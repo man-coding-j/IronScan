@@ -1,0 +1,24 @@
+{
+    "fileFormatVersion": "1.0.0",
+    "itemInfoEntries": {
+        "798A749B-6485-4AE5-BE13-577756843717": {
+            "author": "com.apple.CoreML",
+            "description": "External FeatureDescription Overlay",
+            "name": "FeatureDescriptions.json",
+            "path": "com.apple.CoreML/FeatureDescriptions.json"
+        },
+        "E1248D73-BF19-4A8B-9A01-54AD416A588C": {
+            "author": "com.apple.CoreML",
+            "description": "External Metadata Overlay",
+            "name": "Metadata.json",
+            "path": "com.apple.CoreML/Metadata.json"
+        },
+        "FCE378ED-267A-4491-8A67-589572CD61AB": {
+            "author": "com.apple.CoreML",
+            "description": "CoreML Model Specification",
+            "name": "TongueSegmentation.mlmodel",
+            "path": "com.apple.CoreML/TongueSegmentation.mlmodel"
+        }
+    },
+    "rootModelIdentifier": "FCE378ED-267A-4491-8A67-589572CD61AB"
+}

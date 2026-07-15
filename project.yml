@@ -1,0 +1,56 @@
+name: IronScan
+options:
+  bundleIdPrefix: org.ironscan
+  deploymentTarget:
+    iOS: "18.0"
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    CLANG_ENABLE_MODULES: YES
+targets:
+  IronScan:
+    type: application
+    platform: iOS
+    sources:
+      - path: IronScan
+      - path: Models
+        type: folder
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.ironscan.app
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_NSCameraUsageDescription: "IronScan uses the camera to capture a standardized tongue image for local research processing."
+        TARGETED_DEVICE_FAMILY: "1,2"
+        CODE_SIGN_STYLE: Automatic
+  IronScanMLTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: IronScanTests/ML
+        excludes:
+          - Fixtures/generate_fixture_models.py
+          - Fixtures/PythonGolden
+          - Python
+      - path: IronScanTests/ML/Fixtures/PythonGolden
+        type: folder
+        buildPhase: resources
+      - path: IronScanTests/CameraStateMachineTests.swift
+      - path: IronScanTests/App
+    dependencies:
+      - target: IronScan
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.ironscan.runtime.tests
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  IronScan:
+    build:
+      targets:
+        IronScan: all
+        IronScanMLTests: [test]
+    test:
+      gatherCoverageData: true
+      targets:
+        - IronScanMLTests

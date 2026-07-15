@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ironscan.local/schemas/model_manifest.schema.json",
+  "title": "IronScan Model Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "modelIdentifier",
+    "semanticVersion",
+    "sha256",
+    "deploymentStatus",
+    "input",
+    "resize",
+    "normalization",
+    "outputs",
+    "decisionThreshold",
+    "trainingCommit",
+    "datasetVersion",
+    "preprocessingVersion"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "modelIdentifier": { "type": "string", "minLength": 1 },
+    "semanticVersion": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+    },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "deploymentStatus": { "enum": ["engineeringFixture", "validated"] },
+    "input": { "$ref": "#/$defs/input" },
+    "resize": { "$ref": "#/$defs/resize" },
+    "normalization": { "$ref": "#/$defs/normalization" },
+    "outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/output" }
+    },
+    "decisionThreshold": { "type": "number", "minimum": 0, "maximum": 1 },
+    "trainingCommit": { "type": "string", "minLength": 1 },
+    "datasetVersion": { "type": "string", "minLength": 1 },
+    "preprocessingVersion": { "type": "string", "minLength": 1 },
+    "postprocessing": { "$ref": "#/$defs/postprocessing" }
+  },
+  "$defs": {
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "dimensions", "dataType", "pixelFormat", "colorSpace"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "dimensions": { "type": "array", "items": { "type": "integer", "minimum": 1 } },
+        "dataType": { "const": "uint8" },
+        "pixelFormat": { "const": "32BGRA" },
+        "colorSpace": { "const": "sRGB" }
+      }
+    },
+    "resize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "interpolation"],
+      "properties": {
+        "method": { "enum": ["scaleFill", "centerCrop"] },
+        "interpolation": { "const": "vImageHighQuality" }
+      }
+    },
+    "normalization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "scale", "biases"],
+      "properties": {
+        "kind": { "const": "scale" },
+        "scale": { "type": "number" },
+        "biases": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" } }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "dimensions", "dataType"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "dimensions": { "type": "array", "items": { "type": "integer", "minimum": 1 } },
+        "dataType": { "const": "float32" }
+      }
+    },
+    "postprocessing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "largestConnectedComponent",
+        "maximumHoleAreaPixels",
+        "closingRadiusPixels",
+        "minimumComponentAreaPixels",
+        "boundaryErosionPercentage"
+      ],
+      "properties": {
+        "largestConnectedComponent": { "type": "boolean" },
+        "maximumHoleAreaPixels": { "type": "integer", "minimum": 0 },
+        "closingRadiusPixels": { "type": "integer", "minimum": 0 },
+        "minimumComponentAreaPixels": { "type": "integer", "minimum": 0 },
+        "boundaryErosionPercentage": { "type": "number", "minimum": 0, "maximum": 0.25 }
+      }
+    }
+  }
+}

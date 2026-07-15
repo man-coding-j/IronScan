@@ -1,0 +1,593 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		05EB40CBE58C7ADB1634477D /* ScanResultSummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C502988C6635FDC7526921 /* ScanResultSummaryTests.swift */; };
+		0E292AB8E56DDCF30A3966B9 /* InferenceParityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FD400A9BA4DCEBC3DF01C83 /* InferenceParityTests.swift */; };
+		0EA95B5AF890DF404D16AE1F /* ImageQualityAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF3CF2511DE06DB258F385D /* ImageQualityAnalyzer.swift */; };
+		117F0D6ECAB75C573849205D /* ModelManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A141954B3C3231EC85CC819 /* ModelManifest.swift */; };
+		1CE5EC66D246670DB603799D /* ModelContractValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C05C9F3DD8C7FEC82EBA901E /* ModelContractValidatorTests.swift */; };
+		21A08C30F71407E9CF0C551C /* InferenceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C59731C1A4D7F17FD86674 /* InferenceError.swift */; };
+		48F92A1137852D9482584D6D /* InferenceMetricsRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C453A88B8646A7695A78FF8F /* InferenceMetricsRecorder.swift */; };
+		5C993FCB2DCC54F4CC0AB1FE /* ModelRegistryActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC14E0AC3FE075D48DB9661 /* ModelRegistryActor.swift */; };
+		6234597D3796DC038AC19971 /* SegmentationPostprocessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD7CB65741C133A1A8DDE1C /* SegmentationPostprocessor.swift */; };
+		712CBD973B3D7301BE8FB9A2 /* MLTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2C22F08DE9F7152807BFB /* MLTestSupport.swift */; };
+		74BE258E28187F64E424181C /* SegmentationInferenceActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 877F683BE072E2AE78E67C95 /* SegmentationInferenceActor.swift */; };
+		74F41AD728B434E5A12D9627 /* PixelBufferFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DDE846AA0E6F5402331299 /* PixelBufferFactory.swift */; };
+		81B0FC79D53718FB96F17D40 /* IronScanApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2D43B1333283339DAAB1A2 /* IronScanApp.swift */; };
+		8D4805C6604ED7C45A11C5EF /* CameraStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDED32CC9C977BA8DFC0D96 /* CameraStateMachineTests.swift */; };
+		96EC72C840C4437DDE683ADD /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B53F5DBBA9B4B0234C650E6 /* CameraPreviewView.swift */; };
+		A3C57300BFF390AB1770B7AF /* CameraProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB6AA327A15381DF435F33B6 /* CameraProtocols.swift */; };
+		ACF82F1749130BF4BD4547F5 /* InferenceTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F7E73A518F69DCB117E8E7F /* InferenceTypes.swift */; };
+		B48EBF54043AA3DE398AF662 /* CameraTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1428C9A7E7B879C5CD7864D /* CameraTypes.swift */; };
+		B6D78999748C52EC58223BFD /* InferenceConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2214F3E95AD186D406945DD7 /* InferenceConcurrencyTests.swift */; };
+		C2268EB28D712EB21A3FDAB8 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FAAE579A2288B01A9DB4382 /* ScanView.swift */; };
+		C37F7654A8D51AE4A9956A03 /* RiskInferenceActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D17D37C4A6DCD268E19A1C00 /* RiskInferenceActor.swift */; };
+		C9300BCD9C9634BEAA395F27 /* CameraSessionActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216E3263067D5F8CD5F79591 /* CameraSessionActor.swift */; };
+		CD2B19CB3B172D8F18BEB0A6 /* ModelContractValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B07BAC16006DB6A5DA2AFE7 /* ModelContractValidator.swift */; };
+		D19E3E2A28862730646F0F99 /* LatestFrameProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C687323CDFF8CBFB6C28AF /* LatestFrameProcessor.swift */; };
+		D73BF1906E80187FDA7D75D7 /* GeneratedModelInterfaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEF170027228566C352704E /* GeneratedModelInterfaces.swift */; };
+		D757A71B1B455A8D86C15A79 /* Models in Resources */ = {isa = PBXBuildFile; fileRef = 0D7A23A682BDA80B83764377 /* Models */; };
+		DB5FF1ECAB6355596BE427F2 /* PythonGolden in Resources */ = {isa = PBXBuildFile; fileRef = 31BDC47CB667B112C9B0C516 /* PythonGolden */; };
+		E377DC54A9943F538E1ABB5F /* ScanPipelineActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649273439084E53AF490FF85 /* ScanPipelineActor.swift */; };
+		E39D3072EA64EFDFFB731631 /* ScanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9EE179039AF10C116D439 /* ScanViewModel.swift */; };
+		FF44315A5BCC8D10DB7BBA9B /* CameraStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1391A04C0D992B8864317FF /* CameraStateMachine.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		078AA23E81BD6EBFB89F6DA5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93FD64BE8B2C7BD091905469 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F31F45CDAE547CD6667A4549;
+			remoteInfo = IronScan;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		05DDE846AA0E6F5402331299 /* PixelBufferFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelBufferFactory.swift; sourceTree = "<group>"; };
+		0CEF170027228566C352704E /* GeneratedModelInterfaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedModelInterfaces.swift; sourceTree = "<group>"; };
+		0D7A23A682BDA80B83764377 /* Models */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Models; sourceTree = SOURCE_ROOT; };
+		0F7E73A518F69DCB117E8E7F /* InferenceTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceTypes.swift; sourceTree = "<group>"; };
+		0FAAE579A2288B01A9DB4382 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
+		216E3263067D5F8CD5F79591 /* CameraSessionActor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSessionActor.swift; sourceTree = "<group>"; };
+		2214F3E95AD186D406945DD7 /* InferenceConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceConcurrencyTests.swift; sourceTree = "<group>"; };
+		31BDC47CB667B112C9B0C516 /* PythonGolden */ = {isa = PBXFileReference; lastKnownFileType = folder; name = PythonGolden; path = IronScanTests/ML/Fixtures/PythonGolden; sourceTree = SOURCE_ROOT; };
+		36C59731C1A4D7F17FD86674 /* InferenceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceError.swift; sourceTree = "<group>"; };
+		39C687323CDFF8CBFB6C28AF /* LatestFrameProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LatestFrameProcessor.swift; sourceTree = "<group>"; };
+		3FD400A9BA4DCEBC3DF01C83 /* InferenceParityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceParityTests.swift; sourceTree = "<group>"; };
+		3FF3CF2511DE06DB258F385D /* ImageQualityAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageQualityAnalyzer.swift; sourceTree = "<group>"; };
+		5AE95ECB149F429B61206F24 /* IronScan.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = IronScan.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C2D43B1333283339DAAB1A2 /* IronScanApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IronScanApp.swift; sourceTree = "<group>"; };
+		649273439084E53AF490FF85 /* ScanPipelineActor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanPipelineActor.swift; sourceTree = "<group>"; };
+		6B07BAC16006DB6A5DA2AFE7 /* ModelContractValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelContractValidator.swift; sourceTree = "<group>"; };
+		73B35C89556DAA21C0BC5A58 /* IronScanMLTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = IronScanMLTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A141954B3C3231EC85CC819 /* ModelManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelManifest.swift; sourceTree = "<group>"; };
+		7B53F5DBBA9B4B0234C650E6 /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
+		877F683BE072E2AE78E67C95 /* SegmentationInferenceActor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentationInferenceActor.swift; sourceTree = "<group>"; };
+		9FDED32CC9C977BA8DFC0D96 /* CameraStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraStateMachineTests.swift; sourceTree = "<group>"; };
+		BCD7CB65741C133A1A8DDE1C /* SegmentationPostprocessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentationPostprocessor.swift; sourceTree = "<group>"; };
+		C05C9F3DD8C7FEC82EBA901E /* ModelContractValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelContractValidatorTests.swift; sourceTree = "<group>"; };
+		C453A88B8646A7695A78FF8F /* InferenceMetricsRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceMetricsRecorder.swift; sourceTree = "<group>"; };
+		D17D37C4A6DCD268E19A1C00 /* RiskInferenceActor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiskInferenceActor.swift; sourceTree = "<group>"; };
+		D1E2C22F08DE9F7152807BFB /* MLTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLTestSupport.swift; sourceTree = "<group>"; };
+		D2A9EE179039AF10C116D439 /* ScanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanViewModel.swift; sourceTree = "<group>"; };
+		E1391A04C0D992B8864317FF /* CameraStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraStateMachine.swift; sourceTree = "<group>"; };
+		EB6AA327A15381DF435F33B6 /* CameraProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraProtocols.swift; sourceTree = "<group>"; };
+		F1428C9A7E7B879C5CD7864D /* CameraTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraTypes.swift; sourceTree = "<group>"; };
+		F7C502988C6635FDC7526921 /* ScanResultSummaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanResultSummaryTests.swift; sourceTree = "<group>"; };
+		FDC14E0AC3FE075D48DB9661 /* ModelRegistryActor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelRegistryActor.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		05A0AEB6EBAB5CAEA8FF5890 /* ML */ = {
+			isa = PBXGroup;
+			children = (
+				2214F3E95AD186D406945DD7 /* InferenceConcurrencyTests.swift */,
+				3FD400A9BA4DCEBC3DF01C83 /* InferenceParityTests.swift */,
+				D1E2C22F08DE9F7152807BFB /* MLTestSupport.swift */,
+				C05C9F3DD8C7FEC82EBA901E /* ModelContractValidatorTests.swift */,
+			);
+			name = ML;
+			path = IronScanTests/ML;
+			sourceTree = "<group>";
+		};
+		16428011072E0F1EBA70C100 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				7B53F5DBBA9B4B0234C650E6 /* CameraPreviewView.swift */,
+				5C2D43B1333283339DAAB1A2 /* IronScanApp.swift */,
+				649273439084E53AF490FF85 /* ScanPipelineActor.swift */,
+				0FAAE579A2288B01A9DB4382 /* ScanView.swift */,
+				D2A9EE179039AF10C116D439 /* ScanViewModel.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		2112B7555206086CC11345A7 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				EB6AA327A15381DF435F33B6 /* CameraProtocols.swift */,
+				216E3263067D5F8CD5F79591 /* CameraSessionActor.swift */,
+				E1391A04C0D992B8864317FF /* CameraStateMachine.swift */,
+				F1428C9A7E7B879C5CD7864D /* CameraTypes.swift */,
+				3FF3CF2511DE06DB258F385D /* ImageQualityAnalyzer.swift */,
+				39C687323CDFF8CBFB6C28AF /* LatestFrameProcessor.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		458E352E476E9F659486B5FF /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				0CEF170027228566C352704E /* GeneratedModelInterfaces.swift */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
+		4FF5C807F6D1C3F5BDB8BF35 /* ML */ = {
+			isa = PBXGroup;
+			children = (
+				36C59731C1A4D7F17FD86674 /* InferenceError.swift */,
+				C453A88B8646A7695A78FF8F /* InferenceMetricsRecorder.swift */,
+				0F7E73A518F69DCB117E8E7F /* InferenceTypes.swift */,
+				6B07BAC16006DB6A5DA2AFE7 /* ModelContractValidator.swift */,
+				7A141954B3C3231EC85CC819 /* ModelManifest.swift */,
+				FDC14E0AC3FE075D48DB9661 /* ModelRegistryActor.swift */,
+				D17D37C4A6DCD268E19A1C00 /* RiskInferenceActor.swift */,
+				877F683BE072E2AE78E67C95 /* SegmentationInferenceActor.swift */,
+				BCD7CB65741C133A1A8DDE1C /* SegmentationPostprocessor.swift */,
+				458E352E476E9F659486B5FF /* Generated */,
+			);
+			path = ML;
+			sourceTree = "<group>";
+		};
+		8A986129803FB215759FA3D4 /* IronScanTests */ = {
+			isa = PBXGroup;
+			children = (
+				9FDED32CC9C977BA8DFC0D96 /* CameraStateMachineTests.swift */,
+			);
+			path = IronScanTests;
+			sourceTree = "<group>";
+		};
+		A45DE6E270C9AE46D33896EC /* App */ = {
+			isa = PBXGroup;
+			children = (
+				F7C502988C6635FDC7526921 /* ScanResultSummaryTests.swift */,
+			);
+			name = App;
+			path = IronScanTests/App;
+			sourceTree = "<group>";
+		};
+		A8AFE77C03F889C6DB00473E /* ImageProcessing */ = {
+			isa = PBXGroup;
+			children = (
+				05DDE846AA0E6F5402331299 /* PixelBufferFactory.swift */,
+			);
+			path = ImageProcessing;
+			sourceTree = "<group>";
+		};
+		C95B9885ADEEBE1D600981D2 /* IronScan */ = {
+			isa = PBXGroup;
+			children = (
+				16428011072E0F1EBA70C100 /* App */,
+				2112B7555206086CC11345A7 /* Camera */,
+				A8AFE77C03F889C6DB00473E /* ImageProcessing */,
+				4FF5C807F6D1C3F5BDB8BF35 /* ML */,
+			);
+			path = IronScan;
+			sourceTree = "<group>";
+		};
+		D75E8C5F8D7C0E3A66A4BE3E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5AE95ECB149F429B61206F24 /* IronScan.app */,
+				73B35C89556DAA21C0BC5A58 /* IronScanMLTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FB54AB3A41041700726DC0AC = {
+			isa = PBXGroup;
+			children = (
+				0D7A23A682BDA80B83764377 /* Models */,
+				31BDC47CB667B112C9B0C516 /* PythonGolden */,
+				A45DE6E270C9AE46D33896EC /* App */,
+				C95B9885ADEEBE1D600981D2 /* IronScan */,
+				8A986129803FB215759FA3D4 /* IronScanTests */,
+				05A0AEB6EBAB5CAEA8FF5890 /* ML */,
+				D75E8C5F8D7C0E3A66A4BE3E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		"TEMP_AFB5976A-810C-471B-A68D-B568A2EB449B" /* Features */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		"TEMP_F5344C21-9099-4186-B10B-49531C6FEAE1" /* Fixtures */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Fixtures;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		27FE5977D9EB68638DBA0274 /* IronScanMLTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA6FF82DF79B3593445ACB20 /* Build configuration list for PBXNativeTarget "IronScanMLTests" */;
+			buildPhases = (
+				AED71FE8FC87B5F0DEAEBFDF /* Sources */,
+				9A71B934270B5D3A68D886AC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0328DB5001BA971EC7625E71 /* PBXTargetDependency */,
+			);
+			name = IronScanMLTests;
+			packageProductDependencies = (
+			);
+			productName = IronScanMLTests;
+			productReference = 73B35C89556DAA21C0BC5A58 /* IronScanMLTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		F31F45CDAE547CD6667A4549 /* IronScan */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F31CA3C902ACB2516C68BDFD /* Build configuration list for PBXNativeTarget "IronScan" */;
+			buildPhases = (
+				499DED4BD08A14D55C9783B9 /* Sources */,
+				535B0180077F6DF54A57FD72 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = IronScan;
+			packageProductDependencies = (
+			);
+			productName = IronScan;
+			productReference = 5AE95ECB149F429B61206F24 /* IronScan.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		93FD64BE8B2C7BD091905469 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					F31F45CDAE547CD6667A4549 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 1C9D2341CA857236F14E531B /* Build configuration list for PBXProject "IronScan" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = FB54AB3A41041700726DC0AC;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D75E8C5F8D7C0E3A66A4BE3E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F31F45CDAE547CD6667A4549 /* IronScan */,
+				27FE5977D9EB68638DBA0274 /* IronScanMLTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		535B0180077F6DF54A57FD72 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D757A71B1B455A8D86C15A79 /* Models in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9A71B934270B5D3A68D886AC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DB5FF1ECAB6355596BE427F2 /* PythonGolden in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		499DED4BD08A14D55C9783B9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				96EC72C840C4437DDE683ADD /* CameraPreviewView.swift in Sources */,
+				A3C57300BFF390AB1770B7AF /* CameraProtocols.swift in Sources */,
+				C9300BCD9C9634BEAA395F27 /* CameraSessionActor.swift in Sources */,
+				FF44315A5BCC8D10DB7BBA9B /* CameraStateMachine.swift in Sources */,
+				B48EBF54043AA3DE398AF662 /* CameraTypes.swift in Sources */,
+				D73BF1906E80187FDA7D75D7 /* GeneratedModelInterfaces.swift in Sources */,
+				0EA95B5AF890DF404D16AE1F /* ImageQualityAnalyzer.swift in Sources */,
+				21A08C30F71407E9CF0C551C /* InferenceError.swift in Sources */,
+				48F92A1137852D9482584D6D /* InferenceMetricsRecorder.swift in Sources */,
+				ACF82F1749130BF4BD4547F5 /* InferenceTypes.swift in Sources */,
+				81B0FC79D53718FB96F17D40 /* IronScanApp.swift in Sources */,
+				D19E3E2A28862730646F0F99 /* LatestFrameProcessor.swift in Sources */,
+				CD2B19CB3B172D8F18BEB0A6 /* ModelContractValidator.swift in Sources */,
+				117F0D6ECAB75C573849205D /* ModelManifest.swift in Sources */,
+				5C993FCB2DCC54F4CC0AB1FE /* ModelRegistryActor.swift in Sources */,
+				74F41AD728B434E5A12D9627 /* PixelBufferFactory.swift in Sources */,
+				C37F7654A8D51AE4A9956A03 /* RiskInferenceActor.swift in Sources */,
+				E377DC54A9943F538E1ABB5F /* ScanPipelineActor.swift in Sources */,
+				C2268EB28D712EB21A3FDAB8 /* ScanView.swift in Sources */,
+				E39D3072EA64EFDFFB731631 /* ScanViewModel.swift in Sources */,
+				74BE258E28187F64E424181C /* SegmentationInferenceActor.swift in Sources */,
+				6234597D3796DC038AC19971 /* SegmentationPostprocessor.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AED71FE8FC87B5F0DEAEBFDF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D4805C6604ED7C45A11C5EF /* CameraStateMachineTests.swift in Sources */,
+				B6D78999748C52EC58223BFD /* InferenceConcurrencyTests.swift in Sources */,
+				0E292AB8E56DDCF30A3966B9 /* InferenceParityTests.swift in Sources */,
+				712CBD973B3D7301BE8FB9A2 /* MLTestSupport.swift in Sources */,
+				1CE5EC66D246670DB603799D /* ModelContractValidatorTests.swift in Sources */,
+				05EB40CBE58C7ADB1634477D /* ScanResultSummaryTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0328DB5001BA971EC7625E71 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F31F45CDAE547CD6667A4549 /* IronScan */;
+			targetProxy = 078AA23E81BD6EBFB89F6DA5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1212D66E6E6565F147DA4987 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.ironscan.runtime.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IronScan.app/IronScan";
+			};
+			name = Release;
+		};
+		12E62A2A1EDBD86057B666E6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "IronScan uses the camera to capture a standardized tongue image for local research processing.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.ironscan.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		46755BB74831B24F37313C94 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "IronScan uses the camera to capture a standardized tongue image for local research processing.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.ironscan.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B875D2438F1345F531AE0FD5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.ironscan.runtime.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IronScan.app/IronScan";
+			};
+			name = Debug;
+		};
+		D67A6714ED77ADDE11DBE626 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		E2ABBB52586BC9B2A8C25680 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1C9D2341CA857236F14E531B /* Build configuration list for PBXProject "IronScan" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2ABBB52586BC9B2A8C25680 /* Debug */,
+				D67A6714ED77ADDE11DBE626 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F31CA3C902ACB2516C68BDFD /* Build configuration list for PBXNativeTarget "IronScan" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				46755BB74831B24F37313C94 /* Debug */,
+				12E62A2A1EDBD86057B666E6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FA6FF82DF79B3593445ACB20 /* Build configuration list for PBXNativeTarget "IronScanMLTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B875D2438F1345F531AE0FD5 /* Debug */,
+				1212D66E6E6565F147DA4987 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 93FD64BE8B2C7BD091905469 /* Project object */;
+}

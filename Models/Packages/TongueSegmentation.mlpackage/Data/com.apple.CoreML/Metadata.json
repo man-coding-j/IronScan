@@ -1,0 +1,18 @@
+{
+  "MLModelVersionStringKey" : "0.1.0-engineering.1",
+  "MLModelDescriptionKey" : "Deterministic engineering fixture; not a trained screening model",
+  "MLModelCreatorDefinedKey" : {
+    "colorSpace" : "sRGB",
+    "inputFeatureName" : "image",
+    "inputDimensions" : "[1,64,64,3]",
+    "preprocessingVersion" : "1.0.0",
+    "normalization" : "{\"biases\":[0.0,0.0,0.0],\"kind\":\"scale\",\"scale\":0.00392156862745098}",
+    "pixelFormat" : "32BGRA",
+    "decisionThreshold" : "0.5",
+    "modelIdentifier" : "org.ironscan.engineering.tongue-segmentation",
+    "manifestSchemaVersion" : "1",
+    "semanticVersion" : "0.1.0-engineering.1",
+    "outputFeatures" : "[{\"dataType\":\"float32\",\"dimensions\":[1,64,64],\"name\":\"probability_mask\"}]"
+  },
+  "MLModelAuthorKey" : "IronScan engineering fixture generator"
+}

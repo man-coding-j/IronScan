@@ -1,0 +1,18 @@
+{
+  "MLModelVersionStringKey" : "0.1.0-engineering.1",
+  "MLModelDescriptionKey" : "Deterministic engineering fixture; not a trained screening model",
+  "MLModelCreatorDefinedKey" : {
+    "colorSpace" : "sRGB",
+    "inputFeatureName" : "image",
+    "semanticVersion" : "0.1.0-engineering.1",
+    "preprocessingVersion" : "1.0.0",
+    "normalization" : "{\"biases\":[0.0,0.0,0.0],\"kind\":\"scale\",\"scale\":0.00392156862745098}",
+    "pixelFormat" : "32BGRA",
+    "decisionThreshold" : "0.42",
+    "modelIdentifier" : "org.ironscan.engineering.anemia-risk",
+    "manifestSchemaVersion" : "1",
+    "inputDimensions" : "[1,32,32,3]",
+    "outputFeatures" : "[{\"dataType\":\"float32\",\"dimensions\":[1],\"name\":\"raw_score\"},{\"dataType\":\"float32\",\"dimensions\":[1],\"name\":\"calibrated_probability\"}]"
+  },
+  "MLModelAuthorKey" : "IronScan engineering fixture generator"
+}
