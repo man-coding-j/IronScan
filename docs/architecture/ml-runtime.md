@@ -1,6 +1,6 @@
 # On-device ML runtime
 
-IronScan uses direct Core ML generated model classes. `ModelRegistryActor` validates and loads each model once for a selected compute-unit policy. `SegmentationInferenceActor` and `RiskInferenceActor` serialize native predictions and never execute on `MainActor`.
+IronScan uses direct Core ML generated model classes. During app startup, `ScanPipelineActor.prepareModels()` asks `ModelRegistryActor` to load and validate both packages. The registry retains one instance of each model for the selected compute-unit policy. `SegmentationInferenceActor` and `RiskInferenceActor` serialize native predictions and never execute on `MainActor`.
 
 ## Contract
 
@@ -22,7 +22,16 @@ Actors check cancellation before preprocessing and immediately before native pre
 
 ## Performance status
 
-Model-load, preprocessing, segmentation, caller-supplied calibration, risk-inference, total-pipeline, and peak temporary-buffer metrics are recorded. Physical-device p95 values are not yet available. Record p95 results here for at least two supported iPhones before this task is considered complete.
+Model-load, preprocessing, segmentation, caller-supplied calibration, risk-inference, total-pipeline, and peak temporary-buffer metrics are recorded. A physical-device build exposes **Run 100-scan ML benchmark**, which runs only the synthetic engineering fixture and displays device identifier, iOS version, segmentation p95, risk-inference p95, total-pipeline p95, and peak temporary-buffer count.
+
+Run the benchmark after a release build has reached a stable device temperature, with Low Power Mode disabled and no debugger performance tools attached. Repeat on at least two supported physical iPhones and record the displayed values below. Simulator values do not qualify.
+
+| Device identifier | iOS | Iterations | Segmentation p95 | Risk p95 | Total p95 | Peak buffers |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| Pending physical iPhone 1 | Pending | 100 | Pending | Pending | Pending | Pending |
+| Pending physical iPhone 2 | Pending | 100 | Pending | Pending | Pending | Pending |
+
+Physical-device p95 values remain unavailable, so IS-IOS-ML-001 is not complete until both pending rows are replaced with measured results.
 
 ## Parity tolerances
 

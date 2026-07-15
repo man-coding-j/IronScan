@@ -80,6 +80,13 @@ struct RiskModelHandle: @unchecked Sendable {
     let computeUnits: InferenceComputeUnits
 }
 
+struct ModelRegistryReadiness: Codable, Equatable, Sendable {
+    let segmentationModelIdentifier: String
+    let segmentationModelVersion: String
+    let riskModelIdentifier: String
+    let riskModelVersion: String
+}
+
 actor ModelRegistryActor {
     static let shared = ModelRegistryActor(
         resources: .runtimeBundle(),
@@ -107,6 +114,19 @@ actor ModelRegistryActor {
         self.computeUnits = computeUnits
         self.metrics = metrics
         self.validator = validator
+    }
+
+    func preloadModels() async throws -> ModelRegistryReadiness {
+        try checkCancellation()
+        let segmentation = try await segmentationModel()
+        try checkCancellation()
+        let risk = try await riskModel()
+        return ModelRegistryReadiness(
+            segmentationModelIdentifier: segmentation.manifest.modelIdentifier,
+            segmentationModelVersion: segmentation.manifest.semanticVersion,
+            riskModelIdentifier: risk.manifest.modelIdentifier,
+            riskModelVersion: risk.manifest.semanticVersion
+        )
     }
 
     func segmentationModel() async throws -> SegmentationModelHandle {

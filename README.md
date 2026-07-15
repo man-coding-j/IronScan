@@ -8,10 +8,13 @@ The SwiftUI app owns AVFoundation session mutations inside `CameraSessionActor`,
 
 Open `IronScan.xcworkspace`, choose the `IronScan` scheme, select an iPhone simulator, and press Run. Use **Run synthetic simulator demo** to exercise segmentation and risk inference locally. For camera testing, select a connected iPhone or iPad, choose a development team under Signing & Capabilities, enable Developer Mode on the device, and press Run.
 
+Both model packages are validated during app startup. Physical-device builds also provide **Run 100-scan ML benchmark** so p95 timings can be collected without participant images.
+
 Current limitations:
 
 - Physical captures intentionally return "Unable to assess" after segmentation because validated color calibration has not been integrated. Risk inference is not run for these captures.
 - The bundled Core ML packages are deterministic synthetic engineering fixtures, so their outputs must not be treated as participant results.
 - Image quality checks currently estimate luminance, clipping, and coarse contrast. Motion, tongue coverage, and tongue centering are placeholders and must not be treated as validated measurements.
 - Camera behavior requires validation on supported physical iPhone hardware; the simulator cannot validate capture, torch, focus, exposure, or white-balance behavior.
+- Required p95 measurements on two physical iPhones are still pending; the benchmark procedure and result table are in `docs/architecture/ml-runtime.md`.
 - No raw-image upload path is implemented. Production code must continue to keep raw tongue images local.

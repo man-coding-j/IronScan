@@ -38,12 +38,23 @@ extension RiskDecision {
 }
 
 actor ScanPipelineActor {
+    private let registry: ModelRegistryActor
+    private let metrics: InferenceMetricsRecorder
     private let segmentation: SegmentationInferenceActor
     private let risk: RiskInferenceActor
 
-    init(metrics: InferenceMetricsRecorder = InferenceMetricsRecorder()) {
-        segmentation = SegmentationInferenceActor(metrics: metrics)
-        risk = RiskInferenceActor(metrics: metrics)
+    init(
+        registry: ModelRegistryActor = .shared,
+        metrics: InferenceMetricsRecorder = InferenceMetricsRecorder()
+    ) {
+        self.registry = registry
+        self.metrics = metrics
+        segmentation = SegmentationInferenceActor(registry: registry, metrics: metrics)
+        risk = RiskInferenceActor(registry: registry, metrics: metrics)
+    }
+
+    func prepareModels() async throws -> ModelRegistryReadiness {
+        try await registry.preloadModels()
     }
 
     func processPhysicalCapture(_ frame: CapturedFrame) async throws -> ScanResultSummary {
@@ -74,6 +85,35 @@ actor ScanPipelineActor {
             )
         ))
         return .syntheticDemo(segmentation: segmentationResult, prediction: prediction)
+    }
+
+    func runSyntheticBenchmark(
+        iterations: Int,
+        deviceModelIdentifier: String,
+        operatingSystemVersion: String
+    ) async throws -> InferenceBenchmarkSummary {
+        guard iterations > 0 else { throw InferenceError.invalidDimensions }
+        _ = try await prepareModels()
+        await metrics.reset()
+        for _ in 0..<iterations {
+            try Task.checkCancellation()
+            _ = try await runSyntheticDemo()
+        }
+        let snapshot = await metrics.snapshot()
+        guard let segmentationP95 = snapshot.percentile95(for: .segmentation),
+              let riskP95 = snapshot.percentile95(for: .riskInference),
+              let totalP95 = snapshot.percentile95(for: .totalPipeline) else {
+            throw InferenceError.missingOutput("benchmark metrics")
+        }
+        return InferenceBenchmarkSummary(
+            deviceModelIdentifier: deviceModelIdentifier,
+            operatingSystemVersion: operatingSystemVersion,
+            iterationCount: iterations,
+            segmentationP95Ms: segmentationP95,
+            riskInferenceP95Ms: riskP95,
+            totalPipelineP95Ms: totalP95,
+            peakTemporaryBufferCount: snapshot.peakTemporaryBufferCount
+        )
     }
 }
 

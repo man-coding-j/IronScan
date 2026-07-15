@@ -13,6 +13,9 @@ struct ScanView: View {
                     if let result = viewModel.result {
                         resultCard(result)
                     }
+                    if let benchmark = viewModel.benchmark {
+                        benchmarkCard(benchmark)
+                    }
                     Text("Confirm with a laboratory test. IronScan is a research prototype and does not replace laboratory testing.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
@@ -90,7 +93,19 @@ struct ScanView: View {
             }
             .buttonStyle(.bordered)
             .controlSize(.large)
-            .disabled(viewModel.isBusy)
+            .disabled(!viewModel.canRunSyntheticWork)
+            #endif
+
+            #if !targetEnvironment(simulator)
+            Button {
+                viewModel.runPhysicalDeviceBenchmark()
+            } label: {
+                Label("Run 100-scan ML benchmark", systemImage: "gauge.with.dots.needle.67percent")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
+            .disabled(!viewModel.canRunSyntheticWork)
             #endif
         }
     }
@@ -108,5 +123,29 @@ struct ScanView: View {
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    private func benchmarkCard(_ benchmark: InferenceBenchmarkSummary) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Physical-device benchmark")
+                .font(.title2.weight(.bold))
+            Text("Synthetic engineering fixture only")
+                .foregroundStyle(.secondary)
+            Divider()
+            LabeledContent("Device", value: benchmark.deviceModelIdentifier)
+            LabeledContent("iOS", value: benchmark.operatingSystemVersion)
+            LabeledContent("Iterations", value: benchmark.iterationCount.formatted())
+            LabeledContent("Segmentation p95", value: Self.milliseconds(benchmark.segmentationP95Ms))
+            LabeledContent("Risk inference p95", value: Self.milliseconds(benchmark.riskInferenceP95Ms))
+            LabeledContent("Total pipeline p95", value: Self.milliseconds(benchmark.totalPipelineP95Ms))
+            LabeledContent("Peak temporary buffers", value: benchmark.peakTemporaryBufferCount.formatted())
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    private static func milliseconds(_ value: Double) -> String {
+        "\(value.formatted(.number.precision(.fractionLength(1)))) ms"
     }
 }

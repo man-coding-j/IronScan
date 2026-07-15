@@ -3,6 +3,43 @@ import XCTest
 
 @MainActor
 final class InferenceConcurrencyTests: XCTestCase {
+    func testStartupPreloadValidatesAndLoadsBothModelsOnce() async throws {
+        let metrics = InferenceMetricsRecorder()
+        let registry = try MLTestSupport.registry(metrics: metrics)
+
+        let first = try await registry.preloadModels()
+        let second = try await registry.preloadModels()
+        let segmentationLoadCount = await registry.segmentationLoadCount
+        let riskLoadCount = await registry.riskLoadCount
+
+        XCTAssertEqual(first, second)
+        XCTAssertEqual(segmentationLoadCount, 1)
+        XCTAssertEqual(riskLoadCount, 1)
+    }
+
+    func testConcurrentStartupPreloadStillLoadsEachModelOnce() async throws {
+        let metrics = InferenceMetricsRecorder()
+        let registry = try MLTestSupport.registry(metrics: metrics)
+
+        let readiness = try await withThrowingTaskGroup(of: ModelRegistryReadiness.self) { group in
+            for _ in 0..<8 {
+                group.addTask { try await registry.preloadModels() }
+            }
+            var values = [ModelRegistryReadiness]()
+            for try await value in group {
+                values.append(value)
+            }
+            return values
+        }
+        let segmentationLoadCount = await registry.segmentationLoadCount
+        let riskLoadCount = await registry.riskLoadCount
+
+        XCTAssertEqual(Set(readiness.map(\.segmentationModelVersion)).count, 1)
+        XCTAssertEqual(Set(readiness.map(\.riskModelVersion)).count, 1)
+        XCTAssertEqual(segmentationLoadCount, 1)
+        XCTAssertEqual(riskLoadCount, 1)
+    }
+
     func testRejectedCalibrationDoesNotLoadOrRunRiskModel() async throws {
         let metrics = InferenceMetricsRecorder()
         let registry = try MLTestSupport.registry(metrics: metrics)

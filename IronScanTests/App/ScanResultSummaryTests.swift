@@ -11,6 +11,29 @@ final class ScanResultSummaryTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(summary.inferenceDurationMs, 0)
     }
 
+    func testSyntheticBenchmarkReportsP95Metrics() async throws {
+        let metrics = InferenceMetricsRecorder()
+        let registry = try MLTestSupport.registry(metrics: metrics)
+        let pipeline = ScanPipelineActor(registry: registry, metrics: metrics)
+
+        let summary = try await pipeline.runSyntheticBenchmark(
+            iterations: 3,
+            deviceModelIdentifier: "synthetic-test-device",
+            operatingSystemVersion: "test-os"
+        )
+        let segmentationLoadCount = await registry.segmentationLoadCount
+        let riskLoadCount = await registry.riskLoadCount
+
+        XCTAssertEqual(summary.iterationCount, 3)
+        XCTAssertEqual(summary.deviceModelIdentifier, "synthetic-test-device")
+        XCTAssertGreaterThanOrEqual(summary.segmentationP95Ms, 0)
+        XCTAssertGreaterThanOrEqual(summary.riskInferenceP95Ms, 0)
+        XCTAssertGreaterThanOrEqual(summary.totalPipelineP95Ms, 0)
+        XCTAssertLessThanOrEqual(summary.peakTemporaryBufferCount, 1)
+        XCTAssertEqual(segmentationLoadCount, 1)
+        XCTAssertEqual(riskLoadCount, 1)
+    }
+
     func testAllowedDecisionTitles() {
         XCTAssertEqual(RiskDecision.lowerObservedRisk.displayTitle, "Lower observed risk")
         XCTAssertEqual(RiskDecision.possibleRisk.displayTitle, "Possible anemia risk")

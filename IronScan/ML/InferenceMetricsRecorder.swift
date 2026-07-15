@@ -29,6 +29,16 @@ struct InferenceMetricsSnapshot: Codable, Equatable, Sendable {
     }
 }
 
+struct InferenceBenchmarkSummary: Codable, Equatable, Sendable {
+    let deviceModelIdentifier: String
+    let operatingSystemVersion: String
+    let iterationCount: Int
+    let segmentationP95Ms: Double
+    let riskInferenceP95Ms: Double
+    let totalPipelineP95Ms: Double
+    let peakTemporaryBufferCount: Int
+}
+
 actor InferenceMetricsRecorder {
     private var samples = [InferenceMetricSample]()
     private var activeTemporaryBufferCount = 0
@@ -63,5 +73,11 @@ actor InferenceMetricsRecorder {
             activeTemporaryBufferCount: activeTemporaryBufferCount,
             peakTemporaryBufferCount: peakTemporaryBufferCount
         )
+    }
+
+    func reset() {
+        samples.removeAll(keepingCapacity: true)
+        activeTemporaryBufferCount = 0
+        peakTemporaryBufferCount = 0
     }
 }
