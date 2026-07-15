@@ -1,0 +1,24 @@
+{
+    "fileFormatVersion": "1.0.0",
+    "itemInfoEntries": {
+        "21B9BD1F-C908-42BA-A47C-2C1BEEF79091": {
+            "author": "com.apple.CoreML",
+            "description": "External FeatureDescription Overlay",
+            "name": "FeatureDescriptions.json",
+            "path": "com.apple.CoreML/FeatureDescriptions.json"
+        },
+        "7F3DBFD0-6594-4E65-9536-D1DCB2C0BB20": {
+            "author": "com.apple.CoreML",
+            "description": "CoreML Model Specification",
+            "name": "AnemiaRisk.mlmodel",
+            "path": "com.apple.CoreML/AnemiaRisk.mlmodel"
+        },
+        "87C7B460-65D6-4F79-9223-323577780E2F": {
+            "author": "com.apple.CoreML",
+            "description": "External Metadata Overlay",
+            "name": "Metadata.json",
+            "path": "com.apple.CoreML/Metadata.json"
+        }
+    },
+    "rootModelIdentifier": "7F3DBFD0-6594-4E65-9536-D1DCB2C0BB20"
+}

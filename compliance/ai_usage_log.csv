@@ -1,0 +1,4 @@
+date,tool,scope,summary,review_status
+2026-07-15,Codex,camera implementation,"Reviewed the uncommitted AVFoundation camera module; hardened interruption, cleanup, BGRA capture, and stream behavior; added state-machine tests and documented limitations.",pending human review
+2026-07-15,Codex,on-device ML runtime,"Implemented deterministic Core ML registry and inference actors, manifest validation, synthetic engineering model packages, Python/Swift parity fixtures, metrics, and Xcode/SwiftPM tests.",pending human review
+2026-07-15,Codex,iOS app integration,"Added a SwiftUI application target, AVFoundation preview integration, physical capture segmentation flow, synthetic simulator fixture flow, and app integration tests.",pending human review

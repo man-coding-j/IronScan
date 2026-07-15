@@ -1,0 +1,73 @@
+from __future__ import annotations
+
+import hashlib
+import json
+from pathlib import Path
+from typing import Any
+
+ROOT = Path(__file__).resolve().parents[3]
+
+
+def load_json(path: Path) -> dict[str, Any]:
+    value = json.loads(path.read_text())
+    assert isinstance(value, dict)
+    return value
+
+
+def package_sha256(package: Path) -> str:
+    digest = hashlib.sha256()
+    for file_path in sorted(path for path in package.rglob("*") if path.is_file()):
+        digest.update(file_path.relative_to(package).as_posix().encode())
+        digest.update(b"\0")
+        digest.update(file_path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def test_manifest_checksums_and_locked_contracts() -> None:
+    cases = (
+        ("segmentation_manifest.json", "TongueSegmentation.mlpackage", [1, 64, 64, 3], 0.5),
+        ("risk_manifest.json", "AnemiaRisk.mlpackage", [1, 32, 32, 3], 0.42),
+    )
+    for manifest_name, package_name, dimensions, threshold in cases:
+        manifest = load_json(ROOT / "Models" / "Manifests" / manifest_name)
+        package = ROOT / "Models" / "Packages" / package_name
+        assert manifest["schemaVersion"] == 1
+        assert manifest["deploymentStatus"] == "engineeringFixture"
+        assert manifest["input"]["dimensions"] == dimensions
+        assert manifest["input"]["pixelFormat"] == "32BGRA"
+        assert manifest["input"]["colorSpace"] == "sRGB"
+        assert manifest["decisionThreshold"] == threshold
+        assert manifest["sha256"] == package_sha256(package)
+
+
+def test_golden_inputs_and_outputs_are_self_consistent() -> None:
+    fixture_directory = ROOT / "IronScanTests" / "ML" / "Fixtures" / "PythonGolden"
+    cases = (
+        ("segmentation_input.bgra", "segmentation_output.json", 64, 64),
+        ("risk_input.bgra", "risk_output.json", 32, 32),
+    )
+    for input_name, output_name, width, height in cases:
+        input_data = (fixture_directory / input_name).read_bytes()
+        output = load_json(fixture_directory / output_name)
+        assert len(input_data) == width * height * 4
+        assert output["width"] == width
+        assert output["height"] == height
+        assert output["inputSHA256"] == hashlib.sha256(input_data).hexdigest()
+
+
+def test_segmentation_golden_mask_dimensions() -> None:
+    output = load_json(
+        ROOT / "IronScanTests" / "ML" / "Fixtures" / "PythonGolden" / "segmentation_output.json"
+    )
+    rows = output["expectedMaskRows"]
+    assert isinstance(rows, list)
+    assert len(rows) == 64
+    assert all(isinstance(row, str) and len(row) == 64 and set(row) <= {"0", "1"} for row in rows)
+
+
+def test_risk_fixture_uses_locked_non_default_threshold() -> None:
+    output = load_json(ROOT / "IronScanTests" / "ML" / "Fixtures" / "PythonGolden" / "risk_output.json")
+    assert output["lockedDecisionThreshold"] == 0.42
+    assert output["lockedDecisionThreshold"] != 0.5
+    assert output["expectedDecision"] == "unableToAssess"

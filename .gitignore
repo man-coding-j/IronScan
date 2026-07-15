@@ -1,0 +1,8 @@
+.DS_Store
+.build/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.venv/
+DerivedData/
+__pycache__/

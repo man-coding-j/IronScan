@@ -1,0 +1,12 @@
+{
+  "expectedCalibratedProbability": 0.5708886993996974,
+  "expectedDecision": "unableToAssess",
+  "expectedRawScore": 0.2854779411764705,
+  "fixture": "synthetic calibrated tongue colors",
+  "height": 32,
+  "inputSHA256": "16706c295ed9a5eb10d527335b568ae60f9658d92e58e77fb5cf4e79cd3ecc22",
+  "lockedDecisionThreshold": 0.42,
+  "probabilityTolerance": 0.01,
+  "tensorFloatTolerance": 0.0001,
+  "width": 32
+}

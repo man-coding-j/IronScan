@@ -1,0 +1,52 @@
+{
+  "datasetVersion": "synthetic-v1",
+  "decisionThreshold": 0.42,
+  "deploymentStatus": "engineeringFixture",
+  "input": {
+    "colorSpace": "sRGB",
+    "dataType": "uint8",
+    "dimensions": [
+      1,
+      32,
+      32,
+      3
+    ],
+    "name": "image",
+    "pixelFormat": "32BGRA"
+  },
+  "modelIdentifier": "org.ironscan.engineering.anemia-risk",
+  "normalization": {
+    "biases": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "kind": "scale",
+    "scale": 0.00392156862745098
+  },
+  "outputs": [
+    {
+      "dataType": "float32",
+      "dimensions": [
+        1
+      ],
+      "name": "raw_score"
+    },
+    {
+      "dataType": "float32",
+      "dimensions": [
+        1
+      ],
+      "name": "calibrated_probability"
+    }
+  ],
+  "preprocessingVersion": "1.0.0",
+  "resize": {
+    "interpolation": "vImageHighQuality",
+    "method": "scaleFill"
+  },
+  "schemaVersion": 1,
+  "semanticVersion": "0.1.0-engineering.1",
+  "sha256": "e06c7617d96d8e73916efe46269f94c43ef3c4cda9644c4bf1adc196767a74cb",
+  "trainingCommit": "synthetic-engineering-fixture"
+}
