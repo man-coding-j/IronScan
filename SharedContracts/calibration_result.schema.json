@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ironscan.local/schemas/calibration_result.schema.json",
+  "title": "IronScan calibration result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["calibrationMode", "calibrationMatrix", "exposureScale", "usablePatchCount", "specularFraction", "shadowUniformity", "segmentationConfidence", "calibrationConfidence", "accepted", "rejectionReasons", "preprocessingVersion"],
+  "properties": {
+    "calibrationMode": { "enum": ["multiPatchReference", "neutralPatchReference", "teethPseudoReference", "uncalibratedRejected"] },
+    "calibrationMatrix": { "type": "array", "minItems": 9, "maxItems": 9, "items": { "type": "number" } },
+    "exposureScale": { "type": "number", "minimum": 0.8, "maximum": 1.25 },
+    "usablePatchCount": { "type": "integer", "minimum": 0 },
+    "medianReferenceDeltaE": { "type": ["number", "null"], "minimum": 0 },
+    "maximumReferenceDeltaE": { "type": ["number", "null"], "minimum": 0 },
+    "matrixConditionNumber": { "type": ["number", "null"], "minimum": 0 },
+    "specularFraction": { "type": "number", "minimum": 0, "maximum": 1 },
+    "shadowUniformity": { "type": "number", "minimum": 0 },
+    "segmentationConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "calibrationConfidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "accepted": { "type": "boolean" },
+    "rejectionReasons": { "type": "array", "items": { "type": "string" }, "maxItems": 32 },
+    "preprocessingVersion": { "type": "string", "minLength": 1 }
+  }
+}

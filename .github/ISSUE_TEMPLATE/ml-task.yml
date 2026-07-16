@@ -1,0 +1,9 @@
+name: ML task
+description: Propose model, manifest, preprocessing, or parity work.
+body:
+  - type: textarea
+    attributes: { label: Model contract, description: Identify versions, manifests, datasets, and thresholds. }
+    validations: { required: true }
+  - type: textarea
+    attributes: { label: Provenance and parity, description: Describe grouped splits and Swift/Python validation. }
+    validations: { required: true }

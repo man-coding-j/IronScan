@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Scan {{ scan.id }} · IronScan{% endblock %}
+{% block content %}
+<h2>{{ scan.anonymous_fixture_id }}</h2>
+<p>{{ scan.calibration_mode }} · {{ scan.decision }} · quality {{ scan.quality_score }}</p>
+<div class="cards">
+  <div class="card">Segmentation confidence: {{ scan.segmentation_confidence }}</div>
+  <div class="card">Calibration residual: {{ scan.calibration_residual }}</div>
+  <div class="card">Condition number: {{ scan.condition_number }}</div>
+  <div class="card">Specular fraction: {{ scan.specular_fraction }}</div>
+  <div class="card">Risk score: {{ scan.risk_score or "—" }}</div>
+  <div class="card">Total latency: {{ scan.total_latency_ms }} ms</div>
+</div>
+<h3>Original / calibrated / mask overlay</h3>
+<div class="artifacts">
+{% for artifact in scan.artifacts %}
+  <figure><img src="/api/v1/artifacts/{{ artifact.id }}/content" alt="Synthetic {{ artifact.artifact_type }} fixture"><figcaption>{{ artifact.artifact_type }}</figcaption></figure>
+{% else %}<p>No retained artifacts.</p>{% endfor %}
+</div>
+<h3>Rejection reasons</h3><p>{{ scan.rejection_reasons | join(", ") or "None" }}</p>
+{% endblock %}

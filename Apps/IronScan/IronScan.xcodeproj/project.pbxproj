@@ -1,0 +1,667 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		05EB40CBE58C7ADB1634477D /* ScanResultSummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C502988C6635FDC7526921 /* ScanResultSummaryTests.swift */; };
+		098B16F6AD401D3333F31E7D /* RiskInferenceActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6503BC088E89B87D11A6D450 /* RiskInferenceActor.swift */; };
+		0E292AB8E56DDCF30A3966B9 /* InferenceParityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FD400A9BA4DCEBC3DF01C83 /* InferenceParityTests.swift */; };
+		0EA95B5AF890DF404D16AE1F /* ImageQualityAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF3CF2511DE06DB258F385D /* ImageQualityAnalyzer.swift */; };
+		1CE5EC66D246670DB603799D /* ModelContractValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C05C9F3DD8C7FEC82EBA901E /* ModelContractValidatorTests.swift */; };
+		259FF74E8E63257122F718E3 /* InferenceTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E521288342E5E072D69AFD8 /* InferenceTypes.swift */; };
+		263344BD5510D76BF43F7729 /* CameraPermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA6CB768C98398A8A7420AC /* CameraPermissionManager.swift */; };
+		2F12AFE0B833015A1427D368 /* FrameStrideThrottle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34969953DEEE585BC4B844CD /* FrameStrideThrottle.swift */; };
+		382847C84AA7E1057F06471B /* CameraPermissionAndSimulatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2867BAAE7F5AFBA19E0BA1A /* CameraPermissionAndSimulatorTests.swift */; };
+		44E4570B7D3B85CD99BA7C49 /* SmartColorCalibrationActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBFF115A30C4CF2E5E60859 /* SmartColorCalibrationActor.swift */; };
+		499BFD7B7F3F1AAD6D1CAD7F /* GoldenOutputs in Resources */ = {isa = PBXBuildFile; fileRef = A7DF59D5CCEE09E94013EDC7 /* GoldenOutputs */; };
+		4C34761E1C43DBA725F56BB8 /* SimulatorCameraActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754B466C772DA3ADBBCE6081 /* SimulatorCameraActor.swift */; };
+		557AF563A741F494FA2E90DF /* PixelBufferFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 692CB442B0021CF5A489975C /* PixelBufferFactory.swift */; };
+		5D89A07915CDEF6B39617F2D /* CalibrationTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5038344D4316A4D0F9CC8653 /* CalibrationTestSupport.swift */; };
+		6C9320534E8883FE80B31800 /* ModelContractValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C0CE597EAA9345B29AEFB5 /* ModelContractValidator.swift */; };
+		712CBD973B3D7301BE8FB9A2 /* MLTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2C22F08DE9F7152807BFB /* MLTestSupport.swift */; };
+		81B0FC79D53718FB96F17D40 /* IronScanApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2D43B1333283339DAAB1A2 /* IronScanApp.swift */; };
+		8C025E203D3247AC004049F2 /* SegmentationPostprocessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D45AD513053A1218D65470B /* SegmentationPostprocessor.swift */; };
+		8D4805C6604ED7C45A11C5EF /* CameraStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDED32CC9C977BA8DFC0D96 /* CameraStateMachineTests.swift */; };
+		96EC72C840C4437DDE683ADD /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B53F5DBBA9B4B0234C650E6 /* CameraPreviewView.swift */; };
+		97059C932ADA25ECABB22B3E /* SegmentationInferenceActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0C67D37354FAD49C02F8576 /* SegmentationInferenceActor.swift */; };
+		97E86689C14C83C76E25F9A7 /* ModelRegistryActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41264B53E01E5BF8164EED1 /* ModelRegistryActor.swift */; };
+		992842EAA6B693036A5B90A2 /* InferenceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87B2F4D5E926EB6E09FB033 /* InferenceError.swift */; };
+		A3C57300BFF390AB1770B7AF /* CameraProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB6AA327A15381DF435F33B6 /* CameraProtocols.swift */; };
+		A5FE700388FF3C4A5F529939 /* ModelManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA1A790A7584C9AE802FA3F /* ModelManifest.swift */; };
+		A7C409CDD3BE36F377D186E1 /* GoldenInputs in Resources */ = {isa = PBXBuildFile; fileRef = B331AFD4156DE3F78DBC23CA /* GoldenInputs */; };
+		AD670F0E966AFF3A67DD2ABE /* GeneratedModelInterfaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B0FAA5331B7ED8A17F1476 /* GeneratedModelInterfaces.swift */; };
+		B48EBF54043AA3DE398AF662 /* CameraTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1428C9A7E7B879C5CD7864D /* CameraTypes.swift */; };
+		B524FEDF784AAC5670D77161 /* CalibrationTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 360F897047DC964664E5CBF6 /* CalibrationTypes.swift */; };
+		B6D78999748C52EC58223BFD /* InferenceConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2214F3E95AD186D406945DD7 /* InferenceConcurrencyTests.swift */; };
+		BCBDDEEC9E0CE4FF063C71CC /* InferenceMetricsRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6AED7B749632A99F31E4CC /* InferenceMetricsRecorder.swift */; };
+		C2268EB28D712EB21A3FDAB8 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FAAE579A2288B01A9DB4382 /* ScanView.swift */; };
+		C9300BCD9C9634BEAA395F27 /* CameraSessionActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216E3263067D5F8CD5F79591 /* CameraSessionActor.swift */; };
+		CDF5D5E76C7BDA0E83EB08AF /* CalibrationMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B08EC28262CA4056308E001 /* CalibrationMath.swift */; };
+		D0A056FC848D0F76AA7EECAD /* CameraControllerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128E22481DD933AF311F1FA4 /* CameraControllerFactory.swift */; };
+		D19E3E2A28862730646F0F99 /* LatestFrameProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C687323CDFF8CBFB6C28AF /* LatestFrameProcessor.swift */; };
+		D757A71B1B455A8D86C15A79 /* Models in Resources */ = {isa = PBXBuildFile; fileRef = 0D7A23A682BDA80B83764377 /* Models */; };
+		E377DC54A9943F538E1ABB5F /* ScanPipelineActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649273439084E53AF490FF85 /* ScanPipelineActor.swift */; };
+		E39D3072EA64EFDFFB731631 /* ScanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9EE179039AF10C116D439 /* ScanViewModel.swift */; };
+		FBDB63012B9A954618CBD87E /* SyntheticTongueFrameFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62DD2163A5AB3B41F5AE2CF9 /* SyntheticTongueFrameFactory.swift */; };
+		FC7C7B3183323753BFB909A5 /* SmartColorCalibrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3126104E876CC6FB4A3C3DD /* SmartColorCalibrationTests.swift */; };
+		FF44315A5BCC8D10DB7BBA9B /* CameraStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1391A04C0D992B8864317FF /* CameraStateMachine.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		078AA23E81BD6EBFB89F6DA5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93FD64BE8B2C7BD091905469 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F31F45CDAE547CD6667A4549;
+			remoteInfo = IronScan;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0D7A23A682BDA80B83764377 /* Models */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Models; path = ../../Models; sourceTree = SOURCE_ROOT; };
+		0FAAE579A2288B01A9DB4382 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
+		128E22481DD933AF311F1FA4 /* CameraControllerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraControllerFactory.swift; sourceTree = "<group>"; };
+		216E3263067D5F8CD5F79591 /* CameraSessionActor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSessionActor.swift; sourceTree = "<group>"; };
+		2214F3E95AD186D406945DD7 /* InferenceConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceConcurrencyTests.swift; sourceTree = "<group>"; };
+		22C0CE597EAA9345B29AEFB5 /* ModelContractValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelContractValidator.swift; sourceTree = "<group>"; };
+		2E521288342E5E072D69AFD8 /* InferenceTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceTypes.swift; sourceTree = "<group>"; };
+		34969953DEEE585BC4B844CD /* FrameStrideThrottle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameStrideThrottle.swift; sourceTree = "<group>"; };
+		360F897047DC964664E5CBF6 /* CalibrationTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationTypes.swift; sourceTree = "<group>"; };
+		39C687323CDFF8CBFB6C28AF /* LatestFrameProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LatestFrameProcessor.swift; sourceTree = "<group>"; };
+		3FD400A9BA4DCEBC3DF01C83 /* InferenceParityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceParityTests.swift; sourceTree = "<group>"; };
+		3FF3CF2511DE06DB258F385D /* ImageQualityAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageQualityAnalyzer.swift; sourceTree = "<group>"; };
+		5038344D4316A4D0F9CC8653 /* CalibrationTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationTestSupport.swift; sourceTree = "<group>"; };
+		5AE95ECB149F429B61206F24 /* IronScan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IronScan.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C2D43B1333283339DAAB1A2 /* IronScanApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IronScanApp.swift; sourceTree = "<group>"; };
+		62DD2163A5AB3B41F5AE2CF9 /* SyntheticTongueFrameFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntheticTongueFrameFactory.swift; sourceTree = "<group>"; };
+		649273439084E53AF490FF85 /* ScanPipelineActor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanPipelineActor.swift; sourceTree = "<group>"; };
+		6503BC088E89B87D11A6D450 /* RiskInferenceActor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiskInferenceActor.swift; sourceTree = "<group>"; };
+		692CB442B0021CF5A489975C /* PixelBufferFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelBufferFactory.swift; sourceTree = "<group>"; };
+		73B35C89556DAA21C0BC5A58 /* IronScanMLTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = IronScanMLTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		754B466C772DA3ADBBCE6081 /* SimulatorCameraActor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorCameraActor.swift; sourceTree = "<group>"; };
+		7B53F5DBBA9B4B0234C650E6 /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
+		7D45AD513053A1218D65470B /* SegmentationPostprocessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentationPostprocessor.swift; sourceTree = "<group>"; };
+		9B08EC28262CA4056308E001 /* CalibrationMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationMath.swift; sourceTree = "<group>"; };
+		9FDED32CC9C977BA8DFC0D96 /* CameraStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraStateMachineTests.swift; sourceTree = "<group>"; };
+		A7DF59D5CCEE09E94013EDC7 /* GoldenOutputs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = GoldenOutputs; path = ../../TestFixtures/GoldenOutputs; sourceTree = SOURCE_ROOT; };
+		A87B2F4D5E926EB6E09FB033 /* InferenceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceError.swift; sourceTree = "<group>"; };
+		AF6AED7B749632A99F31E4CC /* InferenceMetricsRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceMetricsRecorder.swift; sourceTree = "<group>"; };
+		B2867BAAE7F5AFBA19E0BA1A /* CameraPermissionAndSimulatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPermissionAndSimulatorTests.swift; sourceTree = "<group>"; };
+		B331AFD4156DE3F78DBC23CA /* GoldenInputs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = GoldenInputs; path = ../../TestFixtures/GoldenInputs; sourceTree = SOURCE_ROOT; };
+		C05C9F3DD8C7FEC82EBA901E /* ModelContractValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelContractValidatorTests.swift; sourceTree = "<group>"; };
+		C41264B53E01E5BF8164EED1 /* ModelRegistryActor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelRegistryActor.swift; sourceTree = "<group>"; };
+		CEA6CB768C98398A8A7420AC /* CameraPermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPermissionManager.swift; sourceTree = "<group>"; };
+		CFA1A790A7584C9AE802FA3F /* ModelManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelManifest.swift; sourceTree = "<group>"; };
+		D1E2C22F08DE9F7152807BFB /* MLTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLTestSupport.swift; sourceTree = "<group>"; };
+		D2A9EE179039AF10C116D439 /* ScanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanViewModel.swift; sourceTree = "<group>"; };
+		D3126104E876CC6FB4A3C3DD /* SmartColorCalibrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartColorCalibrationTests.swift; sourceTree = "<group>"; };
+		D3B0FAA5331B7ED8A17F1476 /* GeneratedModelInterfaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedModelInterfaces.swift; sourceTree = "<group>"; };
+		DDBFF115A30C4CF2E5E60859 /* SmartColorCalibrationActor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartColorCalibrationActor.swift; sourceTree = "<group>"; };
+		E0C67D37354FAD49C02F8576 /* SegmentationInferenceActor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentationInferenceActor.swift; sourceTree = "<group>"; };
+		E1391A04C0D992B8864317FF /* CameraStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraStateMachine.swift; sourceTree = "<group>"; };
+		EB6AA327A15381DF435F33B6 /* CameraProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraProtocols.swift; sourceTree = "<group>"; };
+		F1428C9A7E7B879C5CD7864D /* CameraTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraTypes.swift; sourceTree = "<group>"; };
+		F7C502988C6635FDC7526921 /* ScanResultSummaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanResultSummaryTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		05A0AEB6EBAB5CAEA8FF5890 /* ML */ = {
+			isa = PBXGroup;
+			children = (
+				2214F3E95AD186D406945DD7 /* InferenceConcurrencyTests.swift */,
+				3FD400A9BA4DCEBC3DF01C83 /* InferenceParityTests.swift */,
+				D1E2C22F08DE9F7152807BFB /* MLTestSupport.swift */,
+				C05C9F3DD8C7FEC82EBA901E /* ModelContractValidatorTests.swift */,
+				C80DF4195B5AF3DF66A162EF /* ColorCalibration */,
+			);
+			name = ML;
+			path = IronScanTests/ML;
+			sourceTree = "<group>";
+		};
+		16428011072E0F1EBA70C100 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				7B53F5DBBA9B4B0234C650E6 /* CameraPreviewView.swift */,
+				5C2D43B1333283339DAAB1A2 /* IronScanApp.swift */,
+				649273439084E53AF490FF85 /* ScanPipelineActor.swift */,
+				0FAAE579A2288B01A9DB4382 /* ScanView.swift */,
+				D2A9EE179039AF10C116D439 /* ScanViewModel.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		2112B7555206086CC11345A7 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				128E22481DD933AF311F1FA4 /* CameraControllerFactory.swift */,
+				CEA6CB768C98398A8A7420AC /* CameraPermissionManager.swift */,
+				EB6AA327A15381DF435F33B6 /* CameraProtocols.swift */,
+				216E3263067D5F8CD5F79591 /* CameraSessionActor.swift */,
+				E1391A04C0D992B8864317FF /* CameraStateMachine.swift */,
+				F1428C9A7E7B879C5CD7864D /* CameraTypes.swift */,
+				34969953DEEE585BC4B844CD /* FrameStrideThrottle.swift */,
+				3FF3CF2511DE06DB258F385D /* ImageQualityAnalyzer.swift */,
+				39C687323CDFF8CBFB6C28AF /* LatestFrameProcessor.swift */,
+				754B466C772DA3ADBBCE6081 /* SimulatorCameraActor.swift */,
+				62DD2163A5AB3B41F5AE2CF9 /* SyntheticTongueFrameFactory.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		259A24E8E2B4C7F9242ED93B /* IronScanModels */ = {
+			isa = PBXGroup;
+			children = (
+				EE6E523B672E380D6D4D8FCD /* ML */,
+			);
+			name = IronScanModels;
+			path = ../../Packages/IronScanModels/Sources/IronScanModels;
+			sourceTree = "<group>";
+		};
+		8A986129803FB215759FA3D4 /* IronScanTests */ = {
+			isa = PBXGroup;
+			children = (
+				B2867BAAE7F5AFBA19E0BA1A /* CameraPermissionAndSimulatorTests.swift */,
+				9FDED32CC9C977BA8DFC0D96 /* CameraStateMachineTests.swift */,
+			);
+			path = IronScanTests;
+			sourceTree = "<group>";
+		};
+		A45DE6E270C9AE46D33896EC /* App */ = {
+			isa = PBXGroup;
+			children = (
+				F7C502988C6635FDC7526921 /* ScanResultSummaryTests.swift */,
+			);
+			name = App;
+			path = IronScanTests/App;
+			sourceTree = "<group>";
+		};
+		A5BF7A6474C66F9A252876C2 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				D3B0FAA5331B7ED8A17F1476 /* GeneratedModelInterfaces.swift */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
+		B049C13A2C11A029F0701674 /* ColorCalibration */ = {
+			isa = PBXGroup;
+			children = (
+				9B08EC28262CA4056308E001 /* CalibrationMath.swift */,
+				360F897047DC964664E5CBF6 /* CalibrationTypes.swift */,
+				DDBFF115A30C4CF2E5E60859 /* SmartColorCalibrationActor.swift */,
+			);
+			path = ColorCalibration;
+			sourceTree = "<group>";
+		};
+		BF3710374FF124AE423412ED /* IronScanCore */ = {
+			isa = PBXGroup;
+			children = (
+				B049C13A2C11A029F0701674 /* ColorCalibration */,
+				BF7C97CF310E9CC7B00B6377 /* ImageProcessing */,
+			);
+			name = IronScanCore;
+			path = ../../Packages/IronScanCore/Sources/IronScanCore;
+			sourceTree = "<group>";
+		};
+		BF7C97CF310E9CC7B00B6377 /* ImageProcessing */ = {
+			isa = PBXGroup;
+			children = (
+				692CB442B0021CF5A489975C /* PixelBufferFactory.swift */,
+			);
+			path = ImageProcessing;
+			sourceTree = "<group>";
+		};
+		C80DF4195B5AF3DF66A162EF /* ColorCalibration */ = {
+			isa = PBXGroup;
+			children = (
+				5038344D4316A4D0F9CC8653 /* CalibrationTestSupport.swift */,
+				D3126104E876CC6FB4A3C3DD /* SmartColorCalibrationTests.swift */,
+			);
+			path = ColorCalibration;
+			sourceTree = "<group>";
+		};
+		C95B9885ADEEBE1D600981D2 /* IronScan */ = {
+			isa = PBXGroup;
+			children = (
+				16428011072E0F1EBA70C100 /* App */,
+				2112B7555206086CC11345A7 /* Camera */,
+			);
+			path = IronScan;
+			sourceTree = "<group>";
+		};
+		D75E8C5F8D7C0E3A66A4BE3E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5AE95ECB149F429B61206F24 /* IronScan.app */,
+				73B35C89556DAA21C0BC5A58 /* IronScanMLTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EE6E523B672E380D6D4D8FCD /* ML */ = {
+			isa = PBXGroup;
+			children = (
+				A87B2F4D5E926EB6E09FB033 /* InferenceError.swift */,
+				AF6AED7B749632A99F31E4CC /* InferenceMetricsRecorder.swift */,
+				2E521288342E5E072D69AFD8 /* InferenceTypes.swift */,
+				22C0CE597EAA9345B29AEFB5 /* ModelContractValidator.swift */,
+				CFA1A790A7584C9AE802FA3F /* ModelManifest.swift */,
+				C41264B53E01E5BF8164EED1 /* ModelRegistryActor.swift */,
+				6503BC088E89B87D11A6D450 /* RiskInferenceActor.swift */,
+				E0C67D37354FAD49C02F8576 /* SegmentationInferenceActor.swift */,
+				7D45AD513053A1218D65470B /* SegmentationPostprocessor.swift */,
+				A5BF7A6474C66F9A252876C2 /* Generated */,
+			);
+			path = ML;
+			sourceTree = "<group>";
+		};
+		FB54AB3A41041700726DC0AC = {
+			isa = PBXGroup;
+			children = (
+				B331AFD4156DE3F78DBC23CA /* GoldenInputs */,
+				A7DF59D5CCEE09E94013EDC7 /* GoldenOutputs */,
+				0D7A23A682BDA80B83764377 /* Models */,
+				A45DE6E270C9AE46D33896EC /* App */,
+				C95B9885ADEEBE1D600981D2 /* IronScan */,
+				BF3710374FF124AE423412ED /* IronScanCore */,
+				259A24E8E2B4C7F9242ED93B /* IronScanModels */,
+				8A986129803FB215759FA3D4 /* IronScanTests */,
+				05A0AEB6EBAB5CAEA8FF5890 /* ML */,
+				D75E8C5F8D7C0E3A66A4BE3E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		27FE5977D9EB68638DBA0274 /* IronScanMLTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA6FF82DF79B3593445ACB20 /* Build configuration list for PBXNativeTarget "IronScanMLTests" */;
+			buildPhases = (
+				AED71FE8FC87B5F0DEAEBFDF /* Sources */,
+				9A71B934270B5D3A68D886AC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0328DB5001BA971EC7625E71 /* PBXTargetDependency */,
+			);
+			name = IronScanMLTests;
+			packageProductDependencies = (
+			);
+			productName = IronScanMLTests;
+			productReference = 73B35C89556DAA21C0BC5A58 /* IronScanMLTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		F31F45CDAE547CD6667A4549 /* IronScan */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F31CA3C902ACB2516C68BDFD /* Build configuration list for PBXNativeTarget "IronScan" */;
+			buildPhases = (
+				499DED4BD08A14D55C9783B9 /* Sources */,
+				535B0180077F6DF54A57FD72 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = IronScan;
+			packageProductDependencies = (
+			);
+			productName = IronScan;
+			productReference = 5AE95ECB149F429B61206F24 /* IronScan.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		93FD64BE8B2C7BD091905469 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					F31F45CDAE547CD6667A4549 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 1C9D2341CA857236F14E531B /* Build configuration list for PBXProject "IronScan" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = FB54AB3A41041700726DC0AC;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D75E8C5F8D7C0E3A66A4BE3E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F31F45CDAE547CD6667A4549 /* IronScan */,
+				27FE5977D9EB68638DBA0274 /* IronScanMLTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		535B0180077F6DF54A57FD72 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D757A71B1B455A8D86C15A79 /* Models in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9A71B934270B5D3A68D886AC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7C409CDD3BE36F377D186E1 /* GoldenInputs in Resources */,
+				499BFD7B7F3F1AAD6D1CAD7F /* GoldenOutputs in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		499DED4BD08A14D55C9783B9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CDF5D5E76C7BDA0E83EB08AF /* CalibrationMath.swift in Sources */,
+				B524FEDF784AAC5670D77161 /* CalibrationTypes.swift in Sources */,
+				D0A056FC848D0F76AA7EECAD /* CameraControllerFactory.swift in Sources */,
+				263344BD5510D76BF43F7729 /* CameraPermissionManager.swift in Sources */,
+				96EC72C840C4437DDE683ADD /* CameraPreviewView.swift in Sources */,
+				A3C57300BFF390AB1770B7AF /* CameraProtocols.swift in Sources */,
+				C9300BCD9C9634BEAA395F27 /* CameraSessionActor.swift in Sources */,
+				FF44315A5BCC8D10DB7BBA9B /* CameraStateMachine.swift in Sources */,
+				B48EBF54043AA3DE398AF662 /* CameraTypes.swift in Sources */,
+				2F12AFE0B833015A1427D368 /* FrameStrideThrottle.swift in Sources */,
+				AD670F0E966AFF3A67DD2ABE /* GeneratedModelInterfaces.swift in Sources */,
+				0EA95B5AF890DF404D16AE1F /* ImageQualityAnalyzer.swift in Sources */,
+				992842EAA6B693036A5B90A2 /* InferenceError.swift in Sources */,
+				BCBDDEEC9E0CE4FF063C71CC /* InferenceMetricsRecorder.swift in Sources */,
+				259FF74E8E63257122F718E3 /* InferenceTypes.swift in Sources */,
+				81B0FC79D53718FB96F17D40 /* IronScanApp.swift in Sources */,
+				D19E3E2A28862730646F0F99 /* LatestFrameProcessor.swift in Sources */,
+				6C9320534E8883FE80B31800 /* ModelContractValidator.swift in Sources */,
+				A5FE700388FF3C4A5F529939 /* ModelManifest.swift in Sources */,
+				97E86689C14C83C76E25F9A7 /* ModelRegistryActor.swift in Sources */,
+				557AF563A741F494FA2E90DF /* PixelBufferFactory.swift in Sources */,
+				098B16F6AD401D3333F31E7D /* RiskInferenceActor.swift in Sources */,
+				E377DC54A9943F538E1ABB5F /* ScanPipelineActor.swift in Sources */,
+				C2268EB28D712EB21A3FDAB8 /* ScanView.swift in Sources */,
+				E39D3072EA64EFDFFB731631 /* ScanViewModel.swift in Sources */,
+				97059C932ADA25ECABB22B3E /* SegmentationInferenceActor.swift in Sources */,
+				8C025E203D3247AC004049F2 /* SegmentationPostprocessor.swift in Sources */,
+				4C34761E1C43DBA725F56BB8 /* SimulatorCameraActor.swift in Sources */,
+				44E4570B7D3B85CD99BA7C49 /* SmartColorCalibrationActor.swift in Sources */,
+				FBDB63012B9A954618CBD87E /* SyntheticTongueFrameFactory.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AED71FE8FC87B5F0DEAEBFDF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5D89A07915CDEF6B39617F2D /* CalibrationTestSupport.swift in Sources */,
+				382847C84AA7E1057F06471B /* CameraPermissionAndSimulatorTests.swift in Sources */,
+				8D4805C6604ED7C45A11C5EF /* CameraStateMachineTests.swift in Sources */,
+				B6D78999748C52EC58223BFD /* InferenceConcurrencyTests.swift in Sources */,
+				0E292AB8E56DDCF30A3966B9 /* InferenceParityTests.swift in Sources */,
+				712CBD973B3D7301BE8FB9A2 /* MLTestSupport.swift in Sources */,
+				1CE5EC66D246670DB603799D /* ModelContractValidatorTests.swift in Sources */,
+				05EB40CBE58C7ADB1634477D /* ScanResultSummaryTests.swift in Sources */,
+				FC7C7B3183323753BFB909A5 /* SmartColorCalibrationTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0328DB5001BA971EC7625E71 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F31F45CDAE547CD6667A4549 /* IronScan */;
+			targetProxy = 078AA23E81BD6EBFB89F6DA5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1212D66E6E6565F147DA4987 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.ironscan.runtime.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IronScan.app/IronScan";
+			};
+			name = Release;
+		};
+		12E62A2A1EDBD86057B666E6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = QKAJKR59FF;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "IronScan requires access to your camera to analyze tongue color and screen for anemia risk.";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.ironscan.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		46755BB74831B24F37313C94 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = QKAJKR59FF;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "IronScan requires access to your camera to analyze tongue color and screen for anemia risk.";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.ironscan.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B875D2438F1345F531AE0FD5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.ironscan.runtime.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/IronScan.app/IronScan";
+			};
+			name = Debug;
+		};
+		D67A6714ED77ADDE11DBE626 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DACCELERATE_NEW_LAPACK";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		E2ABBB52586BC9B2A8C25680 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DACCELERATE_NEW_LAPACK";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1C9D2341CA857236F14E531B /* Build configuration list for PBXProject "IronScan" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2ABBB52586BC9B2A8C25680 /* Debug */,
+				D67A6714ED77ADDE11DBE626 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F31CA3C902ACB2516C68BDFD /* Build configuration list for PBXNativeTarget "IronScan" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				46755BB74831B24F37313C94 /* Debug */,
+				12E62A2A1EDBD86057B666E6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FA6FF82DF79B3593445ACB20 /* Build configuration list for PBXNativeTarget "IronScanMLTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B875D2438F1345F531AE0FD5 /* Debug */,
+				1212D66E6E6565F147DA4987 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 93FD64BE8B2C7BD091905469 /* Project object */;
+}

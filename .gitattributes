@@ -1,0 +1,7 @@
+*.mlmodel binary
+*.tflite binary
+*.bgra binary
+*.json text eol=lf
+*.py text eol=lf
+*.swift text eol=lf
+*.md text eol=lf

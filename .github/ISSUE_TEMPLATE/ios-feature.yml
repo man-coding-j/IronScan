@@ -1,0 +1,9 @@
+name: iOS feature
+description: Propose a camera, SwiftUI, calibration, or on-device inference change.
+body:
+  - type: textarea
+    attributes: { label: Goal, description: Describe the research-prototype behavior. }
+    validations: { required: true }
+  - type: textarea
+    attributes: { label: Validation, description: List simulator and physical-device checks. }
+    validations: { required: true }

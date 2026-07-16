@@ -1,0 +1,17 @@
+services:
+  debug-server:
+    build:
+      context: ..
+      dockerfile: Server/Dockerfile
+    environment:
+      IRONSCAN_DATABASE_URL: sqlite:////data/ironscan_debug.sqlite3
+      IRONSCAN_ARTIFACT_ROOT: /data/artifacts
+      IRONSCAN_CONTAINER_MODE: "true"
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ironscan-debug-data:/data
+    restart: unless-stopped
+
+volumes:
+  ironscan-debug-data:

@@ -1,0 +1,12 @@
+:root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+body { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+nav { display: flex; justify-content: space-between; align-items: center; }
+.notice { padding: .8rem; border: 1px solid #ba8b00; border-radius: .5rem; background: #fff3cd; color: #4d3b00; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1rem 0; }
+.card { border: 1px solid #8886; border-radius: .6rem; padding: 1rem; }
+.chart { min-height: 320px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid #8885; padding: .55rem; text-align: left; }
+.artifacts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.artifacts img { width: 100%; border: 1px solid #8885; }
+a { color: #3578e5; }

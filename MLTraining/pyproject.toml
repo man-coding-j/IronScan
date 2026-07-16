@@ -1,0 +1,16 @@
+[project]
+name = "ironscan-ml-training"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = ["numpy>=2,<3"]
+
+[dependency-groups]
+dev = ["mypy>=1.14,<2", "pytest>=8.3,<10", "ruff>=0.9,<1"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true

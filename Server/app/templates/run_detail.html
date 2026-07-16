@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Test Run {{ run.id }} · IronScan{% endblock %}
+{% block content %}
+<h2>Test run {{ run.id }}</h2>
+<p>{{ run.device_model }} · iOS {{ run.ios_version }} · model {{ run.model_version }} · preprocessing {{ run.preprocessing_version }}</p>
+<table>
+  <thead><tr><th>Fixture</th><th>Decision</th><th>Quality</th><th>Residual</th><th>Total latency</th></tr></thead>
+  <tbody>{% for scan in run.scans %}<tr>
+    <td><a href="/dashboard/scans/{{ scan.id }}">{{ scan.anonymous_fixture_id }}</a></td>
+    <td>{{ scan.decision }}</td><td>{{ scan.quality_score }}</td><td>{{ scan.calibration_residual }}</td><td>{{ scan.total_latency_ms }} ms</td>
+  </tr>{% else %}<tr><td colspan="5">No scans.</td></tr>{% endfor %}</tbody>
+</table>
+{% endblock %}

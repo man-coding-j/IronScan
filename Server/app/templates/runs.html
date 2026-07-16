@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Test Runs · IronScan{% endblock %}
+{% block content %}
+<h2>Test runs</h2>
+<button hx-get="/dashboard/partials/test-runs" hx-target="#run-table" hx-swap="innerHTML">Refresh</button>
+<div id="run-table">{% include "_run_table.html" %}</div>
+<div class="cards">
+  <div class="card"><strong>Scans</strong><div>{{ summary.scanCount }}</div></div>
+  <div class="card"><strong>Latency p50</strong><div>{{ summary.latencyP50Ms or "—" }} ms</div></div>
+  <div class="card"><strong>Latency p95</strong><div>{{ summary.latencyP95Ms or "—" }} ms</div></div>
+  <div class="card"><strong>Mean quality</strong><div>{{ summary.meanQualityScore or "—" }}</div></div>
+</div>
+<div id="score-chart" class="chart"></div>
+<div id="latency-chart" class="chart"></div>
+<div id="calibration-chart" class="chart"></div>
+<div id="rejection-chart" class="chart"></div>
+<div id="device-chart" class="chart"></div>
+<div id="expected-chart" class="chart"></div>
+<div id="model-chart" class="chart"></div>
+<script>
+const scores = {{ scores_json | safe }};
+const calibration = {{ calibration_json | safe }};
+const devices = {{ devices_json | safe }}.devices;
+const expected = {{ expected_json | safe }};
+const models = {{ model_json | safe }}.models;
+Plotly.newPlot('score-chart', [{x: scores, type: 'histogram'}], {title: 'Risk-score distribution'});
+Plotly.newPlot('latency-chart', [{x: ['p50', 'p95'], y: [{{ summary.latencyP50Ms or 0 }}, {{ summary.latencyP95Ms or 0 }}], type: 'bar'}], {title: 'Total latency p50/p95'});
+Plotly.newPlot('calibration-chart', [{x: calibration.residuals, type: 'histogram'}], {title: 'Calibration residual distribution'});
+Plotly.newPlot('rejection-chart', [{x: Object.keys(calibration.rejectionReasonCounts), y: Object.values(calibration.rejectionReasonCounts), type: 'bar'}], {title: 'Rejection reasons'});
+Plotly.newPlot('device-chart', [{x: devices.map(d => d.deviceModel), y: devices.map(d => d.latencyP95Ms), type: 'bar'}], {title: 'Device latency p95'});
+const pairs = expected.reduce((acc, item) => { const key = `${item.expected} → ${item.predicted}`; acc[key] = (acc[key] || 0) + 1; return acc; }, {});
+Plotly.newPlot('expected-chart', [{x: Object.keys(pairs), y: Object.values(pairs), type: 'bar'}], {title: 'Expected versus predicted'});
+Plotly.newPlot('model-chart', [{x: models.map(m => m.modelVersion), y: models.map(m => m.meanRiskScore || 0), type: 'bar'}], {title: 'Model-version mean score'});
+</script>
+{% endblock %}

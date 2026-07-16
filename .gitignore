@@ -1,5 +1,8 @@
 .DS_Store
 .build/
+.swiftpm/
+build/
+*.egg-info/
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
@@ -7,3 +10,5 @@
 DerivedData/
 __pycache__/
 xcuserdata/
+debug-artifacts/
+ironscan_debug.sqlite3
