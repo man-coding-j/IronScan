@@ -1,0 +1,10 @@
+name: Provenance Check
+on: [pull_request, workflow_dispatch]
+jobs:
+  provenance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: test -s compliance/ai_usage_log.csv
+      - run: test -s compliance/code_provenance.md
+      - run: test -s Models/Checksums/SHA256SUMS

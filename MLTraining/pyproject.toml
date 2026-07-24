@@ -1,0 +1,27 @@
+[project]
+name = "ironscan-ml-training"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "coremltools==8.1",
+    "numpy==1.26.4",
+    "opencv-python-headless==4.10.0.84",
+    "pillow==11.0.0",
+    "scikit-learn==1.5.2",
+    "torch==2.4.0",
+    "torchvision==0.19.0",
+]
+
+[dependency-groups]
+dev = ["mypy>=1.14,<2", "pytest>=8.3,<10", "ruff>=0.9,<1"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+warn_unused_ignores = false
+disable_error_code = ["misc"]

@@ -1,0 +1,3 @@
+component,version,license,review_status
+Apple platform SDK,Xcode-provided,Apple SDK terms,pending human review
+Python dependencies,uv.lock,mixed,pending automated inventory

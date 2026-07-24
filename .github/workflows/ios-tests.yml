@@ -1,0 +1,9 @@
+name: iOS Tests
+on: [pull_request, workflow_dispatch]
+jobs:
+  test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - run: brew install xcodegen
+      - run: ./scripts/run_ios_checks.sh

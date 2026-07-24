@@ -1,0 +1,68 @@
+name: IronScan
+options:
+  bundleIdPrefix: org.ironscan
+  deploymentTarget:
+    iOS: "18.0"
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    CLANG_ENABLE_MODULES: YES
+    OTHER_SWIFT_FLAGS: "$(inherited) -Xcc -DACCELERATE_NEW_LAPACK"
+targets:
+  IronScan:
+    type: application
+    platform: iOS
+    sources:
+      - path: IronScan
+      - path: ../../Packages/IronScanCore/Sources/IronScanCore
+      - path: ../../Packages/IronScanModels/Sources/IronScanModels
+      - path: ../../Models
+        type: folder
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.ironscan.app
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_NSCameraUsageDescription: "IronScan requires access to your camera to analyze tongue color and screen for anemia risk."
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "IronScan uses your location only while the Care & Labs page is open to find nearby laboratories and clinics."
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        CODE_SIGN_STYLE: Automatic
+  IronScanMLTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: IronScanTests/ML
+        excludes:
+          - Fixtures
+          - Python
+          - GoogleService-Info.plist
+          - GoogleService-Info 2.plist
+          - ColorCalibration/GoogleService-Info.plist
+      - path: ../../TestFixtures/GoldenInputs
+        type: folder
+        buildPhase: resources
+      - path: ../../TestFixtures/GoldenOutputs
+        type: folder
+        buildPhase: resources
+      - path: IronScanTests/CameraStateMachineTests.swift
+      - path: IronScanTests/CameraPermissionAndSimulatorTests.swift
+      - path: IronScanTests/App
+    dependencies:
+      - target: IronScan
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.ironscan.runtime.tests
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  IronScan:
+    build:
+      targets:
+        IronScan: all
+        IronScanMLTests: [test]
+    test:
+      gatherCoverageData: true
+      targets:
+        - IronScanMLTests

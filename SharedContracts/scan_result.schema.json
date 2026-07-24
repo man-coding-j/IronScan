@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ironscan.local/schemas/scan_result.schema.json",
+  "title": "IronScan research scan result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["decision", "modelVersion", "preprocessingVersion", "qualitySummary"],
+  "properties": {
+    "rawScore": { "type": ["number", "null"] },
+    "calibratedProbability": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "decision": { "enum": ["lowerObservedRisk", "possibleRisk", "unableToAssess"] },
+    "uncertainty": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "modelVersion": { "type": "string", "minLength": 1 },
+    "preprocessingVersion": { "type": "string", "minLength": 1 },
+    "qualitySummary": { "type": "object" }
+  }
+}

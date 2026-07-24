@@ -1,0 +1,4 @@
+{
+  "$comment": "Canonical schema: ../../SharedContracts/model_manifest.schema.json",
+  "$ref": "../../SharedContracts/model_manifest.schema.json"
+}

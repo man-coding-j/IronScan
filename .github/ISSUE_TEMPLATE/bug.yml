@@ -1,0 +1,9 @@
+name: Bug
+description: Report a reproducible engineering defect without private data.
+body:
+  - type: textarea
+    attributes: { label: Reproduction, description: Use synthetic fixtures only. }
+    validations: { required: true }
+  - type: textarea
+    attributes: { label: Expected safe behavior }
+    validations: { required: true }

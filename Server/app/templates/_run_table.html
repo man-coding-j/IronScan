@@ -1,0 +1,13 @@
+<table>
+  <thead><tr><th>Started</th><th>Device</th><th>iOS</th><th>Model</th><th>App</th></tr></thead>
+  <tbody>
+  {% for run in runs %}
+    <tr>
+      <td><a href="/dashboard/test-runs/{{ run.id }}">{{ run.started_at }}</a></td>
+      <td>{{ run.device_model }}</td><td>{{ run.ios_version }}</td><td>{{ run.model_version }}</td><td>{{ run.app_version }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5">No synthetic test runs yet. Run the seed command.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>

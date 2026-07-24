@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ironscan.local/schemas/capture_metadata.schema.json",
+  "title": "IronScan capture metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["capturedAt", "orientation", "sourceColorSpace", "focusWasLocked", "exposureWasLocked", "whiteBalanceWasLocked", "exposureTargetOffset"],
+  "properties": {
+    "capturedAt": { "type": "string", "format": "date-time" },
+    "orientation": { "enum": ["up", "upMirrored", "down", "downMirrored", "left", "leftMirrored", "right", "rightMirrored"] },
+    "sourceColorSpace": { "const": "sRGB" },
+    "focusWasLocked": { "type": "boolean" },
+    "exposureWasLocked": { "type": "boolean" },
+    "whiteBalanceWasLocked": { "type": "boolean" },
+    "exposureTargetOffset": { "type": "number" }
+  }
+}

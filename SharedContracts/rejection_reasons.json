@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "reasons": [
+    "clippedReferencePatch",
+    "excessiveShadowGradient",
+    "excessiveSpecularFraction",
+    "insufficientReferencePatches",
+    "invalidCaptureMetadata",
+    "maximumReferenceResidualExceeded",
+    "medianReferenceResidualExceeded",
+    "tongueMaskTooSmall",
+    "tongueMaskTouchesBoundary",
+    "unstableMatrix"
+  ]
+}

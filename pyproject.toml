@@ -1,20 +1,76 @@
 [project]
 name = "ironscan-fixtures"
 version = "0.1.0"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.14,<2",
+    "fastapi>=0.115,<1",
+    "jinja2>=3.1,<4",
+    "numpy>=2.0,<3",
+    "pydantic>=2.10,<3",
+    "sqlalchemy>=2.0,<3",
+    "uvicorn>=0.34,<1",
+]
+
+[project.scripts]
+ironscan-debug-server = "Server.app.cli:main"
+ironscan-seed = "Server.app.seed:main"
+
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["Server", "Server.app*", "Server.migrations*"]
+exclude = ["Server.tests*"]
+
+[tool.setuptools.package-data]
+"Server.app" = ["templates/*.html", "static/*"]
+Server = ["migrations/alembic.ini", "migrations/*.py", "migrations/*.mako", "migrations/versions/*.py"]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28,<1",
+    "mypy>=1.14,<2",
+    "pytest>=8.3,<10",
+    "ruff>=0.9,<1",
+]
 
 [tool.ruff]
 line-length = 120
-target-version = "py311"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "RUF"]
 
+[tool.ruff.lint.per-file-ignores]
+"Server/app/main.py" = ["B008"]
+
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
 strict = true
 ignore_missing_imports = true
 exclude = [".model-generation", ".build"]
 
+[[tool.mypy.overrides]]
+module = "MLTraining.scripts.train_and_convert"
+disable_error_code = ["misc"]
+
+[[tool.mypy.overrides]]
+module = "MLTraining.scripts.train_pallor_model"
+disable_error_code = ["misc"]
+
+[[tool.mypy.overrides]]
+module = "MLTraining.scripts.train_multi_label_model"
+disable_error_code = ["misc"]
+
+[[tool.mypy.overrides]]
+module = "MLTraining.scripts.train_multimodal_suite"
+disable_error_code = ["misc"]
+
 [tool.pytest.ini_options]
-testpaths = ["IronScanTests/ML/Python"]
+testpaths = ["PythonReference/tests", "Server/tests"]
+pythonpath = ["."]
+filterwarnings = [
+    "ignore:Using `httpx` with `starlette.testclient` is deprecated:starlette.exceptions.StarletteDeprecationWarning",
+]

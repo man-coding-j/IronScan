@@ -1,0 +1,61 @@
+{
+  "datasetVersion": "multimodal-clinical-eye-mc-dropout-v1",
+  "decisionThreshold": 0.5094040404040403,
+  "uncertaintyThreshold": 0.05572407550414525,
+  "uncertaintyPassCount": 30,
+  "deploymentStatus": "engineeringFixture",
+  "input": {
+    "colorSpace": "sRGB",
+    "dataType": "uint8",
+    "dimensions": [
+      1,
+      224,
+      224,
+      3
+    ],
+    "name": "image",
+    "pixelFormat": "32BGRA"
+  },
+  "modelIdentifier": "org.ironscan.engineering.eye-laboratory-hgb-screening",
+  "normalization": {
+    "biases": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "kind": "scale",
+    "scale": 0.00392156862745098
+  },
+  "outputs": [
+    {
+      "dataType": "float32",
+      "dimensions": [
+        1
+      ],
+      "name": "raw_proxy_logit"
+    },
+    {
+      "dataType": "float32",
+      "dimensions": [
+        1
+      ],
+      "name": "calibrated_proxy_probability"
+    },
+    {
+      "dataType": "float32",
+      "dimensions": [
+        1
+      ],
+      "name": "predictive_uncertainty"
+    }
+  ],
+  "preprocessingVersion": "multimodal-eye-clinical-2.1.0",
+  "resize": {
+    "interpolation": "vImageHighQuality",
+    "method": "centerCrop"
+  },
+  "schemaVersion": 1,
+  "semanticVersion": "0.3.1-engineering.1",
+  "sha256": "4937d84d30bf9fedbe7a1ab9c1af36c30023f922d107ab7ebbef7c11aaea3138",
+  "trainingCommit": "a3b7f76a7a2e6174129c7ff0c5d571ef95926c4d"
+}

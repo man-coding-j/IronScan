@@ -1,0 +1,11 @@
+name: Model Parity
+on: [pull_request, workflow_dispatch]
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --all-groups
+      - run: uv run python scripts/verify_model_hashes.py
+      - run: uv run pytest PythonReference/tests
