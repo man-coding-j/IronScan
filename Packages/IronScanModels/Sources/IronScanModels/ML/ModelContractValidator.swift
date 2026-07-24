@@ -133,9 +133,44 @@ struct ModelContractValidator: Sendable {
               try JSONDecoder().decode(ModelManifest.Normalization.self, from: normalizationData) == manifest.normalization else {
             throw ModelContractError.normalization
         }
-        let actualThreshold = metadata["decisionThreshold"].flatMap(Double.init)
-        guard actualThreshold == manifest.decisionThreshold else {
-            throw ModelContractError.decisionThreshold(expected: manifest.decisionThreshold, actual: actualThreshold)
+        if let expectedThreshold = manifest.decisionThreshold {
+            let actualThreshold = metadata["decisionThreshold"].flatMap(Double.init)
+            guard actualThreshold == expectedThreshold else {
+                throw ModelContractError.decisionThreshold(expected: expectedThreshold, actual: actualThreshold)
+            }
+        } else if let expectedThresholds = manifest.decisionThresholds {
+            let actualThresholds: [String: Double]?
+            if let data = metadata["decisionThresholds"]?.data(using: .utf8) {
+                actualThresholds = try? JSONDecoder().decode([String: Double].self, from: data)
+            } else {
+                actualThresholds = nil
+            }
+            guard actualThresholds == expectedThresholds else {
+                throw ModelContractError.decisionThresholds(
+                    expected: expectedThresholds,
+                    actual: actualThresholds
+                )
+            }
+        } else {
+            throw ModelContractError.missingModelMetadata("decisionThreshold or decisionThresholds")
+        }
+        if let expectedUncertaintyThreshold = manifest.uncertaintyThreshold {
+            let actualUncertaintyThreshold = metadata["uncertaintyThreshold"].flatMap(Double.init)
+            guard actualUncertaintyThreshold == expectedUncertaintyThreshold else {
+                throw ModelContractError.uncertaintyThreshold(
+                    expected: expectedUncertaintyThreshold,
+                    actual: actualUncertaintyThreshold
+                )
+            }
+        }
+        if let expectedUncertaintyPassCount = manifest.uncertaintyPassCount {
+            let actualUncertaintyPassCount = metadata["uncertaintyPassCount"].flatMap(Int.init)
+            guard actualUncertaintyPassCount == expectedUncertaintyPassCount else {
+                throw ModelContractError.uncertaintyPassCount(
+                    expected: expectedUncertaintyPassCount,
+                    actual: actualUncertaintyPassCount
+                )
+            }
         }
         guard metadata["preprocessingVersion"] == manifest.preprocessingVersion else {
             throw ModelContractError.preprocessingVersion(

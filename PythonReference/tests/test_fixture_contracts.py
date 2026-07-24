@@ -28,6 +28,12 @@ def test_manifest_checksums_and_locked_contracts() -> None:
     cases = (
         ("segmentation_manifest.json", "TongueSegmentation.mlpackage", [1, 64, 64, 3], 0.5),
         ("risk_manifest.json", "AnemiaRisk.mlpackage", [1, 32, 32, 3], 0.42),
+        (
+            "pallor_manifest.json",
+            "IronScanPallorClassifier.mlpackage",
+            [1, 224, 224, 3],
+            0.16261848541234136,
+        ),
     )
     for manifest_name, package_name, dimensions, threshold in cases:
         manifest = load_json(ROOT / "Models" / "Manifests" / manifest_name)
@@ -38,6 +44,43 @@ def test_manifest_checksums_and_locked_contracts() -> None:
         assert manifest["input"]["pixelFormat"] == "32BGRA"
         assert manifest["input"]["colorSpace"] == "sRGB"
         assert manifest["decisionThreshold"] == threshold
+        assert manifest["sha256"] == package_sha256(package)
+
+
+def test_multi_screen_manifest_has_named_outputs_and_thresholds() -> None:
+    manifest = load_json(ROOT / "Models/Manifests/multi_screen_manifest.json")
+    package = ROOT / "Models/CoreML/IronScanMultiScreen.mlpackage"
+    expected_outputs = {
+        "tongue_pale_probability",
+        "toothmark_probability",
+        "crack_probability",
+        "tip_side_red_probability",
+        "fur_thick_probability",
+    }
+
+    assert manifest["deploymentStatus"] == "engineeringFixture"
+    assert manifest["input"]["dimensions"] == [1, 224, 224, 3]
+    assert {output["name"] for output in manifest["outputs"]} == expected_outputs
+    assert set(manifest["decisionThresholds"]) == expected_outputs
+    assert all(0 < threshold < 1 for threshold in manifest["decisionThresholds"].values())
+    assert manifest["sha256"] == package_sha256(package)
+
+
+def test_multimodal_manifests_lock_uncertainty_contracts() -> None:
+    cases = (
+        ("eye_clinical_manifest.json", "IronScanEye_Clinical.mlpackage", 30),
+        ("nail_manifest.json", "IronScanNail.mlpackage", 30),
+        ("tongue_manifest.json", "IronScanTongue.mlpackage", 30),
+    )
+    for manifest_name, package_name, expected_passes in cases:
+        manifest = load_json(ROOT / "Models/Manifests" / manifest_name)
+        package = ROOT / "Models/CoreML" / package_name
+
+        assert manifest["uncertaintyPassCount"] == expected_passes
+        assert 0 < manifest["uncertaintyThreshold"] < 1
+        assert "predictive_uncertainty" in {
+            output["name"] for output in manifest["outputs"]
+        }
         assert manifest["sha256"] == package_sha256(package)
 
 

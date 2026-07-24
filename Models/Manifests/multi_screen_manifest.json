@@ -1,0 +1,79 @@
+{
+  "datasetVersion": "tonguedx2-five-visual-attributes-fold1-v1",
+  "decisionThresholds": {
+    "crack_probability": 0.8280629716568514,
+    "fur_thick_probability": 0.9835036734263566,
+    "tip_side_red_probability": 0.4477408973984361,
+    "tongue_pale_probability": 0.1380755681397391,
+    "toothmark_probability": 0.6022805929600064
+  },
+  "deploymentStatus": "engineeringFixture",
+  "input": {
+    "colorSpace": "sRGB",
+    "dataType": "uint8",
+    "dimensions": [
+      1,
+      224,
+      224,
+      3
+    ],
+    "name": "image",
+    "pixelFormat": "32BGRA"
+  },
+  "modelIdentifier": "org.ironscan.engineering.tongue-attributes",
+  "normalization": {
+    "biases": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "kind": "scale",
+    "scale": 0.00392156862745098
+  },
+  "outputs": [
+    {
+      "dataType": "float32",
+      "dimensions": [
+        1
+      ],
+      "name": "tongue_pale_probability"
+    },
+    {
+      "dataType": "float32",
+      "dimensions": [
+        1
+      ],
+      "name": "toothmark_probability"
+    },
+    {
+      "dataType": "float32",
+      "dimensions": [
+        1
+      ],
+      "name": "crack_probability"
+    },
+    {
+      "dataType": "float32",
+      "dimensions": [
+        1
+      ],
+      "name": "tip_side_red_probability"
+    },
+    {
+      "dataType": "float32",
+      "dimensions": [
+        1
+      ],
+      "name": "fur_thick_probability"
+    }
+  ],
+  "preprocessingVersion": "1.0.0",
+  "resize": {
+    "interpolation": "vImageHighQuality",
+    "method": "scaleFill"
+  },
+  "schemaVersion": 1,
+  "semanticVersion": "0.1.0-engineering.1",
+  "sha256": "c11da3228ba1c9af4269253ae24ff60a77a127de5967dd782ad37d6eb4891d0a",
+  "trainingCommit": "a3b7f76a7a2e6174129c7ff0c5d571ef95926c4d"
+}

@@ -20,6 +20,9 @@ final class CameraStateMachineTests: XCTestCase {
         XCTAssertEqual(stateMachine.state, .completed)
         XCTAssertFalse(stateMachine.torchShouldBeOn)
         stateMachine.handle(.resetAfterCapture)
+        XCTAssertEqual(stateMachine.state, .stabilizing)
+        XCTAssertTrue(stateMachine.torchShouldBeOn)
+        stateMachine.handle(.stabilized)
         XCTAssertEqual(stateMachine.state, .ready)
     }
 
@@ -69,6 +72,22 @@ final class CameraStateMachineTests: XCTestCase {
         stateMachine.handle(.alignmentConfirmed)
         XCTAssertEqual(stateMachine.state, .stabilizing)
 
+        stateMachine.handle(.stabilized)
+        XCTAssertEqual(stateMachine.state, .ready)
+    }
+
+    func testCaptureIssueRestabilizesInsteadOfPermanentlyFailing() {
+        var stateMachine = CameraStateMachine()
+        stateMachine.handle(.requestPermission)
+        stateMachine.handle(.permissionGranted)
+        stateMachine.handle(.configured)
+        stateMachine.handle(.stabilized)
+        stateMachine.handle(.captureRequested)
+
+        stateMachine.handle(.captureAborted)
+
+        XCTAssertEqual(stateMachine.state, .stabilizing)
+        XCTAssertTrue(stateMachine.torchShouldBeOn)
         stateMachine.handle(.stabilized)
         XCTAssertEqual(stateMachine.state, .ready)
     }

@@ -6,7 +6,11 @@ protocol CameraSessionControlling: Sendable {
     var previewSource: CameraPreviewSource { get }
     func eventStream() async -> AsyncStream<CameraEvent>
     func start() async
-    func capture() async
+    @discardableResult
+    func capture() async -> Bool
+    func toggleCamera() async throws
+    func updateCaptureOrientation(_ orientation: CaptureOrientation) async
+    func setOpticsProfile(_ profile: CameraOpticsProfile) async throws
     func setTorchEnabled(_ enabled: Bool) async throws
     func stabilizeForAlignedTongue() async
     func stop() async

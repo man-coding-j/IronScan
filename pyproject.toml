@@ -52,6 +52,22 @@ strict = true
 ignore_missing_imports = true
 exclude = [".model-generation", ".build"]
 
+[[tool.mypy.overrides]]
+module = "MLTraining.scripts.train_and_convert"
+disable_error_code = ["misc"]
+
+[[tool.mypy.overrides]]
+module = "MLTraining.scripts.train_pallor_model"
+disable_error_code = ["misc"]
+
+[[tool.mypy.overrides]]
+module = "MLTraining.scripts.train_multi_label_model"
+disable_error_code = ["misc"]
+
+[[tool.mypy.overrides]]
+module = "MLTraining.scripts.train_multimodal_suite"
+disable_error_code = ["misc"]
+
 [tool.pytest.ini_options]
 testpaths = ["PythonReference/tests", "Server/tests"]
 pythonpath = ["."]

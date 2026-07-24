@@ -10,11 +10,14 @@ final class ModelContractValidatorTests: XCTestCase {
 
         _ = try await registry.segmentationModel()
         _ = try await registry.riskModel()
+        _ = try await registry.multiScreenModel()
 
         let segmentationCount = await registry.segmentationLoadCount
         let riskCount = await registry.riskLoadCount
+        let multiScreenCount = await registry.multiScreenLoadCount
         XCTAssertEqual(segmentationCount, 1)
         XCTAssertEqual(riskCount, 1)
+        XCTAssertEqual(multiScreenCount, 1)
     }
 
     func testManifestSchemaMismatch() async throws {

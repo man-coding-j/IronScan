@@ -95,6 +95,44 @@ final class InferenceParityTests: XCTestCase {
         XCTAssertEqual(try bytes(from: resized), sourceData)
     }
 
+    func testPhysicalYUVPhotoBufferConvertsToBGRAWithoutEncoding() throws {
+        let source = try makeYUVPixelBuffer(width: 32, height: 24)
+
+        let converted = try PixelBufferFactory.makeBGRA(from: source)
+
+        XCTAssertEqual(CVPixelBufferGetPixelFormatType(converted), kCVPixelFormatType_32BGRA)
+        XCTAssertEqual(CVPixelBufferGetWidth(converted), 32)
+        XCTAssertEqual(CVPixelBufferGetHeight(converted), 24)
+        XCTAssertEqual(try bytes(from: converted).count, 32 * 24 * 4)
+    }
+
+    private func makeYUVPixelBuffer(width: Int, height: Int) throws -> CVPixelBuffer {
+        var optionalBuffer: CVPixelBuffer?
+        let creationStatus = CVPixelBufferCreate(
+            kCFAllocatorDefault,
+            width,
+            height,
+            kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+            [kCVPixelBufferIOSurfacePropertiesKey: [:]] as CFDictionary,
+            &optionalBuffer
+        )
+        guard creationStatus == kCVReturnSuccess, let buffer = optionalBuffer else {
+            throw InferenceError.pixelBufferAllocationFailed(creationStatus)
+        }
+        let lockStatus = CVPixelBufferLockBaseAddress(buffer, [])
+        guard lockStatus == kCVReturnSuccess else {
+            throw InferenceError.pixelBufferLockFailed(lockStatus)
+        }
+        defer { CVPixelBufferUnlockBaseAddress(buffer, []) }
+        guard let luminanceBase = CVPixelBufferGetBaseAddressOfPlane(buffer, 0),
+              let chromaBase = CVPixelBufferGetBaseAddressOfPlane(buffer, 1) else {
+            throw InferenceError.invalidDimensions
+        }
+        memset(luminanceBase, 128, CVPixelBufferGetBytesPerRowOfPlane(buffer, 0) * height)
+        memset(chromaBase, 128, CVPixelBufferGetBytesPerRowOfPlane(buffer, 1) * (height / 2))
+        return buffer
+    }
+
     private func bytes(from buffer: CVPixelBuffer) throws -> Data {
         let status = CVPixelBufferLockBaseAddress(buffer, .readOnly)
         guard status == kCVReturnSuccess, let baseAddress = CVPixelBufferGetBaseAddress(buffer) else {

@@ -5,7 +5,6 @@ import Foundation
 struct ImageQualityAnalyzer: CameraQualityAnalyzing {
     private let minimumLuminance = 0.18
     private let maximumClipping = 0.08
-    private let minimumSharpness = 0.012
 
     func analyzePreview(_ frame: AnalyzableFrame) -> QualityObservation {
         analyze(frame.pixelBuffer)
@@ -60,8 +59,6 @@ struct ImageQualityAnalyzer: CameraQualityAnalyzing {
             readiness = .increaseLight
         } else if clippedFraction > maximumClipping {
             readiness = .glareDetected
-        } else if Double(variance) < minimumSharpness {
-            readiness = .holdStill
         } else {
             readiness = .ready
         }

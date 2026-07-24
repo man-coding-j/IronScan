@@ -25,7 +25,9 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: org.ironscan.app
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_NSCameraUsageDescription: "IronScan requires access to your camera to analyze tongue color and screen for anemia risk."
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "IronScan uses your location only while the Care & Labs page is open to find nearby laboratories and clinics."
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
         TARGETED_DEVICE_FAMILY: "1,2"
         CODE_SIGN_STYLE: Automatic
   IronScanMLTests:
@@ -36,6 +38,9 @@ targets:
         excludes:
           - Fixtures
           - Python
+          - GoogleService-Info.plist
+          - GoogleService-Info 2.plist
+          - ColorCalibration/GoogleService-Info.plist
       - path: ../../TestFixtures/GoldenInputs
         type: folder
         buildPhase: resources

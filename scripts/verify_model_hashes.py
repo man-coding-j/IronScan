@@ -31,6 +31,12 @@ def main() -> None:
     pairs = (
         ("segmentation_manifest.json", "TongueSegmentation.mlpackage"),
         ("risk_manifest.json", "AnemiaRisk.mlpackage"),
+        ("pallor_manifest.json", "IronScanPallorClassifier.mlpackage"),
+        ("multi_screen_manifest.json", "IronScanMultiScreen.mlpackage"),
+        ("eye_manifest.json", "IronScanEye.mlpackage"),
+        ("eye_clinical_manifest.json", "IronScanEye_Clinical.mlpackage"),
+        ("nail_manifest.json", "IronScanNail.mlpackage"),
+        ("tongue_manifest.json", "IronScanTongue.mlpackage"),
     )
     for manifest_name, package_name in pairs:
         manifest = load_json(ROOT / "Models" / "Manifests" / manifest_name)

@@ -53,7 +53,10 @@ struct ModelManifest: Codable, Equatable, Sendable {
     let resize: Resize
     let normalization: Normalization
     let outputs: [Output]
-    let decisionThreshold: Double
+    let decisionThreshold: Double?
+    let decisionThresholds: [String: Double]?
+    let uncertaintyThreshold: Double?
+    let uncertaintyPassCount: Int?
     let trainingCommit: String
     let datasetVersion: String
     let preprocessingVersion: String
@@ -63,11 +66,23 @@ struct ModelManifest: Codable, Equatable, Sendable {
 enum ModelKind: String, Sendable {
     case segmentation
     case risk
+    case pallor
+    case multiScreen
+    case eyePallorProxy
+    case eyeLaboratoryScreening
+    case nailPallorProxy
+    case tonguePallorProxy
 
     var expectedIdentifier: String {
         switch self {
         case .segmentation: "org.ironscan.engineering.tongue-segmentation"
         case .risk: "org.ironscan.engineering.anemia-risk"
+        case .pallor: "org.ironscan.engineering.mucosal-pallor"
+        case .multiScreen: "org.ironscan.engineering.tongue-attributes"
+        case .eyePallorProxy: "org.ironscan.engineering.eye-pallor-proxy"
+        case .eyeLaboratoryScreening: "org.ironscan.engineering.eye-laboratory-hgb-screening"
+        case .nailPallorProxy: "org.ironscan.engineering.nail-pallor-proxy"
+        case .tonguePallorProxy: "org.ironscan.engineering.tongue-pallor-proxy"
         }
     }
 }

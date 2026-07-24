@@ -3,7 +3,7 @@ import XCTest
 
 @MainActor
 final class InferenceConcurrencyTests: XCTestCase {
-    func testStartupPreloadValidatesAndLoadsBothModelsOnce() async throws {
+    func testStartupPreloadValidatesAndLoadsAllModelsOnce() async throws {
         let metrics = InferenceMetricsRecorder()
         let registry = try MLTestSupport.registry(metrics: metrics)
 
@@ -11,10 +11,14 @@ final class InferenceConcurrencyTests: XCTestCase {
         let second = try await registry.preloadModels()
         let segmentationLoadCount = await registry.segmentationLoadCount
         let riskLoadCount = await registry.riskLoadCount
+        let pallorLoadCount = await registry.pallorLoadCount
+        let multiScreenLoadCount = await registry.multiScreenLoadCount
 
         XCTAssertEqual(first, second)
         XCTAssertEqual(segmentationLoadCount, 1)
         XCTAssertEqual(riskLoadCount, 1)
+        XCTAssertEqual(pallorLoadCount, 1)
+        XCTAssertEqual(multiScreenLoadCount, 1)
     }
 
     func testConcurrentStartupPreloadStillLoadsEachModelOnce() async throws {
@@ -33,11 +37,16 @@ final class InferenceConcurrencyTests: XCTestCase {
         }
         let segmentationLoadCount = await registry.segmentationLoadCount
         let riskLoadCount = await registry.riskLoadCount
+        let pallorLoadCount = await registry.pallorLoadCount
+        let multiScreenLoadCount = await registry.multiScreenLoadCount
 
         XCTAssertEqual(Set(readiness.map(\.segmentationModelVersion)).count, 1)
         XCTAssertEqual(Set(readiness.map(\.riskModelVersion)).count, 1)
+        XCTAssertEqual(Set(readiness.map(\.multiScreenModelVersion)).count, 1)
         XCTAssertEqual(segmentationLoadCount, 1)
         XCTAssertEqual(riskLoadCount, 1)
+        XCTAssertEqual(pallorLoadCount, 1)
+        XCTAssertEqual(multiScreenLoadCount, 1)
     }
 
     func testRejectedCalibrationDoesNotLoadOrRunRiskModel() async throws {

@@ -14,10 +14,13 @@
     "resize",
     "normalization",
     "outputs",
-    "decisionThreshold",
     "trainingCommit",
     "datasetVersion",
     "preprocessingVersion"
+  ],
+  "oneOf": [
+    { "required": ["decisionThreshold"] },
+    { "required": ["decisionThresholds"] }
   ],
   "properties": {
     "schemaVersion": { "const": 1 },
@@ -37,6 +40,13 @@
       "items": { "$ref": "#/$defs/output" }
     },
     "decisionThreshold": { "type": "number", "minimum": 0, "maximum": 1 },
+    "decisionThresholds": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 }
+    },
+    "uncertaintyThreshold": { "type": "number", "minimum": 0, "maximum": 1 },
+    "uncertaintyPassCount": { "type": "integer", "minimum": 2 },
     "trainingCommit": { "type": "string", "minLength": 1 },
     "datasetVersion": { "type": "string", "minLength": 1 },
     "preprocessingVersion": { "type": "string", "minLength": 1 },

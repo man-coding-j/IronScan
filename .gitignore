@@ -1,4 +1,10 @@
 .DS_Store
+GoogleService-Info*.plist
+*.mobileprovision
+*.p12
+.env
+.env.*
+!.env.example
 .build/
 .swiftpm/
 build/

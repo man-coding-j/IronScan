@@ -72,10 +72,13 @@ actor RiskInferenceActor {
         await metrics.temporaryBufferReleased()
         let rawScore = try scalar(from: output, feature: "raw_score")
         let probability = try scalar(from: output, feature: "calibrated_probability")
+        guard let decisionThreshold = handle.manifest.decisionThreshold else {
+            throw ModelContractError.missingModelMetadata("decisionThreshold")
+        }
         let decision: RiskDecision
         if handle.manifest.deploymentStatus != .validated {
             decision = .unableToAssess
-        } else if probability >= handle.manifest.decisionThreshold {
+        } else if probability >= decisionThreshold {
             decision = .possibleRisk
         } else {
             decision = .lowerObservedRisk

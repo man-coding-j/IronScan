@@ -1,0 +1,61 @@
+{
+  "datasetVersion": "multimodal-clinical-eye-mc-dropout-v1",
+  "decisionThreshold": 0.17382828282828283,
+  "uncertaintyThreshold": 0.009743366676532993,
+  "uncertaintyPassCount": 30,
+  "deploymentStatus": "engineeringFixture",
+  "input": {
+    "colorSpace": "sRGB",
+    "dataType": "uint8",
+    "dimensions": [
+      1,
+      224,
+      224,
+      3
+    ],
+    "name": "image",
+    "pixelFormat": "32BGRA"
+  },
+  "modelIdentifier": "org.ironscan.engineering.tongue-pallor-proxy",
+  "normalization": {
+    "biases": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "kind": "scale",
+    "scale": 0.00392156862745098
+  },
+  "outputs": [
+    {
+      "dataType": "float32",
+      "dimensions": [
+        1
+      ],
+      "name": "raw_proxy_logit"
+    },
+    {
+      "dataType": "float32",
+      "dimensions": [
+        1
+      ],
+      "name": "calibrated_proxy_probability"
+    },
+    {
+      "dataType": "float32",
+      "dimensions": [
+        1
+      ],
+      "name": "predictive_uncertainty"
+    }
+  ],
+  "preprocessingVersion": "multimodal-tongue-1.0.0",
+  "resize": {
+    "interpolation": "vImageHighQuality",
+    "method": "scaleFill"
+  },
+  "schemaVersion": 1,
+  "semanticVersion": "0.3.0-engineering.1",
+  "sha256": "4f290fd5b45245acbdcba87e0f6d732fa5c226aec96d04f2764f713e718cc5fe",
+  "trainingCommit": "a3b7f76a7a2e6174129c7ff0c5d571ef95926c4d"
+}

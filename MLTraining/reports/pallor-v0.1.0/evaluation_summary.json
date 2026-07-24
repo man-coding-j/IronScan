@@ -1,0 +1,63 @@
+{
+  "bestValidationROC_AUC": 0.8148664066438484,
+  "calibration": {
+    "intercept": -1.257002692535929,
+    "method": "Platt",
+    "slope": 0.21243693525179405
+  },
+  "coreMLParity": {
+    "maximumLogitAbsoluteDifference": 0.000055789947509765625,
+    "maximumProbabilityAbsoluteDifference": 0.000001662326201579134,
+    "sampleCount": 20
+  },
+  "datasetVersion": "tonguedx2-tonguepale-fold1-v1",
+  "deploymentStatus": "engineeringFixture",
+  "excludedAmbiguousContent": {
+    "ambiguousParticipantGroup": 9,
+    "crossSplitDuplicateContent": 3
+  },
+  "lockedDecisionThreshold": 0.16261848541234136,
+  "modelIdentifier": "org.ironscan.engineering.mucosal-pallor",
+  "semanticVersion": "0.1.1-engineering.1",
+  "thresholdObjective": "maximum validation F1 (precision/recall balance)",
+  "splitCounts": {
+    "test": {
+      "images": 891,
+      "positive": 93
+    },
+    "train": {
+      "images": 3343,
+      "positive": 417
+    },
+    "validation": {
+      "images": 841,
+      "positive": 102
+    }
+  },
+  "test": {
+    "balancedAccuracy": 0.7068275527528498,
+    "brierScore": 0.08225841267463309,
+    "confusionMatrix": [
+      [639, 159],
+      [36, 57]
+    ],
+    "f1Score": 0.36893203883495146,
+    "precision": 0.2638888888888889,
+    "recall": 0.6129032258064516,
+    "rocAUC": 0.7872234349314146
+  },
+  "trainPositiveWeight": 7.016786570743405,
+  "training": {
+    "bestEpoch": 7,
+    "completedEpochs": 12,
+    "device": "mps",
+    "repositoryDirty": true
+  },
+  "limitations": [
+    "The model predicts the source dataset's visual TonguePale annotation only.",
+    "The output is not a hemoglobin, ferritin, anemia, or iron-status measurement.",
+    "Source images are not standardized IronScan captures and have no laboratory ground truth.",
+    "The held-out precision is too low for participant-facing use.",
+    "Independent cohort, acquisition, calibration, and physical-device validation remain required."
+  ]
+}

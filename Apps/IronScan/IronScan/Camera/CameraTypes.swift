@@ -1,6 +1,89 @@
 import AVFoundation
 import CoreVideo
 import Foundation
+import UIKit
+
+enum CameraLensPosition: String, Codable, Equatable, Sendable {
+    case front
+    case back
+
+    var avPosition: AVCaptureDevice.Position {
+        switch self {
+        case .front: .front
+        case .back: .back
+        }
+    }
+}
+
+enum CameraOpticsProfile: String, Codable, Equatable, Sendable {
+    case eye
+    case nail
+    case tongue
+
+    var exposureBias: Float {
+        switch self {
+        case .eye: -0.5
+        case .nail, .tongue: 0
+        }
+    }
+
+    var usesNearFocusRange: Bool {
+        self == .eye || self == .nail
+    }
+
+    var locksFocusAfterStabilization: Bool {
+        self != .eye
+    }
+
+    var locksExposureAfterStabilization: Bool {
+        self != .eye
+    }
+
+    var automaticTorchLevel: Float? {
+        self == .nail ? 0.2 : nil
+    }
+}
+
+enum CaptureOrientation: String, Codable, Equatable, Sendable {
+    case portrait
+    case portraitUpsideDown
+    case landscapeLeft
+    case landscapeRight
+
+    init?(interfaceOrientation: UIInterfaceOrientation) {
+        switch interfaceOrientation {
+        case .portrait: self = .portrait
+        case .portraitUpsideDown: self = .portraitUpsideDown
+        case .landscapeLeft: self = .landscapeLeft
+        case .landscapeRight: self = .landscapeRight
+        case .unknown: return nil
+        @unknown default: return nil
+        }
+    }
+
+    var isPortrait: Bool {
+        self == .portrait || self == .portraitUpsideDown
+    }
+
+    var videoRotationAngle: CGFloat {
+        switch self {
+        case .portrait: 90
+        case .portraitUpsideDown: 270
+        case .landscapeLeft: 0
+        case .landscapeRight: 180
+        }
+    }
+
+    @available(iOS, deprecated: 17.0)
+    var legacyVideoOrientation: AVCaptureVideoOrientation {
+        switch self {
+        case .portrait: .portrait
+        case .portraitUpsideDown: .portraitUpsideDown
+        case .landscapeLeft: .landscapeLeft
+        case .landscapeRight: .landscapeRight
+        }
+    }
+}
 
 enum CameraError: Error, Equatable, Sendable {
     case permissionDenied
@@ -55,6 +138,8 @@ enum CaptureReadiness: String, Codable, Equatable, Sendable {
 
 struct CameraCapabilities: Codable, Equatable, Sendable {
     let hasTorch: Bool
+    let supportsCameraToggle: Bool
+    let lensPosition: CameraLensPosition
     let supportsFocusPoint: Bool
     let supportsExposurePoint: Bool
     let supportsFocusLock: Bool
@@ -138,6 +223,18 @@ enum CameraEvent: @unchecked Sendable {
     case interruption(String)
     case liveFrame(AnalyzableFrame)
     case captured(CapturedFrame)
+    case captureIssue(CameraError)
+}
+
+enum PhotoPixelFormatSelector {
+    static func select(from availableFormats: [OSType]) -> OSType? {
+        let preferredFormats = [
+            kCVPixelFormatType_32BGRA,
+            kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+            kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
+        ]
+        return preferredFormats.first(where: availableFormats.contains) ?? availableFormats.first
+    }
 }
 
 struct CameraConfiguration: Equatable, Sendable {
@@ -151,4 +248,20 @@ struct CameraConfiguration: Equatable, Sendable {
     var burstCount = 3
     var clippingThreshold = 0.08
     var motionThreshold = 0.15
+}
+
+enum CameraDeviceDiscovery {
+    static func preferredDeviceTypes(for position: CameraLensPosition) -> [AVCaptureDevice.DeviceType] {
+        switch position {
+        case .back:
+            [
+                .builtInTripleCamera,
+                .builtInDualWideCamera,
+                .builtInUltraWideCamera,
+                .builtInWideAngleCamera,
+            ]
+        case .front:
+            [.builtInWideAngleCamera]
+        }
+    }
 }

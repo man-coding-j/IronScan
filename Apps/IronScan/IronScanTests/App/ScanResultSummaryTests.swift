@@ -9,9 +9,13 @@ final class ScanResultSummaryTests: XCTestCase {
         let pipeline = ScanPipelineActor(registry: registry, metrics: metrics)
         let pixelBuffer = try SyntheticTongueFrameFactory.makePixelBuffer()
 
-        let summary = try await pipeline.analyzeLiveFrame(AnalyzableFrame(pixelBuffer: pixelBuffer, timestamp: .zero))
+        let summary = try await pipeline.analyzeLiveFrame(
+            AnalyzableFrame(pixelBuffer: pixelBuffer, timestamp: .zero),
+            runVisualInference: false
+        )
         let segmentationLoadCount = await registry.segmentationLoadCount
         let riskLoadCount = await registry.riskLoadCount
+        let multiScreenLoadCount = await registry.multiScreenLoadCount
 
         XCTAssertGreaterThan(summary.tongueAreaRatio, 0)
         XCTAssertGreaterThanOrEqual(summary.alignmentProgress, 0)
@@ -19,6 +23,7 @@ final class ScanResultSummaryTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(summary.inferenceDurationMs, 0)
         XCTAssertEqual(segmentationLoadCount, 1)
         XCTAssertEqual(riskLoadCount, 0)
+        XCTAssertEqual(multiScreenLoadCount, 0)
     }
 
     func testSyntheticSimulatorFlowRunsOnDeviceModels() async throws {
@@ -28,6 +33,41 @@ final class ScanResultSummaryTests: XCTestCase {
         XCTAssertEqual(summary.detail, "Synthetic engineering fixture — not a participant result.")
         XCTAssertGreaterThan(summary.segmentationAreaRatio, 0)
         XCTAssertGreaterThanOrEqual(summary.inferenceDurationMs, 0)
+    }
+
+    func testManualDemoCaptureProducesVisualAttributeReport() async throws {
+        let camera = SimulatorCameraActor()
+        let stream = await camera.eventStream()
+        var iterator = stream.makeAsyncIterator()
+        await camera.start()
+        await camera.capture()
+
+        var capturedFrame: CapturedFrame?
+        for _ in 0 ..< 16 {
+            guard let event = await iterator.next() else { break }
+            if case let .captured(frame) = event {
+                capturedFrame = frame
+                break
+            }
+        }
+        await camera.stop()
+
+        let frame = try XCTUnwrap(capturedFrame)
+        let metrics = InferenceMetricsRecorder()
+        let registry = try MLTestSupport.registry(metrics: metrics)
+        let pipeline = ScanPipelineActor(registry: registry, metrics: metrics)
+        let liveSummary = try await pipeline.analyzeLiveFrame(
+            AnalyzableFrame(pixelBuffer: frame.pixelBuffer, timestamp: .zero),
+            runVisualInference: false
+        )
+        XCTAssertTrue(
+            liveSummary.isTongueAligned,
+            "area=\(liveSummary.tongueAreaRatio), confidence=\(liveSummary.meanConfidence)"
+        )
+        let summary = try await pipeline.processPhysicalCapture(frame)
+
+        XCTAssertEqual(summary.title, "Visual research summary")
+        XCTAssertNotNil(summary.visualAttributeReport)
     }
 
     func testSyntheticBenchmarkReportsP95Metrics() async throws {

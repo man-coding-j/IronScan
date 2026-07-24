@@ -19,6 +19,12 @@ struct ScanView: View {
                         lightingControl
                         captureControls
                     }
+                    if let report = viewModel.liveVisualAttributeReport {
+                        MultiHealthDashboardView(report: report) {
+                            viewModel.resetLiveScan()
+                        }
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
                     if let result = viewModel.result {
                         resultCard(result)
                             .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -33,6 +39,7 @@ struct ScanView: View {
                 }
                 .padding()
                 .animation(.spring(response: 0.42, dampingFraction: 0.86), value: viewModel.result)
+                .animation(.spring(response: 0.42, dampingFraction: 0.86), value: viewModel.liveScanningState)
             }
             .background(Color(uiColor: .systemGroupedBackground))
             .navigationTitle("IronScan")
@@ -84,32 +91,40 @@ struct ScanView: View {
 
     private var cameraPanel: some View {
         ZStack {
-            CameraPreviewView(source: viewModel.previewSource)
+            CameraPreviewView(
+                source: viewModel.previewSource,
+                lensPosition: viewModel.lensPosition,
+                onOrientationChange: viewModel.updateCaptureOrientation
+            )
             TongueGuideOverlay()
+            ScanningOverlayView(
+                state: viewModel.liveScanningState,
+                alignmentProgress: viewModel.liveScanSummary?.alignmentProgress ?? 0
+            )
 
-            if let summary = viewModel.liveScanSummary {
+            if viewModel.supportsCameraToggle {
                 VStack {
                     HStack {
+                        Button {
+                            viewModel.toggleCamera()
+                        } label: {
+                            Image(systemName: "camera.rotate.fill")
+                                .font(.title3.weight(.semibold))
+                                .foregroundStyle(.white)
+                                .frame(width: 46, height: 46)
+                                .background(.black.opacity(0.62), in: Circle())
+                        }
+                        .disabled(viewModel.isBusy)
+                        .accessibilityLabel(viewModel.lensPosition == .front ? "Use back camera" : "Use front camera")
                         Spacer()
-                        LiveAlignmentBadge(summary: summary, isSteady: viewModel.isLiveTongueSteady)
                     }
                     Spacer()
                 }
                 .padding(14)
             }
 
-            VStack {
-                Spacer()
-                Text(cameraGuidance)
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(.black.opacity(0.68), in: Capsule())
-                    .padding(.bottom, 16)
-            }
         }
-        .frame(height: 430)
+        .aspectRatio(viewModel.captureOrientation.isPortrait ? 3 / 4 : 16 / 9, contentMode: .fit)
         .background(.black)
         .clipShape(RoundedRectangle(cornerRadius: 24))
         .overlay {
@@ -117,22 +132,8 @@ struct ScanView: View {
                 .stroke(.white.opacity(0.12), lineWidth: 1)
         }
         .shadow(color: .black.opacity(0.16), radius: 18, y: 8)
-    }
-
-    private var cameraGuidance: String {
-        if viewModel.statusText.contains("Processing") || viewModel.statusText.contains("Running") {
-            return "Analyzing…"
-        }
-        if viewModel.isLiveTongueSteady {
-            return "Scanning…"
-        }
-        if let liveScanErrorText = viewModel.liveScanErrorText {
-            return liveScanErrorText
-        }
-        return switch viewModel.readiness {
-        case .centerTongue, .moveCloser, .moveFarther: "Align your tongue"
-        case .holdStill, .ready: "Hold steady"
-        default: viewModel.statusText
+        .transaction { transaction in
+            transaction.animation = nil
         }
     }
 
@@ -171,6 +172,11 @@ struct ScanView: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
             .disabled(!viewModel.canCapture)
+
+            Text("Capture is manual. Demo results require acceptable lighting, focus, and tongue alignment.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
 
             #if !targetEnvironment(simulator)
             Button {
@@ -215,6 +221,18 @@ struct ScanView: View {
             Divider()
             LabeledContent("Segmented area", value: result.segmentationAreaRatio.formatted(.percent.precision(.fractionLength(1))))
             LabeledContent("Inference time", value: "\(result.inferenceDurationMs.formatted(.number.precision(.fractionLength(1)))) ms")
+            Button {
+                viewModel.resetForNextScan()
+            } label: {
+                Label(
+                    viewModel.canStartAnotherScan ? "Scan again" : "Preparing next scan…",
+                    systemImage: viewModel.canStartAnotherScan ? "arrow.counterclockwise" : "clock"
+                )
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .disabled(!viewModel.canStartAnotherScan)
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -257,54 +275,10 @@ struct ScanView: View {
     }
 }
 
-private struct LiveAlignmentBadge: View {
-    let summary: LiveScanSummary
-    let isSteady: Bool
-    @State private var isPulsing = false
-
-    var body: some View {
-        VStack(spacing: 7) {
-            ZStack {
-                Circle()
-                    .stroke(.white.opacity(0.22), lineWidth: 5)
-                Circle()
-                    .trim(from: 0, to: min(max(summary.alignmentProgress, 0), 1))
-                    .stroke(isSteady ? .green : .orange, style: StrokeStyle(lineWidth: 5, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
-                Image(systemName: isSteady ? "dot.radiowaves.left.and.right" : "viewfinder")
-                    .foregroundStyle(.white)
-                    .scaleEffect(isSteady && isPulsing ? 1.14 : 0.92)
-            }
-            .frame(width: 48, height: 48)
-            Text(isSteady ? "Scanning…" : "Aligning")
-                .font(.caption2.weight(.bold))
-                .foregroundStyle(.white)
-            Text("\(summary.inferenceDurationMs.formatted(.number.precision(.fractionLength(0)))) ms")
-                .font(.caption2.monospacedDigit())
-                .foregroundStyle(.white.opacity(0.72))
-        }
-        .padding(10)
-        .background(.black.opacity(0.64), in: RoundedRectangle(cornerRadius: 14))
-        .onAppear {
-            withAnimation(.easeInOut(duration: 0.7).repeatForever(autoreverses: true)) {
-                isPulsing = true
-            }
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(isSteady ? "Tongue aligned, scanning" : "Aligning tongue")
-        .accessibilityValue("Alignment \(summary.alignmentProgress.formatted(.percent.precision(.fractionLength(0))))")
-    }
-}
-
 private struct TongueGuideOverlay: View {
     var body: some View {
         GeometryReader { geometry in
-            let targetRect = CGRect(
-                x: geometry.size.width * 0.27,
-                y: geometry.size.height * 0.25,
-                width: geometry.size.width * 0.46,
-                height: geometry.size.height * 0.52
-            )
+            let targetRect = TongueTargetGeometry.rect(in: geometry.size)
             Canvas { context, size in
                 var mask = Path(CGRect(origin: .zero, size: size))
                 mask.addEllipse(in: targetRect)

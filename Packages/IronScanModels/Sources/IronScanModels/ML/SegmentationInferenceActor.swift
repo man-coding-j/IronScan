@@ -67,11 +67,14 @@ actor SegmentationInferenceActor {
             throw InferenceError.missingOutput("probability_mask")
         }
         let probabilities = try floatValues(from: array, expectedCount: width * height, feature: "probability_mask")
+        guard let decisionThreshold = handle.manifest.decisionThreshold else {
+            throw ModelContractError.missingModelMetadata("decisionThreshold")
+        }
         let processed = try postprocessor.process(
             probabilities: probabilities,
             width: width,
             height: height,
-            threshold: handle.manifest.decisionThreshold,
+            threshold: decisionThreshold,
             configuration: postprocessing
         )
         await metrics.record(

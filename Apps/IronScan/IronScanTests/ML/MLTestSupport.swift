@@ -8,7 +8,9 @@ enum MLTestSupport {
         guard resources.segmentationPackageURL != nil,
               resources.segmentationManifestURL != nil,
               resources.riskPackageURL != nil,
-              resources.riskManifestURL != nil else {
+              resources.riskManifestURL != nil,
+              resources.multiScreenPackageURL != nil,
+              resources.multiScreenManifestURL != nil else {
             throw InferenceError.modelLoadingFailed("Swift package model resources are missing")
         }
         return resources

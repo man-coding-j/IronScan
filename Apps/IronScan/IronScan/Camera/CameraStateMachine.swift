@@ -9,6 +9,7 @@ struct CameraStateMachine: Sendable {
         case alignmentConfirmed
         case captureRequested
         case captureCompleted
+        case captureAborted
         case resetAfterCapture
         case interruptionBegan
         case interruptionEnded
@@ -37,8 +38,12 @@ struct CameraStateMachine: Sendable {
         case .captureCompleted where state == .capturing:
             state = .completed
             torchShouldBeOn = false
+        case .captureAborted where state == .capturing:
+            state = .stabilizing
+            torchShouldBeOn = true
         case .resetAfterCapture where state == .completed:
-            state = .ready
+            state = .stabilizing
+            torchShouldBeOn = true
         case .interruptionBegan where state != .idle && state != .completed && !isFailed:
             state = .interrupted
             torchShouldBeOn = false

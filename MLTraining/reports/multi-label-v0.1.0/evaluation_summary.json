@@ -1,0 +1,40 @@
+{
+  "bestValidationMacroROC_AUC": 0.7598250781994829,
+  "coreMLParityMaximumProbabilityAbsoluteDifference": {
+    "Crack": 0.0006357111058085119,
+    "FurThick": 0.0000572635405562405,
+    "TipSideRed": 0.001311221486468006,
+    "TonguePale": 0.0004910897579079865,
+    "Toothmark": 0.0009637791785558347
+  },
+  "datasetVersion": "tonguedx2-five-visual-attributes-fold1-v1",
+  "deploymentStatus": "engineeringFixture",
+  "modelIdentifier": "org.ironscan.engineering.tongue-attributes",
+  "semanticVersion": "0.1.0-engineering.1",
+  "splitCounts": {
+    "test": 891,
+    "train": 3343,
+    "validation": 841
+  },
+  "training": {
+    "batchSize": 128,
+    "bestEpoch": 4,
+    "completedEpochs": 9,
+    "device": "mps",
+    "repositoryDirty": true
+  },
+  "test": {
+    "Crack": {"f1Score": 0.7609375, "precision": 0.9085820895522388, "recall": 0.6545698924731183, "rocAUC": 0.7187568575817423},
+    "FurThick": {"f1Score": 0.5892857142857142, "precision": 0.9945205479452055, "recall": 0.4186851211072664, "rocAUC": 0.8638985005767013},
+    "TipSideRed": {"f1Score": 0.5876010781671159, "precision": 0.5782493368700266, "recall": 0.5972602739726027, "rocAUC": 0.713146518047815},
+    "TonguePale": {"f1Score": 0.3764705882352941, "precision": 0.2591093117408907, "recall": 0.6881720430107527, "rocAUC": 0.803298569003153},
+    "Toothmark": {"f1Score": 0.742248062015504, "precision": 0.7768762677484787, "recall": 0.7105751391465677, "rocAUC": 0.7669189576657109}
+  },
+  "validation": {
+    "Crack": {"f1Score": 0.7637314734088928, "precision": 0.9379014989293362, "recall": 0.6441176470588236, "rocAUC": 0.7870752648885642},
+    "FurThick": {"f1Score": 0.5924657534246575, "precision": 0.9971181556195965, "recall": 0.42143727161997563, "rocAUC": 0.705237515225335},
+    "TipSideRed": {"f1Score": 0.6480446927374303, "precision": 0.6462395543175488, "recall": 0.6498599439775911, "rocAUC": 0.7579635159849064},
+    "TonguePale": {"f1Score": 0.4056338028169015, "precision": 0.2845849802371542, "recall": 0.7058823529411765, "rocAUC": 0.7806787126217198},
+    "Toothmark": {"f1Score": 0.7384284176533907, "precision": 0.7848970251716247, "recall": 0.6971544715447154, "rocAUC": 0.7681703822768887}
+  }
+}

@@ -6,6 +6,10 @@ struct ModelResourceLocations: Sendable {
     let segmentationManifestURL: URL?
     let riskPackageURL: URL?
     let riskManifestURL: URL?
+    let pallorPackageURL: URL?
+    let pallorManifestURL: URL?
+    let multiScreenPackageURL: URL?
+    let multiScreenManifestURL: URL?
 
     static func mainBundle(_ bundle: Bundle = .main) -> ModelResourceLocations {
         ModelResourceLocations(
@@ -28,7 +32,27 @@ struct ModelResourceLocations: Sendable {
                 forResource: "risk_manifest",
                 withExtension: "json",
                 subdirectory: "Models/Manifests"
-            ) ?? bundle.url(forResource: "risk_manifest", withExtension: "json")
+            ) ?? bundle.url(forResource: "risk_manifest", withExtension: "json"),
+            pallorPackageURL: bundle.url(
+                forResource: "IronScanPallorClassifier",
+                withExtension: "mlpackage",
+                subdirectory: "Models/CoreML"
+            ) ?? bundle.url(forResource: "IronScanPallorClassifier", withExtension: "mlpackage"),
+            pallorManifestURL: bundle.url(
+                forResource: "pallor_manifest",
+                withExtension: "json",
+                subdirectory: "Models/Manifests"
+            ) ?? bundle.url(forResource: "pallor_manifest", withExtension: "json"),
+            multiScreenPackageURL: bundle.url(
+                forResource: "IronScanMultiScreen",
+                withExtension: "mlpackage",
+                subdirectory: "Models/CoreML"
+            ) ?? bundle.url(forResource: "IronScanMultiScreen", withExtension: "mlpackage"),
+            multiScreenManifestURL: bundle.url(
+                forResource: "multi_screen_manifest",
+                withExtension: "json",
+                subdirectory: "Models/Manifests"
+            ) ?? bundle.url(forResource: "multi_screen_manifest", withExtension: "json")
         )
     }
 
@@ -62,6 +86,26 @@ struct ModelResourceLocations: Sendable {
                 forResource: "risk_manifest",
                 withExtension: "json",
                 subdirectory: "Models/Manifests"
+            ),
+            pallorPackageURL: Bundle.module.url(
+                forResource: "IronScanPallorClassifier",
+                withExtension: "mlpackage",
+                subdirectory: "Models/CoreML"
+            ),
+            pallorManifestURL: Bundle.module.url(
+                forResource: "pallor_manifest",
+                withExtension: "json",
+                subdirectory: "Models/Manifests"
+            ),
+            multiScreenPackageURL: Bundle.module.url(
+                forResource: "IronScanMultiScreen",
+                withExtension: "mlpackage",
+                subdirectory: "Models/CoreML"
+            ),
+            multiScreenManifestURL: Bundle.module.url(
+                forResource: "multi_screen_manifest",
+                withExtension: "json",
+                subdirectory: "Models/Manifests"
             )
         )
     }
@@ -80,11 +124,27 @@ struct RiskModelHandle: @unchecked Sendable {
     let computeUnits: InferenceComputeUnits
 }
 
+struct PallorModelHandle: @unchecked Sendable {
+    let model: IronScanPallorClassifier
+    let manifest: ModelManifest
+    let computeUnits: InferenceComputeUnits
+}
+
+struct MultiScreenModelHandle: @unchecked Sendable {
+    let model: IronScanMultiScreen
+    let manifest: ModelManifest
+    let computeUnits: InferenceComputeUnits
+}
+
 struct ModelRegistryReadiness: Codable, Equatable, Sendable {
     let segmentationModelIdentifier: String
     let segmentationModelVersion: String
     let riskModelIdentifier: String
     let riskModelVersion: String
+    let pallorModelIdentifier: String
+    let pallorModelVersion: String
+    let multiScreenModelIdentifier: String
+    let multiScreenModelVersion: String
 }
 
 actor ModelRegistryActor {
@@ -101,8 +161,12 @@ actor ModelRegistryActor {
     private let validator: ModelContractValidator
     private var segmentationHandle: SegmentationModelHandle?
     private var riskHandle: RiskModelHandle?
+    private var pallorHandle: PallorModelHandle?
+    private var multiScreenHandle: MultiScreenModelHandle?
     private(set) var segmentationLoadCount = 0
     private(set) var riskLoadCount = 0
+    private(set) var pallorLoadCount = 0
+    private(set) var multiScreenLoadCount = 0
 
     init(
         resources: ModelResourceLocations,
@@ -121,11 +185,19 @@ actor ModelRegistryActor {
         let segmentation = try await segmentationModel()
         try checkCancellation()
         let risk = try await riskModel()
+        try checkCancellation()
+        let pallor = try await pallorModel()
+        try checkCancellation()
+        let multiScreen = try await multiScreenModel()
         return ModelRegistryReadiness(
             segmentationModelIdentifier: segmentation.manifest.modelIdentifier,
             segmentationModelVersion: segmentation.manifest.semanticVersion,
             riskModelIdentifier: risk.manifest.modelIdentifier,
-            riskModelVersion: risk.manifest.semanticVersion
+            riskModelVersion: risk.manifest.semanticVersion,
+            pallorModelIdentifier: pallor.manifest.modelIdentifier,
+            pallorModelVersion: pallor.manifest.semanticVersion,
+            multiScreenModelIdentifier: multiScreen.manifest.modelIdentifier,
+            multiScreenModelVersion: multiScreen.manifest.semanticVersion
         )
     }
 
@@ -183,6 +255,81 @@ actor ModelRegistryActor {
             )
             riskHandle = handle
             riskLoadCount += 1
+            await metrics.record(
+                stage: .modelLoading,
+                durationMs: start.duration(to: .now).milliseconds,
+                modelIdentifier: manifest.modelIdentifier,
+                computeUnits: computeUnits
+            )
+            return handle
+        } catch let error as ModelContractError {
+            throw error
+        } catch let error as InferenceError {
+            throw error
+        } catch {
+            throw InferenceError.modelLoadingFailed(error.localizedDescription)
+        }
+    }
+
+    func pallorModel() async throws -> PallorModelHandle {
+        if let pallorHandle { return pallorHandle }
+        try checkCancellation()
+        guard let packageURL = resources.pallorPackageURL,
+              let manifestURL = resources.pallorManifestURL else {
+            throw InferenceError.modelLoadingFailed("Pallor package or manifest is missing")
+        }
+        let start = ContinuousClock.now
+        do {
+            let manifest = try validator.decodeManifest(at: manifestURL)
+            let model = try loadModel(packageURL: packageURL)
+            try validator.validate(manifest: manifest, kind: .pallor, packageURL: packageURL, model: model)
+            let handle = PallorModelHandle(
+                model: IronScanPallorClassifier(model: model),
+                manifest: manifest,
+                computeUnits: computeUnits
+            )
+            pallorHandle = handle
+            pallorLoadCount += 1
+            await metrics.record(
+                stage: .modelLoading,
+                durationMs: start.duration(to: .now).milliseconds,
+                modelIdentifier: manifest.modelIdentifier,
+                computeUnits: computeUnits
+            )
+            return handle
+        } catch let error as ModelContractError {
+            throw error
+        } catch let error as InferenceError {
+            throw error
+        } catch {
+            throw InferenceError.modelLoadingFailed(error.localizedDescription)
+        }
+    }
+
+    func multiScreenModel() async throws -> MultiScreenModelHandle {
+        if let multiScreenHandle { return multiScreenHandle }
+        try checkCancellation()
+        guard let packageURL = resources.multiScreenPackageURL,
+              let manifestURL = resources.multiScreenManifestURL else {
+            throw InferenceError.modelLoadingFailed("Multi-screen package or manifest is missing")
+        }
+        let start = ContinuousClock.now
+        do {
+            let manifest = try validator.decodeManifest(at: manifestURL)
+            let model = try loadModel(packageURL: packageURL)
+            try validator.validate(
+                manifest: manifest,
+                kind: .multiScreen,
+                packageURL: packageURL,
+                model: model
+            )
+            let handle = MultiScreenModelHandle(
+                model: IronScanMultiScreen(model: model),
+                manifest: manifest,
+                computeUnits: computeUnits
+            )
+            multiScreenHandle = handle
+            multiScreenLoadCount += 1
             await metrics.record(
                 stage: .modelLoading,
                 durationMs: start.duration(to: .now).milliseconds,

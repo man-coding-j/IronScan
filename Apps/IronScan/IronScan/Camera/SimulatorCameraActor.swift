@@ -9,6 +9,7 @@ actor SimulatorCameraActor: CameraSessionControlling {
     private var streamTask: Task<Void, Never>?
     private var stateMachine = CameraStateMachine()
     private var phase = 0
+    private var captureOrientation = CaptureOrientation.portrait
 
     func eventStream() -> AsyncStream<CameraEvent> {
         let streamPair = AsyncStream<CameraEvent>.makeStream(bufferingPolicy: .bufferingNewest(12))
@@ -32,25 +33,44 @@ actor SimulatorCameraActor: CameraSessionControlling {
         }
     }
 
-    func capture() async {
-        guard stateMachine.state == .ready else { return }
+    @discardableResult
+    func capture() async -> Bool {
+        guard stateMachine.state == .ready else { return false }
         transition(.captureRequested)
         do {
             let pixelBuffer = try SyntheticTongueFrameFactory.makePixelBuffer(phase: phase)
             let frame = CapturedFrame(
                 pixelBuffer: pixelBuffer,
-                metadata: Self.metadata(width: CVPixelBufferGetWidth(pixelBuffer), height: CVPixelBufferGetHeight(pixelBuffer)),
+                metadata: Self.metadata(
+                    width: CVPixelBufferGetWidth(pixelBuffer),
+                    height: CVPixelBufferGetHeight(pixelBuffer),
+                    orientation: captureOrientation
+                ),
                 quality: Self.readyObservation
             )
             transition(.captureCompleted)
             eventContinuation?.yield(.captured(frame))
             transition(.resetAfterCapture)
+            transition(.stabilized)
+            return true
         } catch let error as CameraError {
             transition(.failed(error))
+            return true
         } catch {
             transition(.failed(.captureFailed(error.localizedDescription)))
+            return true
         }
     }
+
+    func toggleCamera() async throws {
+        throw CameraError.unsupportedDevice
+    }
+
+    func updateCaptureOrientation(_ orientation: CaptureOrientation) async {
+        captureOrientation = orientation
+    }
+
+    func setOpticsProfile(_ profile: CameraOpticsProfile) async throws {}
 
     func setTorchEnabled(_ enabled: Bool) async throws {
         if enabled {
@@ -111,6 +131,8 @@ actor SimulatorCameraActor: CameraSessionControlling {
 
     private static let capabilities = CameraCapabilities(
         hasTorch: false,
+        supportsCameraToggle: false,
+        lensPosition: .back,
         supportsFocusPoint: false,
         supportsExposurePoint: false,
         supportsFocusLock: true,
@@ -129,7 +151,7 @@ actor SimulatorCameraActor: CameraSessionControlling {
         tongueCenterOffset: 0.02
     )
 
-    private static func metadata(width: Int, height: Int) -> CaptureMetadata {
+    private static func metadata(width: Int, height: Int, orientation: CaptureOrientation) -> CaptureMetadata {
         CaptureMetadata(
             captureTimestamp: Date(timeIntervalSince1970: 0),
             deviceModelIdentifier: "Simulator",
@@ -146,7 +168,7 @@ actor SimulatorCameraActor: CameraSessionControlling {
             focusMode: "locked",
             exposureMode: "custom",
             whiteBalanceMode: "locked-daylight-5500K",
-            orientation: "portrait",
+            orientation: orientation.rawValue,
             focusWasLocked: true,
             exposureWasLocked: true,
             whiteBalanceWasLocked: true,

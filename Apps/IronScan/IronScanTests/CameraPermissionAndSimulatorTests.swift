@@ -1,4 +1,5 @@
 import AVFoundation
+import CoreVideo
 import XCTest
 @testable import IronScan
 
@@ -35,6 +36,33 @@ final class CameraPermissionManagerTests: XCTestCase {
 }
 
 final class SimulatorCameraActorTests: XCTestCase {
+    func testOrientationAdapterMapsEverySupportedInterfaceOrientation() {
+        XCTAssertEqual(CaptureOrientation(interfaceOrientation: .portrait), .portrait)
+        XCTAssertEqual(CaptureOrientation(interfaceOrientation: .portraitUpsideDown), .portraitUpsideDown)
+        XCTAssertEqual(CaptureOrientation(interfaceOrientation: .landscapeLeft), .landscapeLeft)
+        XCTAssertEqual(CaptureOrientation(interfaceOrientation: .landscapeRight), .landscapeRight)
+        XCTAssertNil(CaptureOrientation(interfaceOrientation: .unknown))
+        XCTAssertEqual(CaptureOrientation.portrait.videoRotationAngle, 90)
+        XCTAssertEqual(CaptureOrientation.landscapeLeft.videoRotationAngle, 0)
+        XCTAssertEqual(CaptureOrientation.landscapeRight.videoRotationAngle, 180)
+        XCTAssertEqual(CaptureOrientation.portraitUpsideDown.videoRotationAngle, 270)
+    }
+
+    func testSimulatorRejectsCameraToggleWithoutChangingCapture() async throws {
+        let camera = SimulatorCameraActor()
+        await XCTAssertThrowsErrorAsync(try await camera.toggleCamera()) { error in
+            XCTAssertEqual(error as? CameraError, .unsupportedDevice)
+        }
+    }
+
+    func testSimulatorAcceptsEveryOpticsProfile() async throws {
+        let camera = SimulatorCameraActor()
+
+        for profile in [CameraOpticsProfile.eye, .nail, .tongue] {
+            try await camera.setOpticsProfile(profile)
+        }
+    }
+
     func testFrameStrideThrottleProcessesEveryTwentyFourthFrame() {
         var throttle = FrameStrideThrottle(stride: 24)
         var processedFrames = [UInt64]()
@@ -133,6 +161,183 @@ final class SimulatorCameraActorTests: XCTestCase {
         }
 
         XCTAssertNil(finalFrame)
+    }
+}
+
+final class ImageQualityAnalyzerTests: XCTestCase {
+    func testWellLitLowContrastFrameAllowsCapture() throws {
+        let pixelBuffer = try makeSolidPixelBuffer(channelValue: 128)
+
+        let observation = ImageQualityAnalyzer().analyzePreview(AnalyzableFrame(pixelBuffer: pixelBuffer, timestamp: .zero))
+
+        XCTAssertEqual(observation.readiness, .ready)
+        XCTAssertEqual(observation.sharpnessScore, 0, accuracy: 0.000_001)
+    }
+
+    func testDarkFrameRequestsMoreLight() throws {
+        let pixelBuffer = try makeSolidPixelBuffer(channelValue: 20)
+
+        let observation = ImageQualityAnalyzer().analyzePreview(AnalyzableFrame(pixelBuffer: pixelBuffer, timestamp: .zero))
+
+        XCTAssertEqual(observation.readiness, .increaseLight)
+    }
+
+    func testClippedFrameReportsGlare() throws {
+        let pixelBuffer = try makeSolidPixelBuffer(channelValue: 255)
+
+        let observation = ImageQualityAnalyzer().analyzePreview(AnalyzableFrame(pixelBuffer: pixelBuffer, timestamp: .zero))
+
+        XCTAssertEqual(observation.readiness, .glareDetected)
+    }
+}
+
+final class PhotoPixelFormatSelectorTests: XCTestCase {
+    func testSelectsBGRAWhenAvailable() {
+        let selected = PhotoPixelFormatSelector.select(from: [
+            kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+            kCVPixelFormatType_32BGRA
+        ])
+
+        XCTAssertEqual(selected, kCVPixelFormatType_32BGRA)
+    }
+
+    func testFallsBackToFullRangeYUVForPhysicalPhotoCapture() {
+        let selected = PhotoPixelFormatSelector.select(from: [
+            kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+            kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+        ])
+
+        XCTAssertEqual(selected, kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)
+    }
+}
+
+final class CameraDeviceDiscoveryTests: XCTestCase {
+    func testBackCameraPrefersVirtualMacroSwitchingBeforePhysicalFallbacks() {
+        XCTAssertEqual(
+            CameraDeviceDiscovery.preferredDeviceTypes(for: .back),
+            [
+                .builtInTripleCamera,
+                .builtInDualWideCamera,
+                .builtInUltraWideCamera,
+                .builtInWideAngleCamera,
+            ]
+        )
+    }
+
+    func testFrontCameraUsesWideAngleCamera() {
+        XCTAssertEqual(
+            CameraDeviceDiscovery.preferredDeviceTypes(for: .front),
+            [.builtInWideAngleCamera]
+        )
+    }
+}
+
+final class CameraOpticsProfileTests: XCTestCase {
+    func testEyeProfileUsesContinuousControlsAndNegativeExposureBias() {
+        XCTAssertEqual(CameraOpticsProfile.eye.exposureBias, -0.5)
+        XCTAssertTrue(CameraOpticsProfile.eye.usesNearFocusRange)
+        XCTAssertFalse(CameraOpticsProfile.eye.locksFocusAfterStabilization)
+        XCTAssertFalse(CameraOpticsProfile.eye.locksExposureAfterStabilization)
+        XCTAssertNil(CameraOpticsProfile.eye.automaticTorchLevel)
+    }
+
+    func testNailProfileLocksNearFocusAndUsesLowPowerTorch() throws {
+        XCTAssertTrue(CameraOpticsProfile.nail.usesNearFocusRange)
+        XCTAssertTrue(CameraOpticsProfile.nail.locksFocusAfterStabilization)
+        XCTAssertTrue(CameraOpticsProfile.nail.locksExposureAfterStabilization)
+        XCTAssertEqual(try XCTUnwrap(CameraOpticsProfile.nail.automaticTorchLevel), 0.2)
+    }
+
+    func testTongueProfileUsesStandardFocusAndNoAutomaticTorch() {
+        XCTAssertFalse(CameraOpticsProfile.tongue.usesNearFocusRange)
+        XCTAssertTrue(CameraOpticsProfile.tongue.locksFocusAfterStabilization)
+        XCTAssertEqual(CameraOpticsProfile.tongue.exposureBias, 0)
+        XCTAssertNil(CameraOpticsProfile.tongue.automaticTorchLevel)
+    }
+}
+
+final class MotionStabilityCalculatorTests: XCTestCase {
+    func testStationarySamplesRemainStable() {
+        var calculator = MotionStabilityCalculator()
+        var reading = MotionStabilityReading.unavailable
+
+        for _ in 0..<12 {
+            reading = calculator.add(userAccelerationX: 0.01, y: 0.01, z: 0.01)
+        }
+
+        XCTAssertEqual(reading.status, .stable)
+        XCTAssertEqual(reading.accelerationVariationG, 0, accuracy: 0.000_001)
+        XCTAssertTrue(reading.allowsInference)
+    }
+
+    func testShakySamplesExceedThresholdAndBlockInference() {
+        var calculator = MotionStabilityCalculator()
+        var reading = MotionStabilityReading.unavailable
+
+        for index in 0..<12 {
+            let acceleration = index.isMultiple(of: 2) ? 0.25 : -0.25
+            reading = calculator.add(userAccelerationX: acceleration, y: 0, z: 0)
+        }
+
+        XCTAssertEqual(reading.status, .unstable)
+        XCTAssertGreaterThan(reading.accelerationVariationG, 0.15)
+        XCTAssertFalse(reading.allowsInference)
+    }
+
+    func testUnavailableMotionHardwareDoesNotBlockCapture() {
+        XCTAssertTrue(MotionStabilityReading.unavailable.allowsInference)
+    }
+}
+
+private func makeSolidPixelBuffer(channelValue: UInt8) throws -> CVPixelBuffer {
+    let width = 32
+    let height = 32
+    var optionalPixelBuffer: CVPixelBuffer?
+    let createStatus = CVPixelBufferCreate(
+        kCFAllocatorDefault,
+        width,
+        height,
+        kCVPixelFormatType_32BGRA,
+        [kCVPixelBufferIOSurfacePropertiesKey: [:]] as CFDictionary,
+        &optionalPixelBuffer
+    )
+    guard createStatus == kCVReturnSuccess, let pixelBuffer = optionalPixelBuffer else {
+        throw CameraError.configurationFailed("Test pixel-buffer allocation failed: \(createStatus)")
+    }
+    let lockStatus = CVPixelBufferLockBaseAddress(pixelBuffer, [])
+    guard lockStatus == kCVReturnSuccess else {
+        throw CameraError.configurationFailed("Test pixel-buffer lock failed: \(lockStatus)")
+    }
+    defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, []) }
+    guard let baseAddress = CVPixelBufferGetBaseAddress(pixelBuffer) else {
+        throw CameraError.missingPixelBuffer
+    }
+
+    let bytes = baseAddress.assumingMemoryBound(to: UInt8.self)
+    let bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer)
+    for row in 0..<height {
+        for column in 0..<width {
+            let offset = row * bytesPerRow + column * 4
+            bytes[offset] = channelValue
+            bytes[offset + 1] = channelValue
+            bytes[offset + 2] = channelValue
+            bytes[offset + 3] = 255
+        }
+    }
+    return pixelBuffer
+}
+
+private func XCTAssertThrowsErrorAsync(
+    _ expression: @autoclosure () async throws -> Void,
+    _ errorHandler: (Error) -> Void,
+    file: StaticString = #filePath,
+    line: UInt = #line
+) async {
+    do {
+        try await expression()
+        XCTFail("Expected expression to throw", file: file, line: line)
+    } catch {
+        errorHandler(error)
     }
 }
 

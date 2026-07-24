@@ -1,5 +1,6 @@
 import Foundation
 import AVFoundation
+import SwiftUI
 import UIKit
 
 @MainActor
@@ -15,38 +16,52 @@ final class ScanViewModel: ObservableObject {
     @Published private(set) var cameraState: CameraState = .idle
     @Published private(set) var liveScanSummary: LiveScanSummary?
     @Published private(set) var liveScanErrorText: String?
+    @Published private(set) var liveVisualAttributeReport: TongueVisualAttributeReport?
+    @Published private(set) var liveScanningState = LiveScanningState.idle
     @Published private(set) var isLiveTongueSteady = false
+    @Published private(set) var supportsCameraToggle = false
+    @Published private(set) var lensPosition = CameraLensPosition.back
+    @Published private(set) var captureOrientation = CaptureOrientation.portrait
 
     let previewSource: CameraPreviewSource
 
     private let camera: any CameraSessionControlling
     private let permissionManager: CameraPermissionManager
     private let pipeline: ScanPipelineActor
+    private let haptics: ScanHapticsManager
     private var eventTask: Task<Void, Never>?
     private var processingTask: Task<Void, Never>?
     private var liveInferenceTask: Task<Void, Never>?
     private var modelsReady = false
     private var alignedLiveFrameCount = 0
     private var didStabilizeForLiveAlignment = false
+    private var scanProgressTracker = LiveScanProgressTracker()
 
     init(
         camera: any CameraSessionControlling = CameraControllerFactory.makeDefault(),
         permissionManager: CameraPermissionManager = CameraPermissionManager(),
-        pipeline: ScanPipelineActor = ScanPipelineActor()
+        pipeline: ScanPipelineActor = ScanPipelineActor(),
+        haptics: ScanHapticsManager = ScanHapticsManager()
     ) {
         self.camera = camera
         self.permissionManager = permissionManager
         self.pipeline = pipeline
+        self.haptics = haptics
         previewSource = camera.previewSource
         permissionStatus = permissionManager.authorizationStatus
+        haptics.prepare()
     }
 
     var canCapture: Bool {
-        modelsReady && cameraState == .ready && readiness == .ready && !isBusy
+        modelsReady && cameraState == .ready && !isBusy
     }
 
     var canRunSyntheticWork: Bool {
         modelsReady && !isBusy
+    }
+
+    var canStartAnotherScan: Bool {
+        result != nil && cameraState == .ready && !isBusy
     }
 
     var showsPermissionInstructions: Bool {
@@ -104,9 +119,7 @@ final class ScanViewModel: ObservableObject {
         processingTask = nil
         liveInferenceTask?.cancel()
         liveInferenceTask = nil
-        alignedLiveFrameCount = 0
-        isLiveTongueSteady = false
-        didStabilizeForLiveAlignment = false
+        resetLiveScanningExperience()
         Task { [camera] in
             await camera.stop()
         }
@@ -116,10 +129,58 @@ final class ScanViewModel: ObservableObject {
         guard canCapture else { return }
         liveInferenceTask?.cancel()
         liveInferenceTask = nil
+        resetLiveScanningExperience()
         isBusy = true
         result = nil
         Task { [camera] in
             await camera.capture()
+        }
+    }
+
+    func resetForNextScan() {
+        guard canStartAnotherScan else { return }
+        result = nil
+        liveScanSummary = nil
+        liveScanErrorText = nil
+        resetLiveScanningExperience()
+        statusText = "Ready for another scan"
+    }
+
+    func resetLiveScan() {
+        liveScanSummary = nil
+        liveScanErrorText = nil
+        resetLiveScanningExperience()
+        statusText = "Ready for another live scan"
+    }
+
+    func toggleCamera() {
+        guard supportsCameraToggle, !isBusy else { return }
+        liveInferenceTask?.cancel()
+        liveInferenceTask = nil
+        resetLiveScanningExperience()
+        isBusy = true
+        statusText = "Switching camera"
+        Task { [weak self, camera] in
+            do {
+                try await camera.toggleCamera()
+                self?.statusText = "Camera ready"
+                self?.isBusy = false
+            } catch {
+                self?.statusText = "Camera switch is unavailable"
+                self?.isBusy = false
+            }
+        }
+    }
+
+    func updateCaptureOrientation(_ orientation: CaptureOrientation) {
+        guard captureOrientation != orientation else { return }
+        var transaction = Transaction(animation: nil)
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+            captureOrientation = orientation
+        }
+        Task { [camera] in
+            await camera.updateCaptureOrientation(orientation)
         }
     }
 
@@ -207,32 +268,55 @@ final class ScanViewModel: ObservableObject {
                     self?.finish(with: error)
                 }
             }
+        case let .captureIssue(error):
+            statusText = "Capture was not processed: \(error.displayMessage)"
+            isBusy = false
+            haptics.failed()
         case let .capabilities(capabilities):
             isTorchAvailable = capabilities.hasTorch
             isTorchEnabled = capabilities.hasTorch
+            supportsCameraToggle = capabilities.supportsCameraToggle
+            lensPosition = capabilities.lensPosition
         }
     }
 
     private func processLiveFrame(_ frame: AnalyzableFrame) {
         guard modelsReady, cameraState == .ready, !isBusy, liveInferenceTask == nil else { return }
+        if case .completed = liveScanningState { return }
+        let shouldRunVisualInference = isLiveTongueSteady
         liveInferenceTask = Task { @MainActor [weak self, camera, pipeline] in
             defer { self?.liveInferenceTask = nil }
             do {
-                let summary = try await pipeline.analyzeLiveFrame(frame)
+                let summary = try await pipeline.analyzeLiveFrame(
+                    frame,
+                    runVisualInference: shouldRunVisualInference
+                )
                 guard !Task.isCancelled else { return }
                 self?.liveScanSummary = summary
+                if !summary.isTongueAligned {
+                    self?.handleLostAlignment()
+                    return
+                }
                 self?.liveScanErrorText = nil
-                self?.alignedLiveFrameCount = summary.isTongueAligned ? (self?.alignedLiveFrameCount ?? 0) + 1 : 0
+                if self?.alignedLiveFrameCount == 0 {
+                    self?.liveScanningState = .aligning
+                    self?.haptics.alignmentDetected()
+                }
+                self?.alignedLiveFrameCount = (self?.alignedLiveFrameCount ?? 0) + 1
                 self?.isLiveTongueSteady = (self?.alignedLiveFrameCount ?? 0) >= 2
                 if self?.isLiveTongueSteady == true, self?.didStabilizeForLiveAlignment == false {
                     self?.didStabilizeForLiveAlignment = true
                     await camera.stabilizeForAlignedTongue()
+                }
+                if let report = summary.visualAttributeReport {
+                    self?.registerVisualEvaluation(report)
                 }
             } catch is CancellationError {
                 return
             } catch {
                 guard !Task.isCancelled else { return }
                 self?.liveScanErrorText = "Live alignment temporarily unavailable"
+                self?.handleAnalysisFailure("Unable to analyze this frame. Hold steady and try again.")
             }
         }
     }
@@ -256,20 +340,76 @@ final class ScanViewModel: ObservableObject {
             isTorchEnabled = false
             liveInferenceTask?.cancel()
             liveInferenceTask = nil
+            liveScanningState = .failed(reason: error.displayMessage)
+            haptics.failed()
             isBusy = false
         }
     }
 
     private func finish(with summary: ScanResultSummary) {
-        result = summary
+        if let visualAttributeReport = summary.visualAttributeReport {
+            result = nil
+            liveVisualAttributeReport = visualAttributeReport
+            liveScanningState = .completed(report: visualAttributeReport)
+        } else {
+            result = summary
+        }
         statusText = summary.title
         isBusy = false
+        haptics.completed()
     }
 
     private func finish(with error: Error) {
         result = nil
         statusText = "Unable to assess: \(error.localizedDescription)"
         isBusy = false
+        haptics.failed()
+    }
+
+    private func registerVisualEvaluation(_ report: TongueVisualAttributeReport) {
+        let nextState = scanProgressTracker.register(report: report)
+        liveScanningState = nextState
+        if case .completed = nextState {
+            liveVisualAttributeReport = report
+            haptics.completed()
+        } else {
+            haptics.scanProgress(nextState.progress)
+        }
+    }
+
+    private func handleLostAlignment() {
+        let wasScanning = liveScanningState.isActivelyScanning || scanProgressTracker.evaluationCount > 0
+        liveVisualAttributeReport = nil
+        alignedLiveFrameCount = 0
+        isLiveTongueSteady = false
+        didStabilizeForLiveAlignment = false
+        scanProgressTracker.reset()
+        if wasScanning {
+            liveScanningState = .failed(reason: "Tongue moved outside the oval. Realign and hold steady.")
+            haptics.failed()
+        } else {
+            liveScanningState = .idle
+        }
+    }
+
+    private func handleAnalysisFailure(_ reason: String) {
+        liveVisualAttributeReport = nil
+        alignedLiveFrameCount = 0
+        isLiveTongueSteady = false
+        didStabilizeForLiveAlignment = false
+        scanProgressTracker.reset()
+        liveScanningState = .failed(reason: reason)
+        haptics.failed()
+    }
+
+    private func resetLiveScanningExperience() {
+        liveVisualAttributeReport = nil
+        liveScanningState = .idle
+        alignedLiveFrameCount = 0
+        isLiveTongueSteady = false
+        didStabilizeForLiveAlignment = false
+        scanProgressTracker.reset()
+        haptics.reset()
     }
 
     private static func deviceModelIdentifier() -> String {

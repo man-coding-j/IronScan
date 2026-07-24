@@ -10,6 +10,7 @@ struct LiveScanSummary: Equatable, Sendable {
     let isTongueAligned: Bool
     let inferenceDurationMs: Double
     let modelVersion: String
+    let visualAttributeReport: TongueVisualAttributeReport?
 }
 
 struct ScanResultSummary: Equatable, Sendable {
@@ -19,6 +20,7 @@ struct ScanResultSummary: Equatable, Sendable {
     let riskScore: Double?
     let segmentationAreaRatio: Double
     let inferenceDurationMs: Double
+    let visualAttributeReport: TongueVisualAttributeReport?
 
     static func physicalCapture(segmentation: SegmentationResult) -> ScanResultSummary {
         ScanResultSummary(
@@ -27,7 +29,8 @@ struct ScanResultSummary: Equatable, Sendable {
             decision: .unableToAssess,
             riskScore: nil,
             segmentationAreaRatio: segmentation.confidenceStatistics.areaRatio,
-            inferenceDurationMs: segmentation.inferenceDurationMs
+            inferenceDurationMs: segmentation.inferenceDurationMs,
+            visualAttributeReport: nil
         )
     }
 
@@ -38,7 +41,8 @@ struct ScanResultSummary: Equatable, Sendable {
             decision: prediction.decision,
             riskScore: prediction.calibratedProbability,
             segmentationAreaRatio: segmentation.confidenceStatistics.areaRatio,
-            inferenceDurationMs: segmentation.inferenceDurationMs + prediction.inferenceDurationMs
+            inferenceDurationMs: segmentation.inferenceDurationMs + prediction.inferenceDurationMs,
+            visualAttributeReport: nil
         )
     }
 
@@ -49,7 +53,23 @@ struct ScanResultSummary: Equatable, Sendable {
             decision: prediction.decision,
             riskScore: prediction.calibratedProbability,
             segmentationAreaRatio: segmentation.confidenceStatistics.areaRatio,
-            inferenceDurationMs: segmentation.inferenceDurationMs + prediction.inferenceDurationMs
+            inferenceDurationMs: segmentation.inferenceDurationMs + prediction.inferenceDurationMs,
+            visualAttributeReport: nil
+        )
+    }
+
+    static func prototypeDemoCapture(
+        segmentation: SegmentationResult,
+        report: TongueVisualAttributeReport
+    ) -> ScanResultSummary {
+        ScanResultSummary(
+            title: "Visual research summary",
+            detail: "Image-model output for research demonstration. Confirm with a laboratory test.",
+            decision: .unableToAssess,
+            riskScore: nil,
+            segmentationAreaRatio: segmentation.confidenceStatistics.areaRatio,
+            inferenceDurationMs: segmentation.inferenceDurationMs + report.inferenceDurationMs,
+            visualAttributeReport: report
         )
     }
 }
@@ -71,12 +91,14 @@ actor ScanPipelineActor {
     private let segmentation: SegmentationInferenceActor
     private let risk: RiskInferenceActor
     private let calibration: SmartColorCalibrationActor
+    private let multiInference: MultiInferenceEngine
     private let calibrationConfiguration: ColorCalibrationConfiguration
 
     init(
         registry: ModelRegistryActor = .shared,
         metrics: InferenceMetricsRecorder = InferenceMetricsRecorder(),
         calibration: SmartColorCalibrationActor = SmartColorCalibrationActor(),
+        multiInference: MultiInferenceEngine? = nil,
         calibrationConfiguration: ColorCalibrationConfiguration = .lockedV1
     ) {
         self.registry = registry
@@ -84,6 +106,7 @@ actor ScanPipelineActor {
         segmentation = SegmentationInferenceActor(registry: registry, metrics: metrics)
         risk = RiskInferenceActor(registry: registry, metrics: metrics)
         self.calibration = calibration
+        self.multiInference = multiInference ?? MultiInferenceEngine(registry: registry, metrics: metrics)
         self.calibrationConfiguration = calibrationConfiguration
     }
 
@@ -91,7 +114,10 @@ actor ScanPipelineActor {
         try await registry.preloadModels()
     }
 
-    func analyzeLiveFrame(_ frame: AnalyzableFrame) async throws -> LiveScanSummary {
+    func analyzeLiveFrame(
+        _ frame: AnalyzableFrame,
+        runVisualInference: Bool = true
+    ) async throws -> LiveScanSummary {
         let startedAt = ContinuousClock.now
         do {
             let result = try await segmentation.segment(OrientationNormalizedCapture(
@@ -102,7 +128,19 @@ actor ScanPipelineActor {
             let areaProgress = min(max(statistics.areaRatio / 0.24, 0), 1)
             let confidence = min(max(statistics.meanForegroundProbability, 0), 1)
             let alignmentProgress = areaProgress * confidence
-            let isAligned = (0.12...0.62).contains(statistics.areaRatio) && confidence >= 0.55
+            let minimumConfidence = PrototypeDemoMode.isEnabled
+                ? PrototypeDemoMode.minimumSegmentationConfidence
+                : 0.55
+            let acceptedAreaRatio = PrototypeDemoMode.isEnabled
+                ? PrototypeDemoMode.acceptedTongueAreaRatio
+                : 0.12 ... 0.62
+            let isAligned = acceptedAreaRatio.contains(statistics.areaRatio)
+                && confidence >= minimumConfidence
+            let visualAttributeReport: TongueVisualAttributeReport? = if isAligned && runVisualInference {
+                try await multiInference.predict(frame)
+            } else {
+                nil
+            }
             let elapsedMs = startedAt.duration(to: .now).milliseconds
             logger.debug("Live tongue segmentation completed in \(elapsedMs, format: .fixed(precision: 1)) ms")
             return LiveScanSummary(
@@ -111,7 +149,8 @@ actor ScanPipelineActor {
                 alignmentProgress: alignmentProgress,
                 isTongueAligned: isAligned,
                 inferenceDurationMs: elapsedMs,
-                modelVersion: result.modelVersion
+                modelVersion: result.modelVersion,
+                visualAttributeReport: visualAttributeReport
             )
         } catch {
             logger.error("Live tongue segmentation failed: \(String(describing: error), privacy: .public)")
@@ -124,6 +163,23 @@ actor ScanPipelineActor {
             pixelBuffer: frame.pixelBuffer,
             colorSpace: frame.metadata.sourceColorSpace
         ))
+        let statistics = segmentationResult.confidenceStatistics
+        let minimumConfidence = PrototypeDemoMode.isEnabled
+            ? PrototypeDemoMode.minimumSegmentationConfidence
+            : 0.55
+        let acceptedAreaRatio = PrototypeDemoMode.isEnabled
+            ? PrototypeDemoMode.acceptedTongueAreaRatio
+            : 0.12 ... 0.62
+        let visualQualityAccepted = frame.quality.readiness == .ready
+            && acceptedAreaRatio.contains(statistics.areaRatio)
+            && statistics.meanForegroundProbability >= minimumConfidence
+        if PrototypeDemoMode.isEnabled, visualQualityAccepted,
+           let report = try await multiInference.predict(
+               AnalyzableFrame(pixelBuffer: frame.pixelBuffer, timestamp: .zero),
+               bypassThrottle: true
+           ) {
+            return .prototypeDemoCapture(segmentation: segmentationResult, report: report)
+        }
         let calibratedSample = try await calibration.calibrate(
             capture: frame.pixelBuffer,
             metadata: CalibrationCaptureMetadata(

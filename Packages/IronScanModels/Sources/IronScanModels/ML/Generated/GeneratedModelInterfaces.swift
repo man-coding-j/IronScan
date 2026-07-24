@@ -66,3 +66,81 @@ final class AnemiaRisk: @unchecked Sendable {
         AnemiaRiskOutput(features: try model.prediction(from: ImageFeatureProvider(image: image)))
     }
 }
+
+final class IronScanPallorClassifierOutput: MLFeatureProvider, @unchecked Sendable {
+    private let provider: any MLFeatureProvider
+
+    var featureNames: Set<String> { provider.featureNames }
+
+    init(features: any MLFeatureProvider) {
+        provider = features
+    }
+
+    func featureValue(for featureName: String) -> MLFeatureValue? {
+        provider.featureValue(for: featureName)
+    }
+}
+
+final class IronScanPallorClassifier: @unchecked Sendable {
+    let model: MLModel
+
+    init(model: MLModel) {
+        self.model = model
+    }
+
+    func prediction(image: CVPixelBuffer) throws -> IronScanPallorClassifierOutput {
+        IronScanPallorClassifierOutput(features: try model.prediction(from: ImageFeatureProvider(image: image)))
+    }
+}
+
+final class IronScanMultiScreenOutput: MLFeatureProvider, @unchecked Sendable {
+    private let provider: any MLFeatureProvider
+
+    var featureNames: Set<String> { provider.featureNames }
+
+    init(features: any MLFeatureProvider) {
+        provider = features
+    }
+
+    func featureValue(for featureName: String) -> MLFeatureValue? {
+        provider.featureValue(for: featureName)
+    }
+}
+
+final class IronScanMultiScreen: @unchecked Sendable {
+    let model: MLModel
+
+    init(model: MLModel) {
+        self.model = model
+    }
+
+    func prediction(image: CVPixelBuffer) throws -> IronScanMultiScreenOutput {
+        IronScanMultiScreenOutput(features: try model.prediction(from: ImageFeatureProvider(image: image)))
+    }
+}
+
+final class IronScanTissueClassifierOutput: MLFeatureProvider, @unchecked Sendable {
+    private let provider: any MLFeatureProvider
+
+    var featureNames: Set<String> { provider.featureNames }
+
+    init(features: any MLFeatureProvider) {
+        provider = features
+    }
+
+    func featureValue(for featureName: String) -> MLFeatureValue? {
+        provider.featureValue(for: featureName)
+    }
+}
+
+final class IronScanTissueClassifier: @unchecked Sendable {
+    let model: MLModel
+
+    init(model: MLModel) {
+        self.model = model
+    }
+
+    func prediction(image: CVPixelBuffer) throws -> IronScanTissueClassifierOutput {
+        IronScanTissueClassifierOutput(features: try model.prediction(from: ImageFeatureProvider(image: image)))
+    }
+}

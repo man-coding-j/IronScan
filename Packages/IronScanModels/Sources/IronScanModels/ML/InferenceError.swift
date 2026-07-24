@@ -15,6 +15,9 @@ enum ModelContractError: Error, Equatable, Sendable {
     case outputDimensions(feature: String, expected: [Int], actual: [Int])
     case outputDataType(feature: String, expected: String, actual: String)
     case decisionThreshold(expected: Double, actual: Double?)
+    case decisionThresholds(expected: [String: Double], actual: [String: Double]?)
+    case uncertaintyThreshold(expected: Double, actual: Double?)
+    case uncertaintyPassCount(expected: Int, actual: Int?)
     case preprocessingVersion(expected: String, actual: String?)
     case missingModelMetadata(String)
 }
