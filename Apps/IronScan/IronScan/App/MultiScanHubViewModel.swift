@@ -1,6 +1,7 @@
 import AVFoundation
 import Foundation
 import SwiftUI
+import UIKit
 
 @MainActor
 final class MultiScanHubViewModel: ObservableObject {
@@ -16,12 +17,16 @@ final class MultiScanHubViewModel: ObservableObject {
     @Published private(set) var supportsCameraToggle = false
     @Published private(set) var isTorchAvailable = false
     @Published private(set) var isTorchEnabled = false
+    @Published private(set) var isSwitchingCamera = false
+    @Published private(set) var isAnalyzingTongueCapture = false
     @Published private(set) var lastError: String?
     @Published private(set) var eyeGuidanceText: String?
     @Published private(set) var eyePredictiveUncertainty: Double?
     @Published private(set) var motionReading = MotionStabilityReading.unavailable
     @Published private(set) var autoCapturePhase = AutoCapturePhase.seeking
     @Published private(set) var isAutoCaptureEnabled = true
+    @Published private(set) var imageQualityAssessment = ImageQualityGatekeeper.Assessment.optimal
+    @Published private(set) var latestTongueImage: CGImage?
 
     let previewSource: CameraPreviewSource
 
@@ -30,10 +35,12 @@ final class MultiScanHubViewModel: ObservableObject {
     private let inference: MultiTissueInferenceActor
     private let motionMonitor: any MotionStabilityMonitoring
     private let autoCaptureManager: AutoCaptureManager
+    private let coreMLInferenceManager = CoreMLInferenceManager()
     private let triangulation = TriangulationEngine()
     private let haptics = ScanHapticsManager()
     private var readiness: MultiTissueReadiness?
     private var latestQuality = QualityObservation.unavailable
+    private var capturedFrames: [TissueSite: CapturedFrame] = [:]
     private var eventTask: Task<Void, Never>?
     private var processingTask: Task<Void, Never>?
     private var liveEyeTask: Task<Void, Never>?
@@ -137,13 +144,29 @@ final class MultiScanHubViewModel: ObservableObject {
             return
         }
         guard canCapture else { return }
+        performCapture(overrideChecks: false)
+    }
+
+    func forceManualCapture() {
+        guard readiness != nil,
+              cameraState == .ready,
+              !isBusy,
+              triangulationResult == nil else { return }
+        performCapture(overrideChecks: true)
+    }
+
+    private func performCapture(overrideChecks: Bool) {
         isBusy = true
         lastError = nil
         eyeGuidanceText = nil
         eyePredictiveUncertainty = nil
         statusText = "Capturing \(currentTissue.displayName.lowercased()) image"
         Task { [weak self, camera, autoCaptureManager] in
-            await autoCaptureManager.reset(for: self?.currentTissue ?? .eye)
+            if overrideChecks {
+                await autoCaptureManager.cancelCountdown(message: "Manual capture")
+            } else {
+                await autoCaptureManager.reset(for: self?.currentTissue ?? .eye)
+            }
             let accepted = await camera.capture()
             guard !accepted else { return }
             self?.fail("The camera was not ready. Hold steady and capture again.")
@@ -167,9 +190,14 @@ final class MultiScanHubViewModel: ObservableObject {
         triangulationResult = nil
         currentTissue = .eye
         lastError = nil
+        latestTongueImage = nil
+        isAnalyzingTongueCapture = false
+        isSwitchingCamera = false
         eyeGuidanceText = nil
         eyePredictiveUncertainty = nil
         autoCapturePhase = isAutoCaptureEnabled ? .seeking : .disabled
+        imageQualityAssessment = .optimal
+        capturedFrames = [:]
         Task { [autoCaptureManager] in
             await autoCaptureManager.reset(for: .eye)
         }
@@ -177,14 +205,20 @@ final class MultiScanHubViewModel: ObservableObject {
     }
 
     func toggleCamera() {
-        guard supportsCameraToggle, !isBusy else { return }
-        isBusy = true
-        Task { [weak self, camera] in
+        guard supportsCameraToggle, !isBusy, !isSwitchingCamera else { return }
+        isSwitchingCamera = true
+        eyeGuidanceText = nil
+        statusText = "Switching camera"
+        Task { [weak self, camera, autoCaptureManager] in
+            await autoCaptureManager.cancelCountdown(message: "Camera switch in progress")
             do {
                 try await camera.toggleCamera()
-                self?.isBusy = false
-                self?.statusText = "Camera ready"
+                guard let self else { return }
+                self.isSwitchingCamera = false
+                self.statusText = "Ready to capture the \(self.currentTissue.displayName.lowercased()) image"
+                self.resetAutoCapture(for: self.currentTissue)
             } catch {
+                self?.isSwitchingCamera = false
                 self?.fail("Camera switch is unavailable")
             }
         }
@@ -212,7 +246,7 @@ final class MultiScanHubViewModel: ObservableObject {
         switch event {
         case let .state(state):
             cameraState = state
-            if state == .ready, !isBusy {
+            if state == .ready, !isBusy, !isSwitchingCamera {
                 statusText = "Ready to capture the \(currentTissue.displayName.lowercased()) image"
             }
         case let .captured(frame):
@@ -234,9 +268,11 @@ final class MultiScanHubViewModel: ObservableObject {
     }
 
     private func processLiveFrame(_ frame: AnalyzableFrame) {
+        imageQualityAssessment = ImageQualityGatekeeper.assess(frame.pixelBuffer)
         guard motionReading.allowsInference,
               cameraState == .ready,
               !isBusy,
+              !isSwitchingCamera,
               liveEyeTask == nil else {
             return
         }
@@ -287,16 +323,40 @@ final class MultiScanHubViewModel: ObservableObject {
             return
         }
         let tissue = currentTissue
+        let preparedFrame: CapturedFrame
+        if tissue == .tongue {
+            do {
+                let payload = try coreMLInferenceManager.prepareCapturedFrame(
+                    frame,
+                    tissue: tissue,
+                    lensPosition: lensPosition,
+                    captureOrientation: captureOrientation
+                )
+                guard let previewImage = payload.previewImage else {
+                    fail("Scan incomplete. Please retake the tongue photo.")
+                    return
+                }
+                latestTongueImage = previewImage
+                preparedFrame = payload.frame
+                isAnalyzingTongueCapture = true
+            } catch {
+                fail("Scan incomplete. Please retake the tongue photo.")
+                return
+            }
+        } else {
+            preparedFrame = frame
+        }
         processingTask?.cancel()
         processingTask = Task { [weak self, inference] in
             do {
-                let output = try await inference.predict(frame: frame, tissue: tissue)
+                let output = try await inference.predict(frame: preparedFrame, tissue: tissue)
                 guard !Task.isCancelled else { return }
                 guard output.qualityAccepted else {
                     self?.fail(output.rejectionReasons.first ?? "Capture quality was not accepted")
                     return
                 }
                 self?.completedOutputs[tissue] = output
+                self?.capturedFrames[tissue] = preparedFrame
                 self?.advance(after: tissue)
             } catch let error as ConjunctivaCropError {
                 self?.fail(self?.conjunctivaMessage(for: error) ?? "Unable to locate the conjunctiva")
@@ -331,6 +391,11 @@ final class MultiScanHubViewModel: ObservableObject {
     }
 
     private func finishTriangulation() {
+        let hasAllFrames = TissueSite.allCases.allSatisfy { capturedFrames[$0] != nil }
+        guard hasAllFrames, latestTongueImage != nil, completedOutputs[.tongue] != nil else {
+            fail("Scan incomplete. Please retake the tongue photo.")
+            return
+        }
         guard let readiness else {
             fail("Model versions are unavailable")
             return
@@ -350,6 +415,7 @@ final class MultiScanHubViewModel: ObservableObject {
                 allowEngineeringFixtures: PrototypeDemoMode.isEnabled
             )
             statusText = "Three-step scan complete"
+            isAnalyzingTongueCapture = false
             isBusy = false
         } catch {
             fail("Scan configuration is invalid")
@@ -360,6 +426,7 @@ final class MultiScanHubViewModel: ObservableObject {
         lastError = message
         statusText = message
         isBusy = false
+        isAnalyzingTongueCapture = false
         resetAutoCapture(for: currentTissue)
     }
 
@@ -378,6 +445,7 @@ final class MultiScanHubViewModel: ObservableObject {
                         self?.statusText = "Hold phone steady..."
                     }
                 } else if self?.cameraState == .ready, self?.isBusy == false,
+                          self?.isSwitchingCamera == false,
                           let tissue = self?.currentTissue {
                     self?.statusText = "Ready to capture the \(tissue.displayName.lowercased()) image"
                 }

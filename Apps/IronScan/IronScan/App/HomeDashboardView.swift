@@ -1,6 +1,12 @@
 import Charts
 import Foundation
 import SwiftUI
+#if canImport(FirebaseAuth)
+import FirebaseAuth
+#endif
+#if canImport(FirebaseFirestore)
+import FirebaseFirestore
+#endif
 
 struct ScanHistoryRecord: Codable, Equatable, Identifiable, Sendable {
     let id: UUID
@@ -51,12 +57,18 @@ struct ScanHistoryRecord: Codable, Equatable, Identifiable, Sendable {
     }
 }
 
+struct ScanUserProfile: Equatable, Sendable {
+    let age: String?
+    let gender: String?
+}
+
 @MainActor
 final class ScanHistoryStore: ObservableObject {
     static let storageKey = "ironscan.local.scan-history.v1"
     static let maximumRecordCount = 30
 
     @Published private(set) var records: [ScanHistoryRecord]
+    @Published private(set) var userProfile: ScanUserProfile?
     @Published private(set) var persistenceError: String?
 
     private let defaults: UserDefaults
@@ -66,6 +78,7 @@ final class ScanHistoryStore: ObservableObject {
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         records = []
+        userProfile = nil
         persistenceError = nil
         guard let data = defaults.data(forKey: Self.storageKey) else { return }
         do {
@@ -83,11 +96,89 @@ final class ScanHistoryStore: ObservableObject {
             opticalPatternIndex: result.opticalPallorIndex,
             includedTissues: result.contributions.filter { $0.status == .included }.count
         )
-        records.insert(record, at: 0)
-        if records.count > Self.maximumRecordCount {
-            records.removeLast(records.count - Self.maximumRecordCount)
+        insert(record)
+    }
+
+    func saveScan(_ result: TriangulationResult) async {
+        let capturedAt = Date()
+        let record = ScanHistoryRecord(
+            capturedAt: capturedAt,
+            summary: result.summary,
+            opticalPatternIndex: result.opticalPallorIndex,
+            includedTissues: result.contributions.filter { $0.status == .included }.count
+        )
+        insert(record)
+
+        #if canImport(FirebaseAuth) && canImport(FirebaseFirestore)
+        guard let user = Auth.auth().currentUser else { return }
+
+        var payload: [String: Any] = [
+            "timestamp": Timestamp(date: capturedAt),
+            "anemiaRiskLevel": result.summary.rawValue,
+            "tissuesScanned": result.contributions.map(\.tissue.rawValue)
+        ]
+        if let confidenceScore = result.opticalPallorIndex {
+            payload["confidenceScore"] = confidenceScore
         }
-        persist()
+
+        do {
+            try await Firestore.firestore()
+                .collection("users")
+                .document(user.uid)
+                .collection("scans")
+                .document(record.id.uuidString)
+                .setData(payload)
+        } catch {
+            persistenceError = error.localizedDescription
+        }
+        #endif
+    }
+
+    func fetchHistory() async {
+        #if canImport(FirebaseAuth) && canImport(FirebaseFirestore)
+        guard let user = Auth.auth().currentUser else { return }
+
+        do {
+            let database = Firestore.firestore()
+            let userSnapshot = try await database
+                .collection("users")
+                .document(user.uid)
+                .getDocument()
+
+            if userSnapshot.exists {
+                userProfile = ScanUserProfile(
+                    age: userSnapshot.get("age") as? String,
+                    gender: userSnapshot.get("gender") as? String
+                )
+            }
+
+            let snapshot = try await database
+                .collection("users")
+                .document(user.uid)
+                .collection("scans")
+                .order(by: "timestamp", descending: true)
+                .limit(to: Self.maximumRecordCount)
+                .getDocuments()
+
+            records = snapshot.documents.compactMap { document in
+                let timestamp = (document.get("timestamp") as? Timestamp)?.dateValue() ?? Date()
+                let summaryRawValue = document.get("anemiaRiskLevel") as? String ?? OpticalRiskSummary.unableToAssess.rawValue
+                let tissuesScanned = document.get("tissuesScanned") as? [String] ?? []
+                let confidenceScore = document.get("confidenceScore") as? Double
+
+                return ScanHistoryRecord(
+                    id: UUID(uuidString: document.documentID) ?? UUID(),
+                    capturedAt: timestamp,
+                    summary: OpticalRiskSummary(rawValue: summaryRawValue) ?? .unableToAssess,
+                    opticalPatternIndex: confidenceScore,
+                    includedTissues: tissuesScanned.count
+                )
+            }
+            persist()
+        } catch {
+            persistenceError = error.localizedDescription
+        }
+        #endif
     }
 
     func removeAll() {
@@ -102,6 +193,15 @@ final class ScanHistoryStore: ObservableObject {
         } catch {
             persistenceError = "Local scan history could not be saved."
         }
+    }
+
+    private func insert(_ record: ScanHistoryRecord) {
+        records.removeAll { $0.id == record.id }
+        records.insert(record, at: 0)
+        if records.count > Self.maximumRecordCount {
+            records.removeLast(records.count - Self.maximumRecordCount)
+        }
+        persist()
     }
 }
 

@@ -1,443 +1,294 @@
 import SwiftUI
 
-enum OnboardingFlowContent {
-    static let heroTitle = "Know Your Iron Signals."
-    static let heroBody = "Feeling tired or run down? IronScan checks optical color patterns associated with possible anemia risk in seconds. It does not measure iron levels."
-    static let accountTitle = "Welcome! Start screening in under 2 minutes."
-    static let accountPrivacy = "Prototype access only. Entries stay in memory for this screen, are never submitted, and no account is created."
-    static let contextTitle = "Quick Health Check!"
-    static let contextBody = "Before your first scan, you can share a few optional details—diet, energy levels, and symptoms—so your report can show that context separately from the optical result."
-}
-
 struct OnboardingFlowView: View {
-    private enum Page: Int, CaseIterable {
-        case vision
-        case accountPreview
-        case context
+    private enum Step: Int, CaseIterable {
+        case hero
+        case howItWorks
+        case scanTips
     }
 
     let onComplete: () -> Void
 
-    @State private var page = Page.vision.rawValue
-    @State private var email = ""
-    @State private var password = ""
-    @State private var confirmedPassword = ""
-    @State private var accountMessage: String?
-    @State private var understandsResearchUse = false
-    @State private var showsIntake = false
+    @State private var step: Step = .hero
 
     var body: some View {
         NavigationStack {
             ZStack {
-                IronTheme.creamBackground.ignoresSafeArea()
-                OrganicCornerAccents()
+                IronScreenBackground()
 
-                TabView(selection: $page) {
-                    visionPage
-                        .tag(Page.vision.rawValue)
-                    accountPage
-                        .tag(Page.accountPreview.rawValue)
-                    contextPage
-                        .tag(Page.context.rawValue)
+                VStack(spacing: 0) {
+                    currentStepView
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                .tabViewStyle(.page(indexDisplayMode: .always))
-                .indexViewStyle(.page(backgroundDisplayMode: .interactive))
-                .animation(.snappy(duration: 0.42), value: page)
+                .padding(.horizontal, 20)
+                .padding(.top, 12)
+                .padding(.bottom, 24)
+                .animation(.easeInOut(duration: 0.3), value: step)
             }
+            .toolbar(.hidden, for: .navigationBar)
             .organicTypography()
-            .tint(IronTheme.terracottaPrimary)
-            .navigationDestination(isPresented: $showsIntake) {
-                ScreeningIntakeView(
-                    completionButtonTitle: "Continue to IronScan",
-                    onComplete: onComplete
-                )
-            }
         }
-    }
-
-    private var visionPage: some View {
-        OnboardingPageLayout {
-            VStack(spacing: 30) {
-                heroGraphic
-                    .accessibilityHidden(true)
-
-                VStack(alignment: .leading, spacing: 14) {
-                    Text(OnboardingFlowContent.heroTitle)
-                        .font(IronTheme.roundedFont(.largeTitle, weight: .bold))
-                        .foregroundStyle(IronTheme.slateText)
-                    Text(OnboardingFlowContent.heroBody)
-                        .font(IronTheme.roundedFont(.title3))
-                        .foregroundStyle(IronTheme.slateText.opacity(0.72))
-                        .lineSpacing(5)
-                }
-                .frame(maxWidth: 540, alignment: .leading)
-            }
-        } action: {
-            glassActionGroup {
-                Button {
-                    advance(to: .accountPreview)
-                } label: {
-                    actionLabel("Start Now")
-                }
-                .buttonStyle(OrganicPrimaryButtonStyle())
-            }
-        }
-    }
-
-    private var accountPage: some View {
-        OnboardingPageLayout {
-            VStack(alignment: .leading, spacing: 24) {
-                backButton(to: .vision)
-
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Welcome!")
-                        .font(IronTheme.roundedFont(.largeTitle, weight: .bold))
-                    Text("Start screening in under 2 minutes.")
-                        .font(IronTheme.roundedFont(.title3))
-                        .foregroundStyle(IronTheme.slateText.opacity(0.7))
-                }
-
-                VStack(spacing: 14) {
-                    OrganicTextField(
-                        title: "Email",
-                        text: $email,
-                        contentType: .emailAddress
-                    )
-                    OrganicSecureField(title: "Password", text: $password)
-                    OrganicSecureField(title: "Confirm Password", text: $confirmedPassword)
-                }
-
-                Text(OnboardingFlowContent.accountPrivacy)
-                    .font(IronTheme.roundedFont(.footnote))
-                    .foregroundStyle(IronTheme.slateText.opacity(0.66))
-
-                if let accountMessage {
-                    Label(accountMessage, systemImage: "exclamationmark.circle.fill")
-                        .font(IronTheme.roundedFont(.footnote, weight: .semibold))
-                        .foregroundStyle(IronTheme.warning)
-                }
-            }
-            .frame(maxWidth: 540)
-        } action: {
-            glassActionGroup {
-                Button {
-                    continueFromAccountPreview()
-                } label: {
-                    actionLabel("Continue")
-                }
-                .buttonStyle(OrganicPrimaryButtonStyle())
-            }
-        }
-    }
-
-    private var contextPage: some View {
-        OnboardingPageLayout {
-            VStack(alignment: .leading, spacing: 22) {
-                backButton(to: .accountPreview)
-
-                Text(OnboardingFlowContent.contextTitle)
-                    .font(IronTheme.roundedFont(.largeTitle, weight: .bold))
-
-                HealthContextIllustration()
-                    .frame(maxWidth: .infinity)
-                    .accessibilityHidden(true)
-
-                Text(OnboardingFlowContent.contextBody)
-                    .font(IronTheme.roundedFont(.title3))
-                    .foregroundStyle(IronTheme.slateText.opacity(0.72))
-                    .lineSpacing(5)
-
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(OnboardingConsent.summary)
-                        .font(IronTheme.roundedFont(.subheadline, weight: .bold))
-                    Text(OnboardingConsent.detail)
-                        .font(IronTheme.roundedFont(.footnote))
-                        .foregroundStyle(IronTheme.slateText.opacity(0.7))
-                    Toggle(
-                        "I agree and understand these research limitations.",
-                        isOn: $understandsResearchUse
-                    )
-                    .font(IronTheme.roundedFont(.subheadline, weight: .semibold))
-                    .tint(IronTheme.sageAccent)
-                }
-                .padding(16)
-                .liquidGlassCard(cornerRadius: 22)
-            }
-            .frame(maxWidth: 560)
-        } action: {
-            glassActionGroup {
-                Button {
-                    showsIntake = true
-                } label: {
-                    actionLabel("Get Started")
-                }
-                .buttonStyle(OrganicPrimaryButtonStyle())
-                .disabled(!understandsResearchUse)
-                .opacity(understandsResearchUse ? 1 : 0.52)
-            }
-        }
-    }
-
-    private var heroGraphic: some View {
-        ZStack {
-            Circle()
-                .fill(Color.white.opacity(0.24))
-                .frame(width: 238, height: 238)
-            Circle()
-                .stroke(
-                    IronTheme.sageAccent,
-                    style: StrokeStyle(lineWidth: 4, lineCap: .round, dash: [12, 11])
-                )
-                .frame(width: 252, height: 252)
-            Circle()
-                .fill(IronTheme.terracottaPrimary.opacity(0.45))
-                .frame(width: 142, height: 184)
-                .overlay(alignment: .trailing) {
-                    Capsule()
-                        .stroke(IronTheme.terracottaPrimary.opacity(0.6), lineWidth: 4)
-                        .frame(width: 58, height: 126)
-                        .padding(.trailing, 21)
-                }
-            Circle()
-                .fill(IronTheme.terracottaPrimary)
-                .frame(width: 82, height: 82)
-                .overlay {
-                    Image(systemName: "drop.fill")
-                        .font(.system(size: 42, weight: .bold))
-                        .foregroundStyle(IronTheme.creamBackground)
-                }
-                .offset(x: 74, y: -83)
-        }
-    }
-
-    private func actionLabel(_ title: String) -> some View {
-        HStack {
-            Text(title)
-            Spacer()
-            Image(systemName: "arrow.right")
-                .font(.system(size: 17, weight: .bold))
-        }
-    }
-
-    private func backButton(to destination: Page) -> some View {
-        Button {
-            advance(to: destination)
-        } label: {
-            Image(systemName: "chevron.left")
-                .font(.system(size: 17, weight: .bold))
-                .frame(width: 42, height: 42)
-                .organicGlassEffect(
-                    in: Circle(),
-                    tint: IronTheme.cardGlass,
-                    interactive: true
-                )
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Back")
     }
 
     @ViewBuilder
-    private func glassActionGroup<Content: View>(
-        @ViewBuilder content: () -> Content
-    ) -> some View {
-        if #available(iOS 26.0, *) {
-            GlassEffectContainer(spacing: 20) {
-                content()
+    private var currentStepView: some View {
+        switch step {
+        case .hero:
+            HeroStartView {
+                advance(to: .howItWorks)
             }
-        } else {
-            content()
+            .transition(onboardingStepTransition)
+        case .howItWorks:
+            OnboardingStep1View(
+                onBack: { advance(to: .hero) },
+                onNext: { advance(to: .scanTips) }
+            )
+            .transition(onboardingStepTransition)
+        case .scanTips:
+            OnboardingStep2View(
+                onBack: { advance(to: .howItWorks) },
+                onStartScan: onComplete
+            )
+            .transition(onboardingStepTransition)
         }
     }
 
-    private func advance(to destination: Page) {
-        withAnimation(.snappy(duration: 0.42)) {
-            page = destination.rawValue
-        }
-    }
-
-    private func continueFromAccountPreview() {
-        let hasAnyEntry = !email.isEmpty || !password.isEmpty || !confirmedPassword.isEmpty
-        guard !hasAnyEntry || password == confirmedPassword else {
-            accountMessage = "The password fields do not match."
-            return
-        }
-        accountMessage = nil
-        password = ""
-        confirmedPassword = ""
-        advance(to: .context)
-    }
-}
-
-private struct OnboardingPageLayout<Content: View, Action: View>: View {
-    @ViewBuilder let content: () -> Content
-    @ViewBuilder let action: () -> Action
-
-    var body: some View {
-        GeometryReader { proxy in
-            ScrollView {
-                VStack(spacing: 22) {
-                    content()
-                        .frame(maxWidth: .infinity)
-                    Spacer(minLength: 12)
-                    action()
-                        .frame(maxWidth: 540)
-                }
-                .padding(.horizontal, 26)
-                .padding(.top, max(28, proxy.safeAreaInsets.top + 8))
-                .padding(.bottom, 54)
-                .frame(maxWidth: .infinity, minHeight: proxy.size.height)
-            }
-            .scrollIndicators(.hidden)
+    private func advance(to step: Step) {
+        withAnimation(.snappy(duration: 0.36)) {
+            self.step = step
         }
     }
 }
 
-private struct OrganicTextField: View {
-    let title: String
-    @Binding var text: String
-    let contentType: UITextContentType?
+struct HeroStartView: View {
+    let onGetStarted: () -> Void
 
     var body: some View {
-        TextField(title, text: $text)
-            .textContentType(contentType)
-            .textInputAutocapitalization(.never)
-            .autocorrectionDisabled()
-            .padding(.horizontal, 18)
-            .frame(minHeight: 58)
-            .background(Color.white.opacity(0.32), in: Capsule())
-            .overlay {
-                Capsule()
-                    .stroke(IronTheme.terracottaPrimary.opacity(0.42), lineWidth: 1)
-            }
-            .font(IronTheme.roundedFont(.body))
-    }
-}
+        VStack(alignment: .leading, spacing: 28) {
+            Spacer(minLength: 12)
 
-private struct OrganicSecureField: View {
-    let title: String
-    @Binding var text: String
+            heroMark
+            titleBlock
 
-    var body: some View {
-        SecureField(title, text: $text)
-            .textContentType(.newPassword)
-            .padding(.horizontal, 18)
-            .frame(minHeight: 58)
-            .background(Color.white.opacity(0.32), in: Capsule())
-            .overlay {
-                Capsule()
-                    .stroke(IronTheme.terracottaPrimary.opacity(0.42), lineWidth: 1)
-            }
-            .font(IronTheme.roundedFont(.body))
-    }
-}
-
-private struct HealthContextIllustration: View {
-    var body: some View {
-        ZStack(alignment: .bottom) {
-            Capsule()
-                .fill(IronTheme.sageAccent.opacity(0.18))
-                .frame(width: 248, height: 42)
-
-            HStack(alignment: .bottom, spacing: -12) {
-                clipboard
-                person
-            }
-        }
-        .frame(height: 245)
-    }
-
-    private var clipboard: some View {
-        RoundedRectangle(cornerRadius: 24, style: .continuous)
-            .fill(Color.white.opacity(0.5))
-            .overlay {
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .stroke(IronTheme.sageAccent.opacity(0.48), lineWidth: 2)
-            }
-            .overlay {
-                VStack(spacing: 12) {
-                    ForEach(0 ..< 4, id: \.self) { index in
-                        Capsule()
-                            .fill(IronTheme.sageAccent.opacity(0.45))
-                            .frame(width: index.isMultiple(of: 2) ? 88 : 62, height: 8)
-                    }
-                }
-            }
-            .overlay(alignment: .top) {
-                Circle()
-                    .fill(IronTheme.terracottaPrimary)
-                    .frame(width: 46, height: 46)
-                    .offset(y: -24)
-            }
-            .frame(width: 156, height: 186)
-    }
-
-    private var person: some View {
-        VStack(spacing: -2) {
-            Circle()
-                .fill(Color(red: 239 / 255, green: 190 / 255, blue: 155 / 255))
-                .overlay {
-                    Circle().stroke(IronTheme.slateText, lineWidth: 7)
-                }
-                .frame(width: 66, height: 66)
-            RoundedRectangle(cornerRadius: 36, style: .continuous)
-                .fill(IronTheme.sageAccent)
-                .frame(width: 92, height: 112)
-                .overlay(alignment: .trailing) {
-                    Capsule()
-                        .stroke(
-                            Color(red: 239 / 255, green: 190 / 255, blue: 155 / 255),
-                            lineWidth: 15
-                        )
-                        .frame(width: 38, height: 72)
-                        .offset(x: 23)
-                }
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(IronTheme.slateText.opacity(0.88))
-                .frame(width: 58, height: 84)
-        }
-    }
-}
-
-private struct OrganicCornerAccents: View {
-    var body: some View {
-        GeometryReader { proxy in
             ZStack {
-                LeafCluster()
-                    .frame(width: 150, height: 150)
-                    .offset(x: -42, y: -36)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                Circle()
+                    .fill(Color.white.opacity(0.54))
+                    .frame(width: 252, height: 252)
+                    .background(.ultraThinMaterial, in: Circle())
+                    .overlay {
+                        Circle()
+                            .stroke(Color.white.opacity(0.8), lineWidth: 1)
+                    }
 
-                LeafCluster()
-                    .frame(width: 165, height: 165)
-                    .rotationEffect(.degrees(180))
-                    .offset(x: 52, y: 48)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                Circle()
+                    .stroke(Color.white.opacity(0.6), lineWidth: 10)
+                    .frame(width: 224, height: 224)
+
+                GlossyTerracottaDrop()
+                    .frame(width: 124, height: 164)
             }
-            .frame(width: proxy.size.width, height: proxy.size.height)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Check your iron levels in under 2 minutes.")
+                    .font(IronTheme.roundedFont(.title3, weight: .medium))
+                    .foregroundStyle(IronTheme.textSlate)
+
+                Button(action: onGetStarted) {
+                    IronCTAButtonLabel(title: "Get Started")
+                }
+                .buttonStyle(OrganicPrimaryButtonStyle())
+            }
+            .padding(20)
+            .liquidGlassCard(cornerRadius: 28)
+
+            Spacer(minLength: 0)
         }
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
+    }
+
+    private var heroMark: some View {
+        Image(systemName: "drop.fill")
+            .font(.system(size: 28, weight: .bold))
+            .foregroundStyle(IronTheme.terracottaPrimary)
+            .padding(.top, 12)
+    }
+
+    private var titleBlock: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("IronScan")
+                .font(IronTheme.roundedFont(.largeTitle, weight: .bold))
+                .foregroundStyle(IronTheme.textSlate)
+
+            Text("Smart. Simple. Non-Invasive.\nAnemia Screening for Everyone.")
+                .font(IronTheme.roundedFont(.title3))
+                .foregroundStyle(IronTheme.textMuted)
+                .lineSpacing(4)
+        }
     }
 }
 
-private struct LeafCluster: View {
+struct OnboardingStep1View: View {
+    let onBack: () -> Void
+    let onNext: () -> Void
+
     var body: some View {
-        ZStack {
-            Capsule()
-                .fill(IronTheme.sageAccent.opacity(0.58))
-                .frame(width: 42, height: 112)
-                .rotationEffect(.degrees(43))
-                .offset(x: 22, y: -7)
-            Capsule()
-                .fill(IronTheme.sageAccent.opacity(0.36))
-                .frame(width: 38, height: 104)
-                .rotationEffect(.degrees(67))
-                .offset(x: 48, y: 20)
-            Capsule()
-                .fill(IronTheme.sageAccent.opacity(0.72))
-                .frame(width: 32, height: 92)
-                .rotationEffect(.degrees(27))
-                .offset(x: -4, y: -17)
+        VStack(alignment: .leading, spacing: 18) {
+            onboardingHeader(title: "How It Works", onBack: onBack)
+
+            VStack(spacing: 14) {
+                HowItWorksCard(
+                    icon: "camera.fill",
+                    tint: IronTheme.terracottaPrimary,
+                    title: "1. Take a Photo",
+                    description: "We'll guide you to scan the tongue, eyes, and nail beds to assess anemia risk."
+                )
+                HowItWorksCard(
+                    icon: "sparkles",
+                    tint: IronTheme.sageAccent,
+                    title: "2. AI Analysis",
+                    description: "Our AI analyzes color, texture, and patterns instantly."
+                )
+                HowItWorksCard(
+                    icon: "chart.bar.fill",
+                    tint: IronTheme.terracottaPrimary,
+                    title: "3. Get Results",
+                    description: "Receive your iron deficiency risk score and tips."
+                )
+            }
+
+            Spacer(minLength: 0)
+
+            Button(action: onNext) {
+                IronCTAButtonLabel(title: "Next")
+            }
+            .buttonStyle(OrganicPrimaryButtonStyle())
         }
     }
+}
+
+struct OnboardingStep2View: View {
+    let onBack: () -> Void
+    let onStartScan: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            onboardingHeader(title: "Let's Scan\nYour Tongue", onBack: onBack)
+
+            Text("Follow these simple steps:")
+                .font(IronTheme.roundedFont(.subheadline, weight: .medium))
+                .foregroundStyle(IronTheme.textMuted)
+
+            VStack(spacing: 14) {
+                InstructionCard(icon: "sun.max.fill", title: "Find good lighting")
+                InstructionCard(icon: "mouth.fill", title: "Open your mouth and stick out your tongue")
+                InstructionCard(icon: "iphone", title: "Keep your tongue inside the frame")
+            }
+
+            Spacer(minLength: 0)
+
+            Button(action: onStartScan) {
+                IronCTAButtonLabel(title: "Start Scan")
+            }
+            .buttonStyle(OrganicPrimaryButtonStyle())
+        }
+    }
+}
+
+private struct HowItWorksCard: View {
+    let icon: String
+    let tint: Color
+    let title: String
+    let description: String
+
+    var body: some View {
+        HStack(spacing: 16) {
+            ZStack {
+                Circle()
+                    .fill(Color.white.opacity(0.74))
+                    .frame(width: 64, height: 64)
+                Image(systemName: icon)
+                    .font(.system(size: 26, weight: .semibold))
+                    .foregroundStyle(tint)
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(title)
+                    .font(IronTheme.roundedFont(.headline, weight: .bold))
+                    .foregroundStyle(IronTheme.textSlate)
+
+                Text(description)
+                    .font(IronTheme.roundedFont(.subheadline))
+                    .foregroundStyle(IronTheme.textMuted)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(18)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(Color.white.opacity(0.3), lineWidth: 1)
+        }
+    }
+}
+
+private struct InstructionCard: View {
+    let icon: String
+    let title: String
+
+    var body: some View {
+        HStack(spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(Color.white.opacity(0.76))
+                    .frame(width: 56, height: 56)
+                Image(systemName: icon)
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundStyle(icon == "sun.max.fill" ? IronTheme.sageAccent : IronTheme.textSlate)
+            }
+
+            Text(title)
+                .font(IronTheme.roundedFont(.body, weight: .medium))
+                .foregroundStyle(IronTheme.textSlate)
+
+            Spacer(minLength: 0)
+        }
+        .padding(16)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .stroke(Color.white.opacity(0.3), lineWidth: 1)
+        }
+    }
+}
+
+private var onboardingStepTransition: AnyTransition {
+    AnyTransition.asymmetric(
+        insertion: .move(edge: .trailing).combined(with: .opacity),
+        removal: .move(edge: .leading).combined(with: .opacity)
+    )
+}
+
+@MainActor private func onboardingHeader(title: String, onBack: @escaping () -> Void) -> some View {
+    VStack(alignment: .leading, spacing: 18) {
+        Button(action: onBack) {
+            Image(systemName: "chevron.left")
+                .font(.system(size: 18, weight: .bold))
+                .foregroundStyle(IronTheme.textSlate)
+                .frame(width: 42, height: 42)
+                .background(Color.white.opacity(0.66), in: Circle())
+                .overlay {
+                    Circle()
+                        .stroke(Color.white.opacity(0.85), lineWidth: 1)
+                }
+        }
+        .buttonStyle(.plain)
+
+        Text(title)
+            .font(IronTheme.roundedFont(.largeTitle, weight: .bold))
+            .foregroundStyle(IronTheme.textSlate)
+            .lineLimit(2)
+    }
+    .padding(.top, 12)
 }
