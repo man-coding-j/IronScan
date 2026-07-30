@@ -197,3 +197,16 @@ final class LocationManager: NSObject, ObservableObject, @preconcurrency CLLocat
         )
     }
 }
+
+@MainActor
+private func performLocalSearch(_ request: MKLocalSearch.Request) async throws -> MKLocalSearch.Response {
+    try await withCheckedThrowingContinuation { continuation in
+        MKLocalSearch(request: request).start { response, error in
+            if let response {
+                continuation.resume(returning: response)
+            } else {
+                continuation.resume(throwing: error ?? URLError(.unknown))
+            }
+        }
+    }
+}
