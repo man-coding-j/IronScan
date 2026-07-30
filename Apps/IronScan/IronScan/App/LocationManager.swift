@@ -91,8 +91,28 @@ final class LocationManager: NSObject, ObservableObject, @preconcurrency CLLocat
         }
     }
 
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        authorizationStatus = manager.authorizationStatus
+    nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        let status = manager.authorizationStatus
+        Task { @MainActor [weak self] in
+            self?.handleAuthorizationChange(status)
+        }
+    }
+
+    nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations.last
+        Task { @MainActor [weak self] in
+            self?.handleLocationUpdate(location)
+        }
+    }
+
+    nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        Task { @MainActor [weak self] in
+            self?.handleLocationFailure(error)
+        }
+    }
+
+    private func handleAuthorizationChange(_ status: CLAuthorizationStatus) {
+        authorizationStatus = status
         if hasRequestedSearch,
            authorizationStatus == .authorizedAlways || authorizationStatus == .authorizedWhenInUse {
             requestCurrentLocation()
@@ -102,8 +122,8 @@ final class LocationManager: NSObject, ObservableObject, @preconcurrency CLLocat
         }
     }
 
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else {
+    private func handleLocationUpdate(_ location: CLLocation?) {
+        guard let location else {
             isSearching = false
             message = "A current location was not available."
             return
@@ -116,7 +136,7 @@ final class LocationManager: NSObject, ObservableObject, @preconcurrency CLLocat
         Task { await searchNearby(centeredAt: location) }
     }
 
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+    private func handleLocationFailure(_ error: Error) {
         isSearching = false
         if let locationError = error as? CLError, locationError.code == .denied {
             message = "Location access is off. You can enable it in iOS Settings."
@@ -131,7 +151,7 @@ final class LocationManager: NSObject, ObservableObject, @preconcurrency CLLocat
         locationManager.requestLocation()
     }
 
-    private func searchNearby(centeredAt location: CLLocation) async {
+    @MainActor private func searchNearby(centeredAt location: CLLocation) async {
         let region = MKCoordinateRegion(
             center: location.coordinate,
             latitudinalMeters: 20_000,

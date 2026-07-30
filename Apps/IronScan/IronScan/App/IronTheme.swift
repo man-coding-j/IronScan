@@ -44,10 +44,11 @@ private struct OrganicGlassEffectModifier<EffectShape: Shape>: ViewModifier {
     @ViewBuilder
     func body(content: Content) -> some View {
         if #available(iOS 26.0, *) {
+            let resolvedTint = tint ?? IronTheme.cardGlass
             if interactive {
-                content.glassEffect(.regular.tint(tint).interactive(), in: shape)
+                content.glassEffect(.regular.tint(resolvedTint).interactive(), in: shape)
             } else {
-                content.glassEffect(.regular.tint(tint), in: shape)
+                content.glassEffect(.regular.tint(resolvedTint), in: shape)
             }
         } else {
             content
