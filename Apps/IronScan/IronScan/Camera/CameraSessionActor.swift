@@ -470,7 +470,7 @@ actor CameraSessionActor: CameraSessionControlling {
             }
             if opticsProfile.locksExposureAfterStabilization,
                device.isExposureModeSupported(.custom) {
-                device.setExposureModeCustom(duration: device.exposureDuration, iso: device.iso, completionHandler: nil)
+                device.setExposureModeCustom(duration: AVCaptureDevice.currentExposureDuration, iso: AVCaptureDevice.currentISO, completionHandler: nil)
                 exposureWasLocked = true
             } else if opticsProfile.locksExposureAfterStabilization,
                       device.isExposureModeSupported(.locked) {

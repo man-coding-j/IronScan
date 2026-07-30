@@ -51,6 +51,7 @@ struct ScanView: View {
                 }
             }
         }
+        .toolbar(.hidden, for: .tabBar)
     }
 
     private var prototypeNotice: some View {

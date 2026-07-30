@@ -99,8 +99,14 @@ struct IronHealthInsightsView: View {
                 }
             }
         }
-        .padding(16)
+        .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.indigo.opacity(0.09), in: RoundedRectangle(cornerRadius: 16))
+        .background(.regularMaterial)
+        .cornerRadius(24)
+        .overlay(
+            RoundedRectangle(cornerRadius: 24)
+                .stroke(Color.white.opacity(0.3), lineWidth: 1)
+        )
+        .foregroundColor(.primary)
     }
 }
