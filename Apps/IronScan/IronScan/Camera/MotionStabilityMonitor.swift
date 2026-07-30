@@ -118,16 +118,27 @@ actor MotionStabilityMonitor: MotionStabilityMonitoring {
         }
         guard !motionManager.isDeviceMotionActive else { return }
         calculator.reset()
-        motionManager.startDeviceMotionUpdates(to: updateQueue) { [weak self] motion, error in
+
+        // Use an explicit @Sendable handler and capture self weakly to avoid
+        // sending an actor-isolated `self` into an escaping callback.
+        let handler: @Sendable (CMDeviceMotion?, Error?) -> Void = { [weak self] motion, error in
             guard error == nil, let acceleration = motion?.userAcceleration else {
-                Task { await self?.publishUnavailable() }
+                Task { [weak self] in
+                    await self?.publishUnavailable()
+                }
                 return
             }
+
             let x = acceleration.x
             let y = acceleration.y
             let z = acceleration.z
-            Task { await self?.record(x: x, y: y, z: z) }
+
+            Task { [weak self] in
+                await self?.record(x: x, y: y, z: z)
+            }
         }
+
+        motionManager.startDeviceMotionUpdates(to: updateQueue, withHandler: handler)
     }
 
     func stop() {
