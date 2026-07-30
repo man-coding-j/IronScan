@@ -36,12 +36,7 @@ struct ScanView: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
-                        // Paste this right before your .toolbar(.hidden, for: .tabBar) modifier
-    if viewModel.isProcessing {
-        AIProcessingOverlay()
-            .transition(.opacity.combined(with: .scale))
-            .zIndex(1) // Ensures it sits on top of the camera
-    }
+                        
                 }
                 .padding()
                 .animation(.spring(response: 0.42, dampingFraction: 0.86), value: viewModel.result)

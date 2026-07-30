@@ -8,7 +8,7 @@ IOS_CHECK_ACTION="${IOS_CHECK_ACTION:-build}"
 xcodebuild \
   -project Apps/IronScan/IronScan.xcodeproj \
   -scheme IronScan \
-  -destination "$IOS_DESTINATION" \
+ -destination 'platform=iOS Simulator,name=iPhone 15' \
   -derivedDataPath "$DERIVED_DATA_PATH" \
   CODE_SIGNING_ALLOWED=NO \
   "$IOS_CHECK_ACTION"

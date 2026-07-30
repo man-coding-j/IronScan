@@ -1,3 +1,4 @@
+// MARK: - Application Entry Point (Triggering fresh CI Build)
 import SwiftUI
 #if canImport(FirebaseCore)
 import FirebaseCore
