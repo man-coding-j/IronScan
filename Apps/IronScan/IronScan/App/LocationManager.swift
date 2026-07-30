@@ -1,5 +1,5 @@
-import CoreLocation
-import MapKit
+@preconcurrency import CoreLocation
+@preconcurrency import MapKit
 import SwiftUI
 
 struct NearbyCareFacility: Identifiable, Equatable {
@@ -216,15 +216,16 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
             availability: availabilityEngine.availability(for: name)
         )
     }
-}
 
-private func performLocalSearch(_ request: MKLocalSearch.Request) async throws -> MKLocalSearch.Response {
-    try await withCheckedThrowingContinuation { continuation in
-        MKLocalSearch(request: request).start { response, error in
-            if let response {
-                continuation.resume(returning: response)
-            } else {
-                continuation.resume(throwing: error ?? URLError(.unknown))
+    @MainActor
+    private func performLocalSearch(_ request: MKLocalSearch.Request) async throws -> MKLocalSearch.Response {
+        try await withCheckedThrowingContinuation { continuation in
+            MKLocalSearch(request: request).start { response, error in
+                if let response {
+                    continuation.resume(returning: response)
+                } else {
+                    continuation.resume(throwing: error ?? URLError(.unknown))
+                }
             }
         }
     }

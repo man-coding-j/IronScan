@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-xcodegen generate --spec Apps/IronScan/project.yml --project Apps/IronScan
+IOS_DESTINATION="${IOS_DESTINATION:-generic/platform=iOS Simulator}"
+DERIVED_DATA_PATH="${DERIVED_DATA_PATH:-/tmp/IronScanDerivedData}"
+IOS_CHECK_ACTION="${IOS_CHECK_ACTION:-build}"
+
 xcodebuild \
-  -workspace IronScan.xcworkspace \
+  -project Apps/IronScan/IronScan.xcodeproj \
   -scheme IronScan \
-  -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
-  test
+  -destination "$IOS_DESTINATION" \
+  -derivedDataPath "$DERIVED_DATA_PATH" \
+  CODE_SIGNING_ALLOWED=NO \
+  "$IOS_CHECK_ACTION"

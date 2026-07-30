@@ -22,18 +22,14 @@ final class IronScanAppDependencies: ObservableObject {
     var history: ScanHistoryStore?
     var nearbyCare: LocationManager?
     var multiTissueInference: MultiTissueInferenceActor?
-    
-    @Published var isReady: Bool = false
+
+    @Published var isReady = false
 
     func initializeHeavyDependencies() async {
-        let historyStore = ScanHistoryStore()
-        let location = LocationManager()
-        let inference = MultiTissueInferenceActor()
-        
-        self.history = historyStore
-        self.nearbyCare = location
-        self.multiTissueInference = inference
-        self.isReady = true
+        history = ScanHistoryStore()
+        nearbyCare = LocationManager()
+        multiTissueInference = MultiTissueInferenceActor()
+        isReady = true
     }
 }
 
