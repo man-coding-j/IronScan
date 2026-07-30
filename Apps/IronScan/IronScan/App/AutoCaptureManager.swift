@@ -8,19 +8,22 @@ struct AutoCaptureConfiguration: Equatable, Sendable {
     let signalFreshnessSeconds: TimeInterval
     let motionThresholdG: Double
     let maximumFeatureDrift: Double
+    let minimumDetectionConfidence: Double
 
     init(
-        alignmentHoldSeconds: TimeInterval = 1,
-        countdownSeconds: TimeInterval = 3,
+        alignmentHoldSeconds: TimeInterval = 0.35,
+        countdownSeconds: TimeInterval = 1.2,
         signalFreshnessSeconds: TimeInterval = 1.25,
-        motionThresholdG: Double = 0.10,
-        maximumFeatureDrift: Double = 0.055
+        motionThresholdG: Double = 0.12,
+        maximumFeatureDrift: Double = 0.055,
+        minimumDetectionConfidence: Double = 0.70
     ) {
         self.alignmentHoldSeconds = max(alignmentHoldSeconds, 0)
         self.countdownSeconds = max(countdownSeconds, 0.1)
         self.signalFreshnessSeconds = max(signalFreshnessSeconds, 0.1)
         self.motionThresholdG = max(motionThresholdG, 0)
         self.maximumFeatureDrift = max(maximumFeatureDrift, 0)
+        self.minimumDetectionConfidence = min(max(minimumDetectionConfidence, 0), 1)
     }
 }
 
@@ -61,6 +64,12 @@ struct AutoCaptureStateMachine: Sendable {
     mutating func reset() -> AutoCaptureEvent {
         resetProgress()
         phase = isEnabled ? .seeking : .disabled
+        return AutoCaptureEvent(phase: phase, shouldCapture: false)
+    }
+
+    mutating func cancelCountdown(message: String = "Auto-capture canceled") -> AutoCaptureEvent {
+        resetProgress()
+        phase = .reset(message: message)
         return AutoCaptureEvent(phase: phase, shouldCapture: false)
     }
 
@@ -123,6 +132,7 @@ struct AutoCaptureStateMachine: Sendable {
 
 struct TissueAlignmentObservation: Equatable, Sendable {
     let normalizedBounds: CGRect
+    let confidence: Double
 }
 
 protocol TissueAlignmentDetecting: Sendable {
@@ -186,7 +196,10 @@ struct VisionTissueAlignmentDetector: TissueAlignmentDetecting {
         guard let bounds, targetRect(for: tissue).contains(bounds.center) else {
             return nil
         }
-        return TissueAlignmentObservation(normalizedBounds: bounds)
+        return TissueAlignmentObservation(
+            normalizedBounds: bounds,
+            confidence: alignmentConfidence(for: bounds, tissue: tissue)
+        )
     }
 
     private func nailObservation(in pixelBuffer: CVPixelBuffer) throws -> TissueAlignmentObservation? {
@@ -209,7 +222,10 @@ struct VisionTissueAlignmentDetector: TissueAlignmentDetecting {
             }) else {
             return nil
         }
-        return TissueAlignmentObservation(normalizedBounds: rectangle.boundingBox)
+        return TissueAlignmentObservation(
+            normalizedBounds: rectangle.boundingBox,
+            confidence: alignmentConfidence(for: rectangle.boundingBox, tissue: .nail)
+        )
     }
 
     private func imageBounds(faceBoundingBox: CGRect, points: [CGPoint]) -> CGRect {
@@ -242,6 +258,16 @@ struct VisionTissueAlignmentDetector: TissueAlignmentDetecting {
         case .tongue:
             CGRect(x: 0.27, y: 0.25, width: 0.46, height: 0.50)
         }
+    }
+
+    private func alignmentConfidence(for bounds: CGRect, tissue: TissueSite) -> Double {
+        let target = targetRect(for: tissue)
+        let intersection = target.intersection(bounds)
+        let overlap = bounds.isEmpty ? 0 : (intersection.width * intersection.height) / (bounds.width * bounds.height)
+        let dx = abs(bounds.midX - target.midX) / max(target.width / 2, 0.001)
+        let dy = abs(bounds.midY - target.midY) / max(target.height / 2, 0.001)
+        let centeredness = max(0, 1 - ((dx + dy) / 2))
+        return min(max((overlap * 0.7) + (centeredness * 0.3), 0), 1)
     }
 }
 
@@ -288,6 +314,14 @@ actor AutoCaptureManager {
         publish(stateMachine.reset())
     }
 
+    func cancelCountdown(message: String = "Auto-capture canceled") {
+        lastBounds = nil
+        latestAligned = false
+        latestStable = false
+        lastSignalTime = nil
+        publish(stateMachine.cancelCountdown(message: message))
+    }
+
     func analyze(
         pixelBuffer: CVPixelBuffer,
         tissue: TissueSite,
@@ -300,14 +334,16 @@ actor AutoCaptureManager {
         }
         let observation = if acceptsSyntheticAlignment {
             TissueAlignmentObservation(
-                normalizedBounds: CGRect(x: 0.4, y: 0.4, width: 0.2, height: 0.2)
+                normalizedBounds: CGRect(x: 0.4, y: 0.4, width: 0.2, height: 0.2),
+                confidence: 1
             )
         } else {
             try detector.observation(in: pixelBuffer, tissue: tissue)
         }
         let featureIsSteady = observation.map(isFeatureSteady) ?? false
         lastBounds = observation?.normalizedBounds
-        latestAligned = observation != nil && featureIsSteady
+        latestAligned = (observation?.confidence ?? 0) >= configuration.minimumDetectionConfidence
+            && featureIsSteady
         latestStable = motion.status == .unavailable
             || (motion.status == .stable
                 && motion.accelerationVariationG <= configuration.motionThresholdG)

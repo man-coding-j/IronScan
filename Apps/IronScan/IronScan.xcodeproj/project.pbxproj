@@ -12,9 +12,14 @@
 		0E292AB8E56DDCF30A3966B9 /* InferenceParityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FD400A9BA4DCEBC3DF01C83 /* InferenceParityTests.swift */; };
 		0EA95B5AF890DF404D16AE1F /* ImageQualityAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF3CF2511DE06DB258F385D /* ImageQualityAnalyzer.swift */; };
 		10E7B669B40ED0C40789F864 /* TriangulationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F12B9F23753C31E2366C19 /* TriangulationEngine.swift */; };
+		11223344556677889900AABB /* CoreMLInferenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCCDDEEFF00112233445566 /* CoreMLInferenceManager.swift */; };
+		12A1B2C3D4E5F60718293A4B /* AnalyzingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98A7B6C5D4E3F20192837465 /* AnalyzingView.swift */; };
 		1CE5EC66D246670DB603799D /* ModelContractValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C05C9F3DD8C7FEC82EBA901E /* ModelContractValidatorTests.swift */; };
 		2456CF7D551BB80616A47839 /* PersonalizedPlanEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8F28B81C826B47FB436F0E /* PersonalizedPlanEngine.swift */; };
 		24D70D7B2D72B27579C0D9B1 /* VisualRiskSummaryEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F483D6BE4B152413D512043D /* VisualRiskSummaryEngine.swift */; };
+		24D70D7B2D72B27579C0D9B2 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D70D7B2D72B27579C0D9B3 /* AuthManager.swift */; };
+		24D70D7B2D72B27579C0D9B4 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D70D7B2D72B27579C0D9B5 /* LoginView.swift */; };
+		24D70D7B2D72B27579C0D9B6 /* SignupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D70D7B2D72B27579C0D9B7 /* SignupView.swift */; };
 		2590D1E7A0F142B280A8CF3E /* MultiInferenceEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A597962CF0B7726F9CA374B8 /* MultiInferenceEngineTests.swift */; };
 		259FF74E8E63257122F718E3 /* InferenceTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E521288342E5E072D69AFD8 /* InferenceTypes.swift */; };
 		263344BD5510D76BF43F7729 /* CameraPermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA6CB768C98398A8A7420AC /* CameraPermissionManager.swift */; };
@@ -25,6 +30,7 @@
 		382847C84AA7E1057F06471B /* CameraPermissionAndSimulatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2867BAAE7F5AFBA19E0BA1A /* CameraPermissionAndSimulatorTests.swift */; };
 		39A23679CF6B1980ED7EE535 /* LiveInferenceEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BBCEA4A7E94A20CAE09D8C3 /* LiveInferenceEngineTests.swift */; };
 		39F2E73CD7295B4AD919A00C /* ClinicDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BB9618BB0B2B7C26228A634 /* ClinicDetailSheet.swift */; };
+		3A4B5C6D7E8F90123456789A /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7E6D5C4B3A291807162534 /* CameraView.swift */; };
 		3B2A817404FD76E443F7A866 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF58ADE215E7FFB7343FB4CA /* LocationManager.swift */; };
 		3B65BEBD5357CCBD7958AA16 /* HumanResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EDB70D69E9510F54931E442 /* HumanResultsView.swift */; };
 		3FA6A450C0068E9595835876 /* MultiTissueInferenceActorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1920FA782D1D0215406498D /* MultiTissueInferenceActorTests.swift */; };
@@ -34,6 +40,8 @@
 		495540BFD04AA2C1452DB4D0 /* IntegratedResearchReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE22C656DA84609D181555F /* IntegratedResearchReportView.swift */; };
 		499BFD7B7F3F1AAD6D1CAD7F /* GoldenOutputs in Resources */ = {isa = PBXBuildFile; fileRef = A7DF59D5CCEE09E94013EDC7 /* GoldenOutputs */; };
 		4A621D045C22E8832C80FE8A /* ScanHapticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CDE1BC212E278C815A26473 /* ScanHapticsManager.swift */; };
+		4AA1B8738F5F4A22B2D9B001 /* LiquidGlassModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA1B8738F5F4A22B2D9B002 /* LiquidGlassModifier.swift */; };
+		4AB1C2D3E4F5061728394051 /* ScanResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB1C2D3E4F5061728394052 /* ScanResultView.swift */; };
 		4C34761E1C43DBA725F56BB8 /* SimulatorCameraActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754B466C772DA3ADBBCE6081 /* SimulatorCameraActor.swift */; };
 		4F15CF228BC3871A23462C2D /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AD6F5EE5B90937854CB4A31 /* MainTabView.swift */; };
 		557469F45A175D5E97320054 /* IDARiskEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1876546FE0DE5933B7ABE5C6 /* IDARiskEngineTests.swift */; };
@@ -49,6 +57,7 @@
 		712CBD973B3D7301BE8FB9A2 /* MLTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2C22F08DE9F7152807BFB /* MLTestSupport.swift */; };
 		81B0FC79D53718FB96F17D40 /* IronScanApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C2D43B1333283339DAAB1A2 /* IronScanApp.swift */; };
 		89EE4188E32A98B4D677A04C /* IDARiskEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9AF19F565891DE00509172 /* IDARiskEngine.swift */; };
+		8A9B0C1D2E3F405162738495 /* ImageQualityGatekeeper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6B5A4938271605F4E3D2C1 /* ImageQualityGatekeeper.swift */; };
 		8AB73990E22B561BE48BCF1E /* CameraInferenceBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A9289DE497D5480CB6DF2C /* CameraInferenceBridge.swift */; };
 		8C025E203D3247AC004049F2 /* SegmentationPostprocessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D45AD513053A1218D65470B /* SegmentationPostprocessor.swift */; };
 		8D4805C6604ED7C45A11C5EF /* CameraStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDED32CC9C977BA8DFC0D96 /* CameraStateMachineTests.swift */; };
@@ -65,6 +74,10 @@
 		A7C409CDD3BE36F377D186E1 /* GoldenInputs in Resources */ = {isa = PBXBuildFile; fileRef = B331AFD4156DE3F78DBC23CA /* GoldenInputs */; };
 		AB93B24C5E4DF15EAB3223F6 /* HomeDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BBB970EAF7F97D55BFCFF8 /* HomeDashboardView.swift */; };
 		AD670F0E966AFF3A67DD2ABE /* GeneratedModelInterfaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B0FAA5331B7ED8A17F1476 /* GeneratedModelInterfaces.swift */; };
+		B23CAF3130198BD0004DF14C /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = B23CAF3030198BD0004DF14C /* FirebaseAuth */; };
+		B23CAF3330198BDF004DF14C /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = B23CAF3230198BDF004DF14C /* FirebaseCore */; settings = {ATTRIBUTES = (Required, ); }; };
+		B23CAF3530198BE6004DF14C /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = B23CAF3430198BE6004DF14C /* FirebaseFirestore */; };
+		B23CAF3B3019C454004DF14C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B23CAF3A3019C454004DF14C /* GoogleService-Info.plist */; };
 		B4247B4B0D0BEF810488F2DC /* AvailabilityEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF081E85AE18E47ECCDE44FF /* AvailabilityEngine.swift */; };
 		B48EBF54043AA3DE398AF662 /* CameraTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1428C9A7E7B879C5CD7864D /* CameraTypes.swift */; };
 		B524FEDF784AAC5670D77161 /* CalibrationTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 360F897047DC964664E5CBF6 /* CalibrationTypes.swift */; };
@@ -123,6 +136,9 @@
 		216E3263067D5F8CD5F79591 /* CameraSessionActor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSessionActor.swift; sourceTree = "<group>"; };
 		2214F3E95AD186D406945DD7 /* InferenceConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceConcurrencyTests.swift; sourceTree = "<group>"; };
 		22C0CE597EAA9345B29AEFB5 /* ModelContractValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelContractValidator.swift; sourceTree = "<group>"; };
+		24D70D7B2D72B27579C0D9B3 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		24D70D7B2D72B27579C0D9B5 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		24D70D7B2D72B27579C0D9B7 /* SignupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupView.swift; sourceTree = "<group>"; };
 		2855A955B977BB96DE8AC76F /* IronHealthInsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IronHealthInsightsView.swift; sourceTree = "<group>"; };
 		29D4524BE67BE6FD8A4190A6 /* ScanningOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanningOverlayView.swift; sourceTree = "<group>"; };
 		2E521288342E5E072D69AFD8 /* InferenceTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceTypes.swift; sourceTree = "<group>"; };
@@ -134,9 +150,11 @@
 		3FD400A9BA4DCEBC3DF01C83 /* InferenceParityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceParityTests.swift; sourceTree = "<group>"; };
 		3FF3CF2511DE06DB258F385D /* ImageQualityAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageQualityAnalyzer.swift; sourceTree = "<group>"; };
 		4457EDACDD6892570E750178 /* PersonalizedPlanEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalizedPlanEngineTests.swift; sourceTree = "<group>"; };
+		4AA1B8738F5F4A22B2D9B002 /* LiquidGlassModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassModifier.swift; sourceTree = "<group>"; };
+		4AB1C2D3E4F5061728394052 /* ScanResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanResultView.swift; sourceTree = "<group>"; };
 		5038344D4316A4D0F9CC8653 /* CalibrationTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationTestSupport.swift; sourceTree = "<group>"; };
 		553D2620EC92C3D28FAB40D0 /* OnboardingConsentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingConsentTests.swift; sourceTree = "<group>"; };
-		5AE95ECB149F429B61206F24 /* IronScan.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = IronScan.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5AE95ECB149F429B61206F24 /* IronScan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IronScan.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C2D43B1333283339DAAB1A2 /* IronScanApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IronScanApp.swift; sourceTree = "<group>"; };
 		5CBBC27689B1D6992CE064AD /* OnboardingConsentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingConsentView.swift; sourceTree = "<group>"; };
 		62DD2163A5AB3B41F5AE2CF9 /* SyntheticTongueFrameFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntheticTongueFrameFactory.swift; sourceTree = "<group>"; };
@@ -146,18 +164,21 @@
 		6968486D2A25A9D0677F8D80 /* LiveInferenceEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveInferenceEngine.swift; sourceTree = "<group>"; };
 		6B9052FEAD737CA624684F19 /* IronHealthInsightsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IronHealthInsightsTests.swift; sourceTree = "<group>"; };
 		6EDB70D69E9510F54931E442 /* HumanResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HumanResultsView.swift; sourceTree = "<group>"; };
-		73B35C89556DAA21C0BC5A58 /* IronScanMLTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = IronScanMLTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		73B35C89556DAA21C0BC5A58 /* IronScanMLTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IronScanMLTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		742AEF3CFFEAC638088A53FC /* CareResourcesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CareResourcesTests.swift; sourceTree = "<group>"; };
 		754B466C772DA3ADBBCE6081 /* SimulatorCameraActor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorCameraActor.swift; sourceTree = "<group>"; };
 		77C4C5F23B3C0E40E2444F2A /* VisualRiskSummaryEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualRiskSummaryEngineTests.swift; sourceTree = "<group>"; };
 		7AD6F5EE5B90937854CB4A31 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		7B53F5DBBA9B4B0234C650E6 /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
+		7C6B5A4938271605F4E3D2C1 /* ImageQualityGatekeeper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageQualityGatekeeper.swift; sourceTree = "<group>"; };
 		7D45AD513053A1218D65470B /* SegmentationPostprocessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentationPostprocessor.swift; sourceTree = "<group>"; };
 		7F8F28B81C826B47FB436F0E /* PersonalizedPlanEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalizedPlanEngine.swift; sourceTree = "<group>"; };
 		83032E866467B729ABF35364 /* HealthGuidanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthGuidanceView.swift; sourceTree = "<group>"; };
 		8759AA28CA65469EC27C5E48 /* ScreeningIntakeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreeningIntakeView.swift; sourceTree = "<group>"; };
 		8F6E0456ADCDA35F2DD3B17A /* OnboardingFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlowTests.swift; sourceTree = "<group>"; };
+		8F7E6D5C4B3A291807162534 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		90BBB970EAF7F97D55BFCFF8 /* HomeDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeDashboardView.swift; sourceTree = "<group>"; };
+		98A7B6C5D4E3F20192837465 /* AnalyzingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyzingView.swift; sourceTree = "<group>"; };
 		9B08EC28262CA4056308E001 /* CalibrationMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationMath.swift; sourceTree = "<group>"; };
 		9BBCEA4A7E94A20CAE09D8C3 /* LiveInferenceEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveInferenceEngineTests.swift; sourceTree = "<group>"; };
 		9E5DD93499E94B80E235234B /* LiveScanningState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveScanningState.swift; sourceTree = "<group>"; };
@@ -169,6 +190,7 @@
 		A87B2F4D5E926EB6E09FB033 /* InferenceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceError.swift; sourceTree = "<group>"; };
 		ACE22C656DA84609D181555F /* IntegratedResearchReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegratedResearchReportView.swift; sourceTree = "<group>"; };
 		AF6AED7B749632A99F31E4CC /* InferenceMetricsRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceMetricsRecorder.swift; sourceTree = "<group>"; };
+		B23CAF3A3019C454004DF14C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B27692D47BCDB9056A242261 /* MultiHealthDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiHealthDashboardView.swift; sourceTree = "<group>"; };
 		B2867BAAE7F5AFBA19E0BA1A /* CameraPermissionAndSimulatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPermissionAndSimulatorTests.swift; sourceTree = "<group>"; };
 		B331AFD4156DE3F78DBC23CA /* GoldenInputs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = GoldenInputs; path = ../../TestFixtures/GoldenInputs; sourceTree = SOURCE_ROOT; };
@@ -176,6 +198,7 @@
 		B49C6579320618D80A43F4DA /* DesignSystemAndHistoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystemAndHistoryTests.swift; sourceTree = "<group>"; };
 		B8EC1DB78925749755F72C35 /* MultiScanHubViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiScanHubViewModel.swift; sourceTree = "<group>"; };
 		BBC8EBDEEFBF656C079C059D /* ResultTranslatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultTranslatorTests.swift; sourceTree = "<group>"; };
+		BBCCDDEEFF00112233445566 /* CoreMLInferenceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreMLInferenceManager.swift; sourceTree = "<group>"; };
 		BF081E85AE18E47ECCDE44FF /* AvailabilityEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailabilityEngine.swift; sourceTree = "<group>"; };
 		C05C9F3DD8C7FEC82EBA901E /* ModelContractValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelContractValidatorTests.swift; sourceTree = "<group>"; };
 		C1920FA782D1D0215406498D /* MultiTissueInferenceActorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiTissueInferenceActorTests.swift; sourceTree = "<group>"; };
@@ -204,6 +227,19 @@
 		FF58ADE215E7FFB7343FB4CA /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		B23CAF2D30198B16004DF14C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B23CAF3330198BDF004DF14C /* FirebaseCore in Frameworks */,
+				B23CAF3130198BD0004DF14C /* FirebaseAuth in Frameworks */,
+				B23CAF3530198BE6004DF14C /* FirebaseFirestore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
 		05A0AEB6EBAB5CAEA8FF5890 /* ML */ = {
 			isa = PBXGroup;
@@ -226,20 +262,28 @@
 		16428011072E0F1EBA70C100 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				98A7B6C5D4E3F20192837465 /* AnalyzingView.swift */,
+				24D70D7B2D72B27579C0D9B3 /* AuthManager.swift */,
 				D81E16B037A0A9CA6FCE917A /* AutoCaptureManager.swift */,
 				BF081E85AE18E47ECCDE44FF /* AvailabilityEngine.swift */,
+				8F7E6D5C4B3A291807162534 /* CameraView.swift */,
 				7B53F5DBBA9B4B0234C650E6 /* CameraPreviewView.swift */,
 				C214FD97A093F448B6284F90 /* CareResourcesView.swift */,
 				1BB9618BB0B2B7C26228A634 /* ClinicDetailSheet.swift */,
+				BBCCDDEEFF00112233445566 /* CoreMLInferenceManager.swift */,
 				83032E866467B729ABF35364 /* HealthGuidanceView.swift */,
 				90BBB970EAF7F97D55BFCFF8 /* HomeDashboardView.swift */,
 				6EDB70D69E9510F54931E442 /* HumanResultsView.swift */,
 				ACE22C656DA84609D181555F /* IntegratedResearchReportView.swift */,
 				B3C5B18F24F17B8D829F225A /* IntegratedTriangulationReportView.swift */,
+				7C6B5A4938271605F4E3D2C1 /* ImageQualityGatekeeper.swift */,
 				2855A955B977BB96DE8AC76F /* IronHealthInsightsView.swift */,
 				5C2D43B1333283339DAAB1A2 /* IronScanApp.swift */,
+				B23CAF3A3019C454004DF14C /* GoogleService-Info.plist */,
 				D355473F6361D54CA97933B2 /* IronTheme.swift */,
+				4AA1B8738F5F4A22B2D9B002 /* LiquidGlassModifier.swift */,
 				9E5DD93499E94B80E235234B /* LiveScanningState.swift */,
+				24D70D7B2D72B27579C0D9B5 /* LoginView.swift */,
 				FF58ADE215E7FFB7343FB4CA /* LocationManager.swift */,
 				7AD6F5EE5B90937854CB4A31 /* MainTabView.swift */,
 				B27692D47BCDB9056A242261 /* MultiHealthDashboardView.swift */,
@@ -250,12 +294,14 @@
 				7F8F28B81C826B47FB436F0E /* PersonalizedPlanEngine.swift */,
 				A16619C1546F3F0256ADF8BB /* PrototypeDemoMode.swift */,
 				3EA4498D7B44EECC80F86350 /* ResultTranslator.swift */,
+				4AB1C2D3E4F5061728394052 /* ScanResultView.swift */,
 				3CDE1BC212E278C815A26473 /* ScanHapticsManager.swift */,
 				29D4524BE67BE6FD8A4190A6 /* ScanningOverlayView.swift */,
 				649273439084E53AF490FF85 /* ScanPipelineActor.swift */,
 				0FAAE579A2288B01A9DB4382 /* ScanView.swift */,
 				D2A9EE179039AF10C116D439 /* ScanViewModel.swift */,
 				8759AA28CA65469EC27C5E48 /* ScreeningIntakeView.swift */,
+				24D70D7B2D72B27579C0D9B7 /* SignupView.swift */,
 				F483D6BE4B152413D512043D /* VisualRiskSummaryEngine.swift */,
 			);
 			path = App;
@@ -348,6 +394,13 @@
 			path = ColorCalibration;
 			sourceTree = "<group>";
 		};
+		B23CAF2F30198BD0004DF14C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		BF3710374FF124AE423412ED /* IronScanCore */ = {
 			isa = PBXGroup;
 			children = (
@@ -423,15 +476,9 @@
 				259A24E8E2B4C7F9242ED93B /* IronScanModels */,
 				8A986129803FB215759FA3D4 /* IronScanTests */,
 				05A0AEB6EBAB5CAEA8FF5890 /* ML */,
+				B23CAF2F30198BD0004DF14C /* Frameworks */,
 				D75E8C5F8D7C0E3A66A4BE3E /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		"TEMP_46F31945-13D4-4EDE-B448-0164CF3789FE" /* Features */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Features;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -462,6 +509,7 @@
 			buildPhases = (
 				499DED4BD08A14D55C9783B9 /* Sources */,
 				535B0180077F6DF54A57FD72 /* Resources */,
+				B23CAF2D30198B16004DF14C /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -469,6 +517,9 @@
 			);
 			name = IronScan;
 			packageProductDependencies = (
+				B23CAF3030198BD0004DF14C /* FirebaseAuth */,
+				B23CAF3230198BDF004DF14C /* FirebaseCore */,
+				B23CAF3430198BE6004DF14C /* FirebaseFirestore */,
 			);
 			productName = IronScan;
 			productReference = 5AE95ECB149F429B61206F24 /* IronScan.app */;
@@ -481,7 +532,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 2660;
 				TargetAttributes = {
 					F31F45CDAE547CD6667A4549 = {
 						ProvisioningStyle = Automatic;
@@ -497,6 +548,9 @@
 			);
 			mainGroup = FB54AB3A41041700726DC0AC;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B23CAF2E30198BB4004DF14C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D75E8C5F8D7C0E3A66A4BE3E /* Products */;
 			projectDirPath = "";
@@ -514,6 +568,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D757A71B1B455A8D86C15A79 /* Models in Resources */,
+				B23CAF3B3019C454004DF14C /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -533,10 +588,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12A1B2C3D4E5F60718293A4B /* AnalyzingView.swift in Sources */,
+				24D70D7B2D72B27579C0D9B2 /* AuthManager.swift in Sources */,
 				A2A9B6604CF51867291EE9AF /* AutoCaptureManager.swift in Sources */,
 				B4247B4B0D0BEF810488F2DC /* AvailabilityEngine.swift in Sources */,
 				CDF5D5E76C7BDA0E83EB08AF /* CalibrationMath.swift in Sources */,
 				B524FEDF784AAC5670D77161 /* CalibrationTypes.swift in Sources */,
+				3A4B5C6D7E8F90123456789A /* CameraView.swift in Sources */,
 				D0A056FC848D0F76AA7EECAD /* CameraControllerFactory.swift in Sources */,
 				8AB73990E22B561BE48BCF1E /* CameraInferenceBridge.swift in Sources */,
 				263344BD5510D76BF43F7729 /* CameraPermissionManager.swift in Sources */,
@@ -547,6 +605,7 @@
 				B48EBF54043AA3DE398AF662 /* CameraTypes.swift in Sources */,
 				BA0F718BC12581FF463CAD18 /* CareResourcesView.swift in Sources */,
 				39F2E73CD7295B4AD919A00C /* ClinicDetailSheet.swift in Sources */,
+				11223344556677889900AABB /* CoreMLInferenceManager.swift in Sources */,
 				2F12AFE0B833015A1427D368 /* FrameStrideThrottle.swift in Sources */,
 				AD670F0E966AFF3A67DD2ABE /* GeneratedModelInterfaces.swift in Sources */,
 				55E29B2B60816E0EA84D658F /* HealthGuidanceView.swift in Sources */,
@@ -554,6 +613,7 @@
 				3B65BEBD5357CCBD7958AA16 /* HumanResultsView.swift in Sources */,
 				89EE4188E32A98B4D677A04C /* IDARiskEngine.swift in Sources */,
 				0EA95B5AF890DF404D16AE1F /* ImageQualityAnalyzer.swift in Sources */,
+				8A9B0C1D2E3F405162738495 /* ImageQualityGatekeeper.swift in Sources */,
 				992842EAA6B693036A5B90A2 /* InferenceError.swift in Sources */,
 				BCBDDEEC9E0CE4FF063C71CC /* InferenceMetricsRecorder.swift in Sources */,
 				259FF74E8E63257122F718E3 /* InferenceTypes.swift in Sources */,
@@ -562,7 +622,9 @@
 				306069A9C9EF2060525BAB27 /* IronHealthInsightsView.swift in Sources */,
 				81B0FC79D53718FB96F17D40 /* IronScanApp.swift in Sources */,
 				B8651DE9C93B615A6A8EC0C1 /* IronTheme.swift in Sources */,
+				4AA1B8738F5F4A22B2D9B001 /* LiquidGlassModifier.swift in Sources */,
 				D19E3E2A28862730646F0F99 /* LatestFrameProcessor.swift in Sources */,
+				24D70D7B2D72B27579C0D9B4 /* LoginView.swift in Sources */,
 				B600BDAD4357764CB305ED55 /* LiveInferenceEngine.swift in Sources */,
 				FA60163BCCA322501C3422BD /* LiveScanningState.swift in Sources */,
 				3B2A817404FD76E443F7A866 /* LocationManager.swift in Sources */,
@@ -583,12 +645,14 @@
 				9330B31BCB31A9D904A9BD67 /* PrototypeDemoMode.swift in Sources */,
 				C49033EF9535E2841A3FBD00 /* ResultTranslator.swift in Sources */,
 				098B16F6AD401D3333F31E7D /* RiskInferenceActor.swift in Sources */,
+				4AB1C2D3E4F5061728394051 /* ScanResultView.swift in Sources */,
 				4A621D045C22E8832C80FE8A /* ScanHapticsManager.swift in Sources */,
 				E377DC54A9943F538E1ABB5F /* ScanPipelineActor.swift in Sources */,
 				C2268EB28D712EB21A3FDAB8 /* ScanView.swift in Sources */,
 				E39D3072EA64EFDFFB731631 /* ScanViewModel.swift in Sources */,
 				5FA889C9B5C46999EE82EC75 /* ScanningOverlayView.swift in Sources */,
 				5CFE93F5FB2E1057E1E8BC8D /* ScreeningIntakeView.swift in Sources */,
+				24D70D7B2D72B27579C0D9B6 /* SignupView.swift in Sources */,
 				97059C932ADA25ECABB22B3E /* SegmentationInferenceActor.swift in Sources */,
 				8C025E203D3247AC004049F2 /* SegmentationPostprocessor.swift in Sources */,
 				4C34761E1C43DBA725F56BB8 /* SimulatorCameraActor.swift in Sources */,
@@ -664,6 +728,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = QKAJKR59FF;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "IronScan requires access to your camera to analyze tongue color and screen for anemia risk.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "IronScan uses your location only while the Care & Labs page is open to find nearby laboratories and clinics.";
@@ -673,7 +738,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.ironscan.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.namanjain.IronScan;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -685,6 +750,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = QKAJKR59FF;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "IronScan requires access to your camera to analyze tongue color and screen for anemia risk.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "IronScan uses your location only while the Care & Labs page is open to find nearby laboratories and clinics.";
@@ -694,7 +760,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.ironscan.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.namanjain.IronScan;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -721,6 +787,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -754,6 +821,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -768,6 +836,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DACCELERATE_NEW_LAPACK";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -779,6 +848,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -812,6 +882,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -833,6 +904,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -Xcc -DACCELERATE_NEW_LAPACK";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -871,6 +943,35 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B23CAF2E30198BB4004DF14C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.17.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B23CAF3030198BD0004DF14C /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B23CAF2E30198BB4004DF14C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		B23CAF3230198BDF004DF14C /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B23CAF2E30198BB4004DF14C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		B23CAF3430198BE6004DF14C /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B23CAF2E30198BB4004DF14C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 93FD64BE8B2C7BD091905469 /* Project object */;
 }

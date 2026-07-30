@@ -16,7 +16,7 @@ actor CameraSessionActor: CameraSessionControlling {
 
     private let configuration: CameraConfiguration
     private let analyzer: any CameraQualityAnalyzing
-    private let sampleBufferQueue = DispatchQueue(label: "org.ironscan.camera.sample-buffer", qos: .userInitiated)
+    private let videoQueue = DispatchQueue(label: "com.ironscan.videoQueue", qos: .userInitiated)
     private let inferenceBridge = CameraInferenceBridge()
     private var frameProcessor: LatestFrameProcessor<AnalyzableFrame>?
     private var eventContinuation: AsyncStream<CameraEvent>.Continuation?
@@ -304,7 +304,7 @@ actor CameraSessionActor: CameraSessionControlling {
         videoDataOutput.videoSettings = [
             kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA
         ]
-        videoDataOutput.setSampleBufferDelegate(inferenceBridge, queue: sampleBufferQueue)
+        videoDataOutput.setSampleBufferDelegate(inferenceBridge, queue: videoQueue)
         guard session.canAddOutput(videoDataOutput) else {
             throw CameraError.configurationFailed("Video-data output cannot be added")
         }

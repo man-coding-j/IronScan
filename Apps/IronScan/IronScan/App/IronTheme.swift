@@ -2,17 +2,25 @@ import SwiftUI
 
 enum IronTheme {
     enum Hex {
-        static let creamBackground = "#F5EBE1"
-        static let terracottaPrimary = "#E68A61"
-        static let slateText = "#3D3B4A"
+        static let glassCream = "#F8F6F0"
+        static let terracottaPrimary = "#FF6B35"
         static let sageAccent = "#8DAA82"
+        static let textSlate = "#2A2830"
+        static let mutedText = "#7A7885"
+        static let deepSlate = "#121214"
+        static let creamBackground = glassCream
+        static let slateText = textSlate
     }
 
-    static let creamBackground = Color(red: 245 / 255, green: 235 / 255, blue: 225 / 255)
-    static let terracottaPrimary = Color(red: 230 / 255, green: 138 / 255, blue: 97 / 255)
-    static let slateText = Color(red: 61 / 255, green: 59 / 255, blue: 74 / 255)
+    static let glassCream = Color(red: 248 / 255, green: 246 / 255, blue: 240 / 255)
+    static let terracottaPrimary = Color(red: 1, green: 107 / 255, blue: 53 / 255)
     static let sageAccent = Color(red: 141 / 255, green: 170 / 255, blue: 130 / 255)
-    static let cardGlass = Color.white.opacity(0.48)
+    static let textSlate = Color(red: 42 / 255, green: 40 / 255, blue: 48 / 255)
+    static let textMuted = Color(red: 122 / 255, green: 120 / 255, blue: 133 / 255)
+    static let deepSlate = Color(red: 18 / 255, green: 18 / 255, blue: 20 / 255)
+    static let creamBackground = glassCream
+    static let slateText = textSlate
+    static let cardGlass = Color.white.opacity(0.65)
     static let warning = Color(red: 205 / 255, green: 116 / 255, blue: 70 / 255)
 
     static let mintBackground = creamBackground
@@ -52,23 +60,6 @@ private struct OrganicGlassEffectModifier<EffectShape: Shape>: ViewModifier {
     }
 }
 
-private struct LiquidGlassCardModifier: ViewModifier {
-    let cornerRadius: CGFloat
-
-    func body(content: Content) -> some View {
-        content
-            .organicGlassEffect(
-                in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-            )
-            .shadow(
-                color: IronTheme.slateText.opacity(0.08),
-                radius: 18,
-                x: 0,
-                y: 9
-            )
-    }
-}
-
 private struct OrganicTypographyModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
@@ -92,10 +83,6 @@ extension View {
         )
     }
 
-    func liquidGlassCard(cornerRadius: CGFloat = 24) -> some View {
-        modifier(LiquidGlassCardModifier(cornerRadius: cornerRadius))
-    }
-
     func organicTypography() -> some View {
         modifier(OrganicTypographyModifier())
     }
@@ -107,25 +94,207 @@ struct OrganicPrimaryButtonStyle: ButtonStyle {
             .font(IronTheme.roundedFont(.headline, weight: .bold))
             .foregroundStyle(.white)
             .padding(.horizontal, 20)
-            .padding(.vertical, 15)
+            .padding(.vertical, 16)
             .frame(maxWidth: .infinity)
-            .background(
-                IronTheme.terracottaPrimary.opacity(configuration.isPressed ? 0.72 : 0.9),
-                in: Capsule()
-            )
-            .organicGlassEffect(
-                in: Capsule(),
-                tint: IronTheme.terracottaPrimary,
-                interactive: true
-            )
+            .background(buttonBackground(pressed: configuration.isPressed), in: Capsule())
+            .overlay {
+                Capsule()
+                    .stroke(Color.white.opacity(0.22), lineWidth: 0.8)
+            }
             .scaleEffect(configuration.isPressed ? 0.975 : 1)
             .shadow(
-                color: IronTheme.terracottaPrimary.opacity(0.24),
-                radius: 14,
-                y: 8
+                color: IronTheme.terracottaPrimary.opacity(0.28),
+                radius: 18,
+                y: 10
             )
             .animation(.easeOut(duration: 0.16), value: configuration.isPressed)
+    }
+
+    private func buttonBackground(pressed: Bool) -> LinearGradient {
+        LinearGradient(
+            colors: [
+                IronTheme.terracottaPrimary.opacity(pressed ? 0.9 : 1),
+                Color(red: 1, green: 126 / 255, blue: 76 / 255).opacity(pressed ? 0.84 : 0.96)
+            ],
+            startPoint: .leading,
+            endPoint: .trailing
+        )
     }
 }
 
 typealias TealPrimaryButtonStyle = OrganicPrimaryButtonStyle
+
+struct IronScreenBackground: View {
+    var body: some View {
+        ZStack {
+            IronTheme.creamBackground
+
+            RadialGradient(
+                colors: [
+                    Color.white.opacity(0.92),
+                    IronTheme.creamBackground.opacity(0.4)
+                ],
+                center: .topLeading,
+                startRadius: 40,
+                endRadius: 420
+            )
+
+            LinearGradient(
+                colors: [
+                    IronTheme.sageAccent.opacity(0.08),
+                    .clear,
+                    IronTheme.terracottaPrimary.opacity(0.06)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            IronLeafGlow(alignment: .bottomTrailing)
+            IronLeafGlow(alignment: .topTrailing, rotation: -18, scale: 0.82, opacity: 0.22)
+        }
+        .ignoresSafeArea()
+    }
+}
+
+struct IronCTAButtonLabel: View {
+    let title: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Spacer(minLength: 0)
+            Text(title)
+            ZStack {
+                Circle()
+                    .fill(Color.white.opacity(0.18))
+                    .frame(width: 28, height: 28)
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 13, weight: .bold))
+            }
+        }
+    }
+}
+
+struct GlossyTerracottaDrop: View {
+    var body: some View {
+        ZStack {
+            LiquidDropShape()
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 1, green: 180 / 255, blue: 150 / 255).opacity(0.9),
+                            IronTheme.terracottaPrimary,
+                            Color(red: 1, green: 146 / 255, blue: 98 / 255)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+
+            LiquidDropShape()
+                .stroke(Color.white.opacity(0.65), lineWidth: 1.2)
+
+            Circle()
+                .fill(Color.white.opacity(0.55))
+                .frame(width: 24, height: 24)
+                .blur(radius: 1)
+                .offset(x: 18, y: 12)
+
+            Ellipse()
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.95),
+                            Color.white.opacity(0.15)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .frame(width: 26, height: 56)
+                .rotationEffect(.degrees(18))
+                .offset(x: 18, y: -20)
+                .blur(radius: 0.6)
+        }
+        .shadow(color: IronTheme.terracottaPrimary.opacity(0.24), radius: 20, y: 12)
+    }
+}
+
+struct IronLeafGlow: View {
+    var alignment: Alignment = .bottomTrailing
+    var rotation: Double = 0
+    var scale: CGFloat = 1
+    var opacity: Double = 0.28
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                Ellipse()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                IronTheme.sageAccent.opacity(opacity),
+                                IronTheme.sageAccent.opacity(0.01)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .frame(width: 96, height: 170)
+                    .rotationEffect(.degrees(-34))
+                    .offset(x: 18, y: 20)
+
+                Ellipse()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                IronTheme.sageAccent.opacity(opacity * 0.9),
+                                IronTheme.sageAccent.opacity(0.01)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .frame(width: 80, height: 148)
+                    .rotationEffect(.degrees(18))
+                    .offset(x: -28, y: 28)
+            }
+            .blur(radius: 6)
+            .scaleEffect(scale)
+            .rotationEffect(.degrees(rotation))
+            .frame(
+                width: geometry.size.width,
+                height: geometry.size.height,
+                alignment: alignment
+            )
+        }
+        .allowsHitTesting(false)
+    }
+}
+
+private struct LiquidDropShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+        path.addCurve(
+            to: CGPoint(x: rect.minX, y: rect.midY),
+            control1: CGPoint(x: rect.midX * 0.92, y: rect.minY + rect.height * 0.16),
+            control2: CGPoint(x: rect.minX, y: rect.height * 0.28)
+        )
+        path.addCurve(
+            to: CGPoint(x: rect.midX, y: rect.maxY),
+            control1: CGPoint(x: rect.minX, y: rect.maxY - rect.height * 0.12),
+            control2: CGPoint(x: rect.midX - rect.width * 0.18, y: rect.maxY)
+        )
+        path.addCurve(
+            to: CGPoint(x: rect.maxX, y: rect.midY),
+            control1: CGPoint(x: rect.midX + rect.width * 0.18, y: rect.maxY),
+            control2: CGPoint(x: rect.maxX, y: rect.maxY - rect.height * 0.12)
+        )
+        path.addCurve(
+            to: CGPoint(x: rect.midX, y: rect.minY),
+            control1: CGPoint(x: rect.maxX, y: rect.height * 0.28),
+            control2: CGPoint(x: rect.midX * 1.08, y: rect.minY + rect.height * 0.16)
+        )
+        return path
+    }
+}
