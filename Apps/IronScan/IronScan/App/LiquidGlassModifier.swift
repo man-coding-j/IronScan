@@ -22,3 +22,21 @@ extension View {
         modifier(LiquidGlassCardModifier(cornerRadius: cornerRadius))
     }
 }
+
+
+// MARK: - Premium Button Micro-Interactions
+struct LiquidBounceButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            // The button physically squishes down to 92% of its size when pressed
+            .scaleEffect(configuration.isPressed ? 0.92 : 1.0)
+            // A bouncy spring animation makes it feel like physical glass
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
+            // Fires a physical haptic tap inside the device when touched (iOS 17+)
+            .sensoryFeedback(.impact(weight: .medium, intensity: 0.8), trigger: configuration.isPressed)
+    }
+}
+
+extension ButtonStyle where Self == LiquidBounceButtonStyle {
+    static var liquidBounce: LiquidBounceButtonStyle { LiquidBounceButtonStyle() }
+}
