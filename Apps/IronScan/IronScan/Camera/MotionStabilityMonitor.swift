@@ -82,7 +82,6 @@ protocol MotionStabilityMonitoring: Sendable {
 
 actor MotionStabilityMonitor: MotionStabilityMonitoring {
     private let motionManager: CMMotionManager
-    private let updateQueue: OperationQueue
     private var calculator: MotionStabilityCalculator
     private var continuation: AsyncStream<MotionStabilityReading>.Continuation?
 
@@ -94,11 +93,6 @@ actor MotionStabilityMonitor: MotionStabilityMonitoring {
         self.motionManager = motionManager
         motionManager.deviceMotionUpdateInterval = updateInterval
         calculator = MotionStabilityCalculator(thresholdG: thresholdG)
-        let queue = OperationQueue()
-        queue.name = "org.ironscan.motion-stability"
-        queue.qualityOfService = .userInteractive
-        queue.maxConcurrentOperationCount = 1
-        updateQueue = queue
     }
 
     func eventStream() -> AsyncStream<MotionStabilityReading> {
@@ -118,15 +112,21 @@ actor MotionStabilityMonitor: MotionStabilityMonitoring {
         }
         guard !motionManager.isDeviceMotionActive else { return }
         calculator.reset()
-        motionManager.startDeviceMotionUpdates(to: updateQueue) { [weak self] motion, error in
-            guard error == nil, let acceleration = motion?.userAcceleration else {
-                Task { await self?.publishUnavailable() }
-                return
+        let monitor = self
+        motionManager.startDeviceMotionUpdates(to: .main) { data, error in
+            if let data = data {
+                Task {
+                    await monitor.record(
+                        x: data.userAcceleration.x,
+                        y: data.userAcceleration.y,
+                        z: data.userAcceleration.z
+                    )
+                }
+            } else {
+                Task {
+                    await monitor.publishUnavailable()
+                }
             }
-            let x = acceleration.x
-            let y = acceleration.y
-            let z = acceleration.z
-            Task { await self?.record(x: x, y: y, z: z) }
         }
     }
 

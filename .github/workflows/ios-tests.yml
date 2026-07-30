@@ -5,5 +5,11 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
-      - run: brew install xcodegen
-      - run: ./scripts/run_ios_checks.sh
+      - name: List available simulators (debug)
+        run: |
+          echo "=== simctl runtimes ==="
+          xcrun simctl list runtimes
+          echo "=== simctl devices (all) ==="
+          xcrun simctl list devices
+      - name: Build IronScan
+        run: ./scripts/run_ios_checks.sh
