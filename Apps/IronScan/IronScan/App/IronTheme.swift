@@ -43,21 +43,13 @@ private struct OrganicGlassEffectModifier<EffectShape: Shape>: ViewModifier {
 
     @ViewBuilder
     func body(content: Content) -> some View {
-        if #available(iOS 26.0, *) {
-            let resolvedTint = tint ?? IronTheme.cardGlass
-            if interactive {
-                content.glassEffect(.regular.tint(resolvedTint).interactive(), in: shape)
-            } else {
-                content.glassEffect(.regular.tint(resolvedTint), in: shape)
+        let resolvedTint = tint ?? IronTheme.cardGlass
+        content
+            .background(.ultraThinMaterial, in: shape)
+            .background(resolvedTint.opacity(interactive ? 0.64 : 0.58), in: shape)
+            .overlay {
+                shape.stroke(Color.white.opacity(interactive ? 0.8 : 0.76), lineWidth: interactive ? 0.8 : 0.6)
             }
-        } else {
-            content
-                .background(.ultraThinMaterial, in: shape)
-                .background((tint ?? IronTheme.cardGlass).opacity(0.58), in: shape)
-                .overlay {
-                    shape.stroke(Color.white.opacity(0.76), lineWidth: 0.6)
-                }
-        }
     }
 }
 

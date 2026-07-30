@@ -7,23 +7,13 @@ struct LiquidGlassCardModifier: ViewModifier {
     func body(content: Content) -> some View {
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
 
-        if #available(iOS 26.0, *) {
-            content
-                .background(Color.white.opacity(0.65), in: shape)
-                .glassEffect(.regular, in: shape)
-                .overlay {
-                    shape.stroke(Color.white.opacity(0.8), lineWidth: 1)
-                }
-                .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
-        } else {
-            content
-                .background(.ultraThinMaterial, in: shape)
-                .background(Color.white.opacity(0.65), in: shape)
-                .overlay {
-                    shape.stroke(Color.white.opacity(0.8), lineWidth: 1)
-                }
-                .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
-        }
+        content
+            .background(.ultraThinMaterial, in: shape)
+            .background(Color.white.opacity(0.65), in: shape)
+            .overlay {
+                shape.stroke(Color.white.opacity(0.8), lineWidth: 1)
+            }
+            .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
     }
 }
 

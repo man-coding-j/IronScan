@@ -1,4 +1,4 @@
-@preconcurrency import CoreLocation
+import CoreLocation
 import MapKit
 import SwiftUI
 
@@ -42,7 +42,7 @@ struct NearbyCareFacility: Identifiable, Equatable {
 }
 
 @MainActor
-final class LocationManager: NSObject, ObservableObject, @preconcurrency CLLocationManagerDelegate {
+final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     nonisolated static let searchQueries = [
         "Diagnostic Laboratory",
         "Quest Diagnostics",
@@ -164,7 +164,7 @@ final class LocationManager: NSObject, ObservableObject, @preconcurrency CLLocat
             request.naturalLanguageQuery = query
             request.region = region
             do {
-                let response = try await MKLocalSearch(request: request).start()
+                let response = try await performLocalSearch(request)
                 results.append(contentsOf: response.mapItems.compactMap {
                     facility(from: $0, relativeTo: location)
                 })
@@ -215,5 +215,17 @@ final class LocationManager: NSObject, ObservableObject, @preconcurrency CLLocat
             distanceMeters: facilityLocation.distance(from: location),
             availability: availabilityEngine.availability(for: name)
         )
+    }
+}
+
+private func performLocalSearch(_ request: MKLocalSearch.Request) async throws -> MKLocalSearch.Response {
+    try await withCheckedThrowingContinuation { continuation in
+        MKLocalSearch(request: request).start { response, error in
+            if let response {
+                continuation.resume(returning: response)
+            } else {
+                continuation.resume(throwing: error ?? URLError(.unknown))
+            }
+        }
     }
 }
