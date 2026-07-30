@@ -278,17 +278,20 @@ final class MultiScanHubViewModel: ObservableObject {
         }
         let tissue = currentTissue
         let motion = motionReading
+        let isAutoCaptureEnabled = isAutoCaptureEnabled
         let usesSyntheticAlignment = previewSource.isSimulated && latestQuality.readiness == .ready
         liveEyeTask = Task { [weak self, inference, autoCaptureManager] in
             defer { self?.liveEyeTask = nil }
-            if self?.isAutoCaptureEnabled == true {
+            if isAutoCaptureEnabled {
                 do {
-                    try await autoCaptureManager.analyze(
-                        pixelBuffer: frame.pixelBuffer,
-                        tissue: tissue,
-                        motion: motion,
-                        acceptsSyntheticAlignment: usesSyntheticAlignment
-                    )
+                    try await Task.detached(priority: .userInitiated) {
+                        try await autoCaptureManager.analyze(
+                            pixelBuffer: frame.pixelBuffer,
+                            tissue: tissue,
+                            motion: motion,
+                            acceptsSyntheticAlignment: usesSyntheticAlignment
+                        )
+                    }.value
                 } catch {
                     self?.statusText = "Automatic alignment is unavailable. Use manual capture."
                     await autoCaptureManager.reset(for: tissue)
@@ -296,7 +299,9 @@ final class MultiScanHubViewModel: ObservableObject {
             }
             guard tissue == .eye, !usesSyntheticAlignment else { return }
             do {
-                let assessment = try await inference.assessEyePreview(pixelBuffer: frame.pixelBuffer)
+                let assessment = try await Task.detached(priority: .userInitiated) {
+                    try await inference.assessEyePreview(pixelBuffer: frame.pixelBuffer)
+                }.value
                 guard !Task.isCancelled else { return }
                 self?.eyePredictiveUncertainty = assessment.predictiveUncertainty
                 self?.eyeGuidanceText = assessment.uncertaintyAccepted
@@ -322,6 +327,8 @@ final class MultiScanHubViewModel: ObservableObject {
             fail("Hold phone steady...")
             return
         }
+        isBusy = true
+        lastError = nil
         let tissue = currentTissue
         let preparedFrame: CapturedFrame
         if tissue == .tongue {
@@ -349,7 +356,9 @@ final class MultiScanHubViewModel: ObservableObject {
         processingTask?.cancel()
         processingTask = Task { [weak self, inference] in
             do {
-                let output = try await inference.predict(frame: preparedFrame, tissue: tissue)
+                let output = try await Task.detached(priority: .userInitiated) {
+                    try await inference.predict(frame: preparedFrame, tissue: tissue)
+                }.value
                 guard !Task.isCancelled else { return }
                 guard output.qualityAccepted else {
                     self?.fail(output.rejectionReasons.first ?? "Capture quality was not accepted")

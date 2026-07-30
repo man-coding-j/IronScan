@@ -36,6 +36,12 @@ struct ScanView: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
+                        // Paste this right before your .toolbar(.hidden, for: .tabBar) modifier
+    if viewModel.isProcessing {
+        AIProcessingOverlay()
+            .transition(.opacity.combined(with: .scale))
+            .zIndex(1) // Ensures it sits on top of the camera
+    }
                 }
                 .padding()
                 .animation(.spring(response: 0.42, dampingFraction: 0.86), value: viewModel.result)
@@ -294,5 +300,50 @@ private struct TongueGuideOverlay: View {
         }
         .allowsHitTesting(false)
         .accessibilityHidden(true)
+    }
+}
+
+struct AIProcessingOverlay: View {
+    @State private var isPulsing = false
+    
+    var body: some View {
+        ZStack {
+            // Darkened background to focus the user
+            Color.black.opacity(0.6).ignoresSafeArea()
+            
+            VStack(spacing: 24) {
+                ZStack {
+                    // Outer expanding pulse
+                    Circle()
+                        .stroke(IronTheme.terracottaPrimary.opacity(0.6), lineWidth: 4)
+                        .frame(width: 120, height: 120)
+                        .scaleEffect(isPulsing ? 1.8 : 0.8)
+                        .opacity(isPulsing ? 0.0 : 1.0)
+                    
+                    // Inner glowing core
+                    Circle()
+                        .fill(IronTheme.terracottaPrimary)
+                        .frame(width: 80, height: 80)
+                        .shadow(color: IronTheme.terracottaPrimary.opacity(0.5), radius: 10)
+                    
+                    Image(systemName: "waveform.path.ecg")
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(.white)
+                }
+                
+                Text("Analyzing Tissue...")
+                    .font(IronTheme.roundedFont(.title3, weight: .semibold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Capsule())
+            }
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: false)) {
+                isPulsing = true
+            }
+        }
     }
 }

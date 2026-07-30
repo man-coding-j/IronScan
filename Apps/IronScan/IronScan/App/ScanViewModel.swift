@@ -56,6 +56,10 @@ final class ScanViewModel: ObservableObject {
         modelsReady && cameraState == .ready && !isBusy
     }
 
+    var isProcessing: Bool {
+        isBusy
+    }
+
     var canRunSyntheticWork: Bool {
         modelsReady && !isBusy
     }

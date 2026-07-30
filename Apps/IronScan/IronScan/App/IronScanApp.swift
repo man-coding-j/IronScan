@@ -17,7 +17,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
 }
 
-
 @MainActor
 final class IronScanAppDependencies: ObservableObject {
     var history: ScanHistoryStore?
@@ -27,12 +26,10 @@ final class IronScanAppDependencies: ObservableObject {
     @Published var isReady: Bool = false
 
     func initializeHeavyDependencies() async {
-        // Initialize heavy ML models in the background so the app doesn't freeze
         let historyStore = ScanHistoryStore()
         let location = LocationManager()
         let inference = MultiTissueInferenceActor()
         
-        // Safely assign them back on the Main UI Thread
         self.history = historyStore
         self.nearbyCare = location
         self.multiTissueInference = inference

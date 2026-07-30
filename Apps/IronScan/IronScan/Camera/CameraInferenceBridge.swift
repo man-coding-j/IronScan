@@ -17,7 +17,10 @@ final class CameraInferenceBridge: NSObject, AVCaptureVideoDataOutputSampleBuffe
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
-        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+        guard CMSampleBufferDataIsReady(sampleBuffer),
+              let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            return
+        }
         let frame = AnalyzableFrame(
             pixelBuffer: pixelBuffer,
             timestamp: CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
