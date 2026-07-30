@@ -216,7 +216,7 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
             availability: availabilityEngine.availability(for: name)
         )
     }
-
+// Clean version synced with cloud
     @MainActor
     private func performLocalSearch(_ request: MKLocalSearch.Request) async throws -> MKLocalSearch.Response {
         try await withCheckedThrowingContinuation { continuation in
@@ -230,3 +230,5 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
         }
     }
 }
+
+
