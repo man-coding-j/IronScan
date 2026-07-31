@@ -21,30 +21,17 @@ jobs:
           xcodebuild -version
           ls /Applications | grep -i Xcode
 
-      - name: Select Xcode 15
+      - name: Select Latest Xcode Available
         run: |
-          for xcode_path in \
-            /Applications/Xcode_15.app \
-            /Applications/Xcode_15.4.app \
-            /Applications/Xcode-15.4.app \
-            /Applications/Xcode_15.3.app \
-            /Applications/Xcode-15.3.app \
-            /Applications/Xcode_15.2.app \
-            /Applications/Xcode-15.2.app \
-            /Applications/Xcode_15.1.app \
-            /Applications/Xcode-15.1.app \
-            /Applications/Xcode_15.0.app \
-            /Applications/Xcode-15.0.app \
-            /Applications/Xcode.app
-          do
-            if [ -d "$xcode_path" ]; then
-              sudo xcode-select -s "$xcode_path"
-              xcodebuild -version
-              exit 0
-            fi
-          done
-          echo "No supported Xcode 15 installation found."
-          exit 1
+          # Find all Xcode apps, sort them (which puts the highest version at the end), and grab the last one
+          LATEST_XCODE=$(ls -d /Applications/Xcode*.app | sort -V | tail -n 1)
+          if [ -z "$LATEST_XCODE" ]; then
+            echo "No Xcode installation found!" >&2
+            exit 1
+          fi
+          echo "Selecting latest Xcode found: $LATEST_XCODE"
+          sudo xcode-select -s "$LATEST_XCODE"
+          xcodebuild -version
 
       - name: Install xcbeautify
         run: brew install xcbeautify
