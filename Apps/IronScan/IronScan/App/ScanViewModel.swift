@@ -262,7 +262,7 @@ final class ScanViewModel: ObservableObject {
             processingTask = Task { [weak self, pipeline] in
                 do {
                     let summary = if self?.previewSource.isSimulated == true {
-                        try await pipeline.runSyntheticDemo()
+                        try await pipeline.processSyntheticCapture(frame)
                     } else {
                         try await pipeline.processPhysicalCapture(frame)
                     }

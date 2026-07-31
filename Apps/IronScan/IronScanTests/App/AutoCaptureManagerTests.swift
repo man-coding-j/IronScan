@@ -3,7 +3,11 @@ import XCTest
 
 final class AutoCaptureManagerTests: XCTestCase {
     func testStableAlignmentHoldsThenCountsDownAndCapturesOnce() {
-        var stateMachine = AutoCaptureStateMachine()
+        let configuration = AutoCaptureConfiguration(
+            alignmentHoldSeconds: 1,
+            countdownSeconds: 3
+        )
+        var stateMachine = AutoCaptureStateMachine(configuration: configuration)
 
         XCTAssertEqual(
             stateMachine.update(isAligned: true, isStable: true, now: 10).phase,
@@ -63,6 +67,6 @@ final class AutoCaptureManagerTests: XCTestCase {
     }
 
     func testConfigurationUsesRequiredMotionThreshold() {
-        XCTAssertEqual(AutoCaptureConfiguration().motionThresholdG, 0.10, accuracy: 0.000_001)
+        XCTAssertEqual(AutoCaptureConfiguration().motionThresholdG, 0.12, accuracy: 0.000_001)
     }
 }

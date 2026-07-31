@@ -5,11 +5,20 @@ import Foundation
 actor SimulatorCameraActor: CameraSessionControlling {
     nonisolated let previewSource = CameraPreviewSource.simulated
 
+    private let imageProvider: any CameraImageProviding
+    private let analyzer: any CameraQualityAnalyzing
     private var eventContinuation: AsyncStream<CameraEvent>.Continuation?
     private var streamTask: Task<Void, Never>?
     private var stateMachine = CameraStateMachine()
-    private var phase = 0
     private var captureOrientation = CaptureOrientation.portrait
+
+    init(
+        imageProvider: any CameraImageProviding = StaticTestImageProvider(),
+        analyzer: any CameraQualityAnalyzing = ImageQualityAnalyzer()
+    ) {
+        self.imageProvider = imageProvider
+        self.analyzer = analyzer
+    }
 
     func eventStream() -> AsyncStream<CameraEvent> {
         let streamPair = AsyncStream<CameraEvent>.makeStream(bufferingPolicy: .bufferingNewest(12))
@@ -25,7 +34,13 @@ actor SimulatorCameraActor: CameraSessionControlling {
         transition(.permissionGranted)
         transition(.configured)
         eventContinuation?.yield(.capabilities(Self.capabilities))
-        eventContinuation?.yield(.quality(Self.readyObservation))
+        do {
+            let frame = try imageProvider.makeFrame()
+            eventContinuation?.yield(.quality(analyzer.analyzePreview(frame)))
+        } catch {
+            transition(.failed(.configurationFailed(error.localizedDescription)))
+            return
+        }
         transition(.stabilized)
         streamTask?.cancel()
         streamTask = Task { [weak self] in
@@ -38,7 +53,7 @@ actor SimulatorCameraActor: CameraSessionControlling {
         guard stateMachine.state == .ready else { return false }
         transition(.captureRequested)
         do {
-            let pixelBuffer = try SyntheticTongueFrameFactory.makePixelBuffer(phase: phase)
+            let pixelBuffer = try imageProvider.makeFrame().pixelBuffer
             let frame = CapturedFrame(
                 pixelBuffer: pixelBuffer,
                 metadata: Self.metadata(
@@ -46,7 +61,7 @@ actor SimulatorCameraActor: CameraSessionControlling {
                     height: CVPixelBufferGetHeight(pixelBuffer),
                     orientation: captureOrientation
                 ),
-                quality: Self.readyObservation
+                quality: analyzer.analyzeCapture(pixelBuffer)
             )
             transition(.captureCompleted)
             eventContinuation?.yield(.captured(frame))
@@ -93,28 +108,12 @@ actor SimulatorCameraActor: CameraSessionControlling {
     private func runPreviewLoop() async {
         let clock = ContinuousClock()
         while !Task.isCancelled {
-            phase += 1
-            let readiness: CaptureReadiness = switch phase % 8 {
-            case 1: .centerTongue
-            case 2: .holdStill
-            default: .ready
-            }
-            eventContinuation?.yield(.quality(QualityObservation(
-                readiness: readiness,
-                sharpnessScore: readiness == .ready ? 0.92 : 0.72,
-                clippedHighlightFraction: 0.01,
-                motionScore: readiness == .holdStill ? 0.2 : 0.02,
-                meanLuminance: 0.52,
-                tongueCoverage: 0.34,
-                tongueCenterOffset: readiness == .centerTongue ? 0.12 : 0.02
-            )))
-            if phase.isMultiple(of: 2) {
-                do {
-                    let pixelBuffer = try SyntheticTongueFrameFactory.makePixelBuffer(phase: phase)
-                    eventContinuation?.yield(.liveFrame(AnalyzableFrame(pixelBuffer: pixelBuffer, timestamp: .zero)))
-                } catch {
-                    eventContinuation?.yield(.interruption("Synthetic preview frame unavailable"))
-                }
+            do {
+                let frame = try imageProvider.makeFrame()
+                eventContinuation?.yield(.quality(analyzer.analyzePreview(frame)))
+                eventContinuation?.yield(.liveFrame(frame))
+            } catch {
+                eventContinuation?.yield(.interruption("Static test frame unavailable"))
             }
             do {
                 try await clock.sleep(for: .milliseconds(450))
@@ -139,16 +138,6 @@ actor SimulatorCameraActor: CameraSessionControlling {
         supportsCustomExposure: true,
         supportsWhiteBalanceLock: true,
         supportsActiveMaxDimensions: false
-    )
-
-    private static let readyObservation = QualityObservation(
-        readiness: .ready,
-        sharpnessScore: 0.92,
-        clippedHighlightFraction: 0.01,
-        motionScore: 0.02,
-        meanLuminance: 0.52,
-        tongueCoverage: 0.34,
-        tongueCenterOffset: 0.02
     )
 
     private static func metadata(width: Int, height: Int, orientation: CaptureOrientation) -> CaptureMetadata {

@@ -1,5 +1,9 @@
 import SwiftUI
 
+enum ScreeningIntakeContent {
+    static let contextBody = "This optional information stays in the app on this device and is shown separately from the optical result. It is not sent to the model and does not change the visual finding."
+}
+
 enum BiologicalSexContext: String, CaseIterable, Identifiable, Sendable {
     case preferNotToSay
     case female
@@ -116,7 +120,7 @@ struct ScreeningIntakeView: View {
     var body: some View {
         Form {
             Section {
-                Text("This optional information stays in the app on this device. It is not sent to the model and does not change the visual finding.")
+                Text(ScreeningIntakeContent.contextBody)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             } header: {

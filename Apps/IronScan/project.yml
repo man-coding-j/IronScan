@@ -47,6 +47,9 @@ targets:
       - path: ../../TestFixtures/GoldenOutputs
         type: folder
         buildPhase: resources
+      - path: ../../Models
+        type: folder
+        buildPhase: resources
       - path: IronScanTests/CameraStateMachineTests.swift
       - path: IronScanTests/CameraPermissionAndSimulatorTests.swift
       - path: IronScanTests/App

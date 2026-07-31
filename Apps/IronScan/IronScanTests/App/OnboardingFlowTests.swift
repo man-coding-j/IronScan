@@ -3,9 +3,9 @@ import XCTest
 
 final class OnboardingFlowTests: XCTestCase {
     func testOrganicPaletteUsesLockedHexValues() {
-        XCTAssertEqual(IronTheme.Hex.creamBackground, "#F5EBE1")
-        XCTAssertEqual(IronTheme.Hex.terracottaPrimary, "#E68A61")
-        XCTAssertEqual(IronTheme.Hex.slateText, "#3D3B4A")
+        XCTAssertEqual(IronTheme.Hex.creamBackground, "#F8F6F0")
+        XCTAssertEqual(IronTheme.Hex.terracottaPrimary, "#FF6B35")
+        XCTAssertEqual(IronTheme.Hex.slateText, "#2A2830")
         XCTAssertEqual(IronTheme.Hex.sageAccent, "#8DAA82")
     }
 
@@ -19,15 +19,17 @@ final class OnboardingFlowTests: XCTestCase {
         XCTAssertFalse(copy.contains("you are iron deficient"))
     }
 
-    func testAccountPreviewDisclosesNoAccountOrCredentialStorage() {
-        let copy = OnboardingFlowContent.accountPrivacy.lowercased()
+    func testConsentDisclosesPrototypeLimitations() {
+        let copy = "\(OnboardingConsent.summary) \(OnboardingConsent.detail)".lowercased()
 
-        XCTAssertTrue(copy.contains("never submitted"))
-        XCTAssertTrue(copy.contains("no account is created"))
+        XCTAssertTrue(copy.contains("research prototype"))
+        XCTAssertTrue(copy.contains("does not measure iron or hemoglobin"))
+        XCTAssertTrue(copy.contains("cannot establish a clinical diagnosis"))
+        XCTAssertTrue(copy.contains("laboratory test"))
     }
 
     func testContextCopyKeepsQuestionnaireSeparateFromOpticalResult() {
-        let copy = OnboardingFlowContent.contextBody.lowercased()
+        let copy = ScreeningIntakeContent.contextBody.lowercased()
 
         XCTAssertTrue(copy.contains("optional"))
         XCTAssertTrue(copy.contains("separately from the optical result"))

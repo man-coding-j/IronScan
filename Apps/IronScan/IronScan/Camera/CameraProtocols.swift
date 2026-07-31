@@ -26,3 +26,27 @@ protocol CameraQualityAnalyzing: Sendable {
     func analyzePreview(_ frame: AnalyzableFrame) -> QualityObservation
     func analyzeCapture(_ pixelBuffer: CVPixelBuffer) -> QualityObservation
 }
+
+protocol CameraImageProviding: Sendable {
+    func makeFrame() throws -> AnalyzableFrame
+}
+
+struct StaticTestImageProvider: CameraImageProviding {
+    let width: Int
+    let height: Int
+
+    init(width: Int = 96, height: Int = 96) {
+        self.width = width
+        self.height = height
+    }
+
+    func makeFrame() throws -> AnalyzableFrame {
+        AnalyzableFrame(
+            pixelBuffer: try SyntheticTongueFrameFactory.makePixelBuffer(
+                width: width,
+                height: height
+            ),
+            timestamp: .zero
+        )
+    }
+}

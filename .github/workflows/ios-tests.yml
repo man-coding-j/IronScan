@@ -11,5 +11,7 @@ jobs:
           xcrun simctl list runtimes
           echo "=== simctl devices (all) ==="
           xcrun simctl list devices
-      - name: Build IronScan
+      - name: Test IronScan
+        env:
+          IOS_CHECK_ACTION: test
         run: ./scripts/run_ios_checks.sh

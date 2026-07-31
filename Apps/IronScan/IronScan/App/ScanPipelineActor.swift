@@ -202,6 +202,20 @@ actor ScanPipelineActor {
 
     func runSyntheticDemo() async throws -> ScanResultSummary {
         let pixelBuffer = try SyntheticTongueFrameFactory.makePixelBuffer(width: 96, height: 96)
+        return try await processSyntheticPixelBuffer(pixelBuffer, captureQualityScore: 1)
+    }
+
+    func processSyntheticCapture(_ frame: CapturedFrame) async throws -> ScanResultSummary {
+        try await processSyntheticPixelBuffer(
+            frame.pixelBuffer,
+            captureQualityScore: frame.quality.readiness == .ready ? 1 : 0
+        )
+    }
+
+    private func processSyntheticPixelBuffer(
+        _ pixelBuffer: CVPixelBuffer,
+        captureQualityScore: Double
+    ) async throws -> ScanResultSummary {
         let segmentationResult = try await segmentation.segment(OrientationNormalizedCapture(
             pixelBuffer: pixelBuffer,
             colorSpace: "sRGB"
@@ -216,7 +230,7 @@ actor ScanPipelineActor {
                 segmentationAreaRatio: statistics.areaRatio,
                 segmentationMeanConfidence: statistics.meanForegroundProbability,
                 calibrationResidual: 0,
-                captureQualityScore: 1
+                captureQualityScore: captureQualityScore
             )
         ))
         return .syntheticDemo(segmentation: segmentationResult, prediction: prediction)

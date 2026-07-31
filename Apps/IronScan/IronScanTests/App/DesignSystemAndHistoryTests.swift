@@ -19,11 +19,13 @@ final class DesignSystemAndHistoryTests: XCTestCase {
         super.tearDown()
     }
 
-    func testMainNavigationHasThreeStableTabs() {
-        XCTAssertEqual(MainTab.allCases, [.home, .scan, .care])
-        XCTAssertEqual(MainTab.home.symbol, "house.fill")
-        XCTAssertEqual(MainTab.scan.symbol, "camera.viewfinder")
-        XCTAssertEqual(MainTab.care.symbol, "map.fill")
+    func testMainNavigationHasFiveStableTabs() {
+        XCTAssertEqual(MainTab.allCases, [.home, .history, .scan, .learn, .profile])
+        XCTAssertEqual(MainTab.home.symbol, "house")
+        XCTAssertEqual(MainTab.history.symbol, "clock")
+        XCTAssertEqual(MainTab.scan.symbol, "camera.fill")
+        XCTAssertEqual(MainTab.learn.symbol, "book.closed")
+        XCTAssertEqual(MainTab.profile.symbol, "person")
     }
 
     func testHistoryPersistsOnlyBoundedResultSummaries() {

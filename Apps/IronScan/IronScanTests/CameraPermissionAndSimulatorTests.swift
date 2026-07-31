@@ -146,6 +146,38 @@ final class SimulatorCameraActorTests: XCTestCase {
         XCTAssertTrue(receivedLiveFrame)
     }
 
+    func testInjectedStaticImageFeedsQualityAndCapturedFrame() async throws {
+        let camera = SimulatorCameraActor(
+            imageProvider: SolidCameraImageProvider(channelValue: 20)
+        )
+        let stream = await camera.eventStream()
+        var iterator = stream.makeAsyncIterator()
+
+        await camera.start()
+        await camera.capture()
+
+        var quality: QualityObservation?
+        var capturedFrame: CapturedFrame?
+        for _ in 0..<20 {
+            guard let event = await iterator.next() else { break }
+            switch event {
+            case let .quality(observation):
+                quality = observation
+            case let .captured(frame):
+                capturedFrame = frame
+            default:
+                break
+            }
+            if quality != nil, capturedFrame != nil { break }
+        }
+
+        await camera.stop()
+        XCTAssertEqual(quality?.readiness, .increaseLight)
+        XCTAssertEqual(capturedFrame?.quality.readiness, .increaseLight)
+        XCTAssertEqual(capturedFrame.map { CVPixelBufferGetWidth($0.pixelBuffer) }, 32)
+        XCTAssertEqual(capturedFrame.map { CVPixelBufferGetHeight($0.pixelBuffer) }, 32)
+    }
+
     func testSyntheticFramesReleaseAfterStressLoop() throws {
         weak var finalFrame: CVPixelBuffer?
 
@@ -351,5 +383,16 @@ private struct MockAuthorizationProvider: CameraAuthorizationProviding {
 
     func requestAccess() async -> Bool {
         requestResult
+    }
+}
+
+private struct SolidCameraImageProvider: CameraImageProviding {
+    let channelValue: UInt8
+
+    func makeFrame() throws -> AnalyzableFrame {
+        AnalyzableFrame(
+            pixelBuffer: try makeSolidPixelBuffer(channelValue: channelValue),
+            timestamp: .zero
+        )
     }
 }

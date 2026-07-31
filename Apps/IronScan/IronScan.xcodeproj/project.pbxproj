@@ -97,6 +97,7 @@
 		D19E3E2A28862730646F0F99 /* LatestFrameProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C687323CDFF8CBFB6C28AF /* LatestFrameProcessor.swift */; };
 		D4C035BD0CD8F4E0C9D9A9C4 /* MultiScanHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D654FBEECD0C973CF6F522A /* MultiScanHubView.swift */; };
 		D757A71B1B455A8D86C15A79 /* Models in Resources */ = {isa = PBXBuildFile; fileRef = 0D7A23A682BDA80B83764377 /* Models */; };
+		AA0000000000000000000001 /* Models in Resources */ = {isa = PBXBuildFile; fileRef = 0D7A23A682BDA80B83764377 /* Models */; };
 		DE636CBC229FD1ABEEE56EB1 /* PersonalizedPlanEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4457EDACDD6892570E750178 /* PersonalizedPlanEngineTests.swift */; };
 		E377DC54A9943F538E1ABB5F /* ScanPipelineActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649273439084E53AF490FF85 /* ScanPipelineActor.swift */; };
 		E39D3072EA64EFDFFB731631 /* ScanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9EE179039AF10C116D439 /* ScanViewModel.swift */; };
@@ -578,6 +579,7 @@
 			files = (
 				A7C409CDD3BE36F377D186E1 /* GoldenInputs in Resources */,
 				499BFD7B7F3F1AAD6D1CAD7F /* GoldenOutputs in Resources */,
+				AA0000000000000000000001 /* Models in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,10 @@
 import SwiftUI
 
+enum OnboardingFlowContent {
+    static let heroTitle = "A two-minute check for possible anemia risk."
+    static let heroBody = "IronScan evaluates visible color patterns. It does not measure iron levels or diagnose a condition."
+}
+
 struct OnboardingFlowView: View {
     private enum Step: Int, CaseIterable {
         case hero
@@ -91,9 +96,13 @@ struct HeroStartView: View {
             .padding(.vertical, 16)
 
             VStack(alignment: .leading, spacing: 16) {
-                Text("Check your iron levels in under 2 minutes.")
+                Text(OnboardingFlowContent.heroTitle)
                     .font(IronTheme.roundedFont(.title3, weight: .medium))
                     .foregroundStyle(IronTheme.textSlate)
+
+                Text(OnboardingFlowContent.heroBody)
+                    .font(IronTheme.roundedFont(.subheadline))
+                    .foregroundStyle(IronTheme.textMuted)
 
                 Button(action: onGetStarted) {
                     IronCTAButtonLabel(title: "Get Started")
