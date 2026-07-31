@@ -6,19 +6,21 @@ final class DesignSystemAndHistoryTests: XCTestCase {
     private var suiteName: String!
     private var defaults: UserDefaults!
 
-    @MainActor
-    override func setUp() {
-        super.setUp()
-        suiteName = "DesignSystemAndHistoryTests.\(UUID().uuidString)"
-        defaults = UserDefaults(suiteName: suiteName)
+    override func setUp() async throws {
+        try await super.setUp()
+        await MainActor.run {
+            suiteName = "DesignSystemAndHistoryTests.\(UUID().uuidString)"
+            defaults = UserDefaults(suiteName: suiteName)
+        }
     }
 
-    @MainActor
-    override func tearDown() {
-        defaults.removePersistentDomain(forName: suiteName)
-        defaults = nil
-        suiteName = nil
-        super.tearDown()
+    override func tearDown() async throws {
+        await MainActor.run {
+            defaults.removePersistentDomain(forName: suiteName)
+            defaults = nil
+            suiteName = nil
+        }
+        try await super.tearDown()
     }
 
     func testMainNavigationHasFiveStableTabs() {
