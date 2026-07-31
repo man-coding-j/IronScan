@@ -16,6 +16,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Show available Xcode versions
+        run: |
+          xcodebuild -version
+          ls /Applications | grep -i Xcode
+
+      - name: Select Xcode 15
+        run: |
+          for xcode_path in \
+            /Applications/Xcode_15.app \
+            /Applications/Xcode_15.4.app \
+            /Applications/Xcode-15.4.app \
+            /Applications/Xcode_15.3.app \
+            /Applications/Xcode-15.3.app \
+            /Applications/Xcode_15.2.app \
+            /Applications/Xcode-15.2.app \
+            /Applications/Xcode_15.1.app \
+            /Applications/Xcode-15.1.app \
+            /Applications/Xcode_15.0.app \
+            /Applications/Xcode-15.0.app \
+            /Applications/Xcode.app
+          do
+            if [ -d "$xcode_path" ]; then
+              sudo xcode-select -s "$xcode_path"
+              xcodebuild -version
+              exit 0
+            fi
+          done
+          echo "No supported Xcode 15 installation found."
+          exit 1
+
       - name: Install xcbeautify
         run: brew install xcbeautify
 

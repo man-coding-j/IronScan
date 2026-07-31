@@ -6,12 +6,14 @@ final class DesignSystemAndHistoryTests: XCTestCase {
     private var suiteName: String!
     private var defaults: UserDefaults!
 
+    @MainActor
     override func setUp() {
         super.setUp()
         suiteName = "DesignSystemAndHistoryTests.\(UUID().uuidString)"
         defaults = UserDefaults(suiteName: suiteName)
     }
 
+    @MainActor
     override func tearDown() {
         defaults.removePersistentDomain(forName: suiteName)
         defaults = nil
