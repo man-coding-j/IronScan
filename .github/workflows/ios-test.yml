@@ -104,12 +104,29 @@ jobs:
           echo "Booting simulator $SIM_ID..."
           xcrun simctl boot "$SIM_ID" || true
           
-          # 4. CRITICAL: Wait for simulator to be fully ready before testing
-          # simctl argument parsing varies by Xcode version. Try both orders.
+          # 4. Wait for simulator to be fully ready using a portable polling loop
           echo "Waiting for simulator to boot..."
-          if ! xcrun simctl bootstatus -b -t 60 "$SIM_ID"; then
-            echo "bootstatus with flags-before-device failed; trying flags-after-device..."
-            xcrun simctl bootstatus "$SIM_ID" -b -t 60
+          MAX_WAIT=60
+          SLEEP_INTERVAL=2
+          elapsed=0
+          
+          while [ $elapsed -lt $MAX_WAIT ]; do
+            DEV_LINE=$(xcrun simctl list devices | grep -i "$SIM_ID" || true)
+            echo "Device state line: $DEV_LINE"
+            
+            if echo "$DEV_LINE" | grep -qi "Booted"; then
+              echo "Simulator $SIM_ID is Booted!"
+              break
+            fi
+            
+            sleep $SLEEP_INTERVAL
+            elapsed=$((elapsed + SLEEP_INTERVAL))
+          done
+          
+          if ! echo "$DEV_LINE" | grep -qi "Booted"; then
+            echo "Error: Simulator failed to boot within ${MAX_WAIT}s" >&2
+            xcrun simctl list devices
+            exit 1
           fi
           
           # 5. Execute xcodebuild with result bundle path
