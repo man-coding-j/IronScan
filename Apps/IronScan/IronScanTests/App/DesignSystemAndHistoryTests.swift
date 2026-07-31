@@ -6,20 +6,18 @@ final class DesignSystemAndHistoryTests: XCTestCase {
     private var suiteName: String!
     private var defaults: UserDefaults!
 
-    nonisolated override func setUp() async throws {
+    override func setUp() async throws {
         try await super.setUp()
-        await MainActor.run {
-            suiteName = "DesignSystemAndHistoryTests.\(UUID().uuidString)"
-            defaults = UserDefaults(suiteName: suiteName)
-        }
+        // Running safely on MainActor because the class is @MainActor
+        suiteName = "DesignSystemAndHistoryTests.\(UUID().uuidString)"
+        defaults = UserDefaults(suiteName: suiteName)
     }
 
-    nonisolated override func tearDown() async throws {
-        await MainActor.run {
-            defaults.removePersistentDomain(forName: suiteName)
-            defaults = nil
-            suiteName = nil
-        }
+    override func tearDown() async throws {
+        // Running safely on MainActor because the class is @MainActor
+        defaults.removePersistentDomain(forName: suiteName)
+        defaults = nil
+        suiteName = nil
         try await super.tearDown()
     }
 
