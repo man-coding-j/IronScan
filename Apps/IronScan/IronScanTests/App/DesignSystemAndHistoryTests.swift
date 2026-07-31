@@ -6,7 +6,7 @@ final class DesignSystemAndHistoryTests: XCTestCase {
     private var suiteName: String!
     private var defaults: UserDefaults!
 
-    override func setUp() async throws {
+    nonisolated override func setUp() async throws {
         try await super.setUp()
         await MainActor.run {
             suiteName = "DesignSystemAndHistoryTests.\(UUID().uuidString)"
@@ -14,7 +14,7 @@ final class DesignSystemAndHistoryTests: XCTestCase {
         }
     }
 
-    override func tearDown() async throws {
+    nonisolated override func tearDown() async throws {
         await MainActor.run {
             defaults.removePersistentDomain(forName: suiteName)
             defaults = nil

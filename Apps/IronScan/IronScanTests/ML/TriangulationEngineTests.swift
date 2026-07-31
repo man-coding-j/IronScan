@@ -28,7 +28,10 @@ final class TriangulationEngineTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(first.opticalPallorIndex), 0.5, accuracy: 1e-12)
         XCTAssertEqual(first.summary, .possibleAnemiaRisk)
         XCTAssertEqual(first.contributions.map(\.tissue), TissueSite.allCases)
-        XCTAssertEqual(first.contributions.map(\.normalizedWeight), [1 / 3, 1 / 3, 1 / 3])
+        let expectedWeights = [1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0]
+        zip(first.contributions.map(\.normalizedWeight), expectedWeights).forEach { actual, expected in
+            XCTAssertEqual(actual, expected, accuracy: 1e-12)
+        }
         XCTAssertEqual(first.contributions.map(\.priorityMultiplier), [1.2, 0.9, 0.9])
     }
 
@@ -116,7 +119,7 @@ final class TriangulationEngineTests: XCTestCase {
         XCTAssertEqual(result.summary, .lowerObservedRisk)
         XCTAssertEqual(try XCTUnwrap(result.opticalPallorIndex), 0.18, accuracy: 1e-12)
         XCTAssertEqual(result.contribution(for: .eye)?.status, .uncertainRescanRecommended)
-        XCTAssertEqual(result.contribution(for: .eye)?.normalizedWeight, 0)
+        XCTAssertEqual(result.contribution(for: .eye)?.normalizedWeight, 0.0, accuracy: 1e-12)
         XCTAssertTrue(result.rejectionReasons.contains { $0.contains("re-scan recommended") })
     }
 
