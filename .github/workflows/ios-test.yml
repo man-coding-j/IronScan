@@ -105,8 +105,12 @@ jobs:
           xcrun simctl boot "$SIM_ID" || true
           
           # 4. CRITICAL: Wait for simulator to be fully ready before testing
-          # Note: Flags (-b -t 60) MUST come before the device argument ($SIM_ID)
-          xcrun simctl bootstatus -b -t 60 "$SIM_ID"
+          # simctl argument parsing varies by Xcode version. Try both orders.
+          echo "Waiting for simulator to boot..."
+          if ! xcrun simctl bootstatus -b -t 60 "$SIM_ID"; then
+            echo "bootstatus with flags-before-device failed; trying flags-after-device..."
+            xcrun simctl bootstatus "$SIM_ID" -b -t 60
+          fi
           
           # 5. Execute xcodebuild with result bundle path
           RESULT_BUNDLE="$PWD/build/TestResults.xcresult"
