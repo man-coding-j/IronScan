@@ -73,9 +73,10 @@ jobs:
           EOF
           echo "Created dummy GoogleService-Info.plist at Apps/IronScan/IronScan/App/"
 
-      - name: Run iOS Tests (Boot-Verified Simulator)
+      - name: Run iOS Tests (Robust Simulator)
         run: |
           set -o pipefail
+          set -x
           
           # 1. Clean existing simulator states
           xcrun simctl shutdown all || true
@@ -85,17 +86,27 @@ jobs:
           echo "Selected runtime: $RUNTIME"
           
           # 3. Get or create simulator
-          SIM_ID=$(xcrun simctl list devices available | grep "iPhone" | head -n1 | grep -oE '[0-9A-F-]{36}' || true)
+          SIM_ID=$(xcrun simctl list devices available | grep -i "iPhone" | head -n1 | grep -oE '[0-9A-F-]{36}' || true)
           if [ -z "$SIM_ID" ]; then
             echo "No available device; creating CI simulator..."
             SIM_ID=$(xcrun simctl create "ci-iPhone-14" "iPhone 14" "$RUNTIME")
+            if [ -z "$SIM_ID" ]; then
+              echo "Failed to create simulator for runtime: $RUNTIME" >&2
+              xcrun simctl list runtimes
+              xcrun simctl list devices
+              exit 1
+            fi
           fi
+          echo "Using simulator: $SIM_ID"
           
+          # Ensure clean state
+          xcrun simctl erase "$SIM_ID" || true
           echo "Booting simulator $SIM_ID..."
           xcrun simctl boot "$SIM_ID" || true
           
           # 4. CRITICAL: Wait for simulator to be fully ready before testing
-          xcrun simctl bootstatus "$SIM_ID" -b -t 60
+          # Note: Flags (-b -t 60) MUST come before the device argument ($SIM_ID)
+          xcrun simctl bootstatus -b -t 60 "$SIM_ID"
           
           # 5. Execute xcodebuild with result bundle path
           RESULT_BUNDLE="$PWD/build/TestResults.xcresult"
