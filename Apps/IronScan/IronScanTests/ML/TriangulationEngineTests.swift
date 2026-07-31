@@ -119,7 +119,7 @@ final class TriangulationEngineTests: XCTestCase {
         XCTAssertEqual(result.summary, .lowerObservedRisk)
         XCTAssertEqual(try XCTUnwrap(result.opticalPallorIndex), 0.18, accuracy: 1e-12)
         XCTAssertEqual(result.contribution(for: .eye)?.status, .uncertainRescanRecommended)
-        XCTAssertEqual(result.contribution(for: .eye)?.normalizedWeight, 0.0, accuracy: 1e-12)
+        XCTAssertEqual(try XCTUnwrap(result.contribution(for: .eye)?.normalizedWeight), 0.0, accuracy: 1e-12)
         XCTAssertTrue(result.rejectionReasons.contains { $0.contains("re-scan recommended") })
     }
 
