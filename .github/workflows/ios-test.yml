@@ -73,7 +73,7 @@ jobs:
           EOF
           echo "Created dummy GoogleService-Info.plist at Apps/IronScan/IronScan/App/"
 
-      - name: Run iOS Tests (Robust Simulator)
+      - name: Run iOS Tests (Strict Diagnostic Mode)
         run: |
           set -o pipefail
           set -x
@@ -81,57 +81,36 @@ jobs:
           # 1. Clean existing simulator states
           xcrun simctl shutdown all || true
           
-          # 2. Select iOS runtime reliably
-          RUNTIME=$(xcrun simctl list runtimes | awk -F '[()]' '/iOS/{print $(NF-1); exit}')
-          echo "Selected runtime: $RUNTIME"
+          # 2. Strict ID extraction for Runtime and Device Type
+          RUNTIME=$(xcrun simctl list runtimes | grep -Eo 'com.apple.CoreSimulator.SimRuntime.iOS[-0-9.]+' | head -n1)
+          DEVICE_TYPE=$(xcrun simctl list devicetypes | awk -F '[()]' '/iPhone 14/{print $2; exit}')
           
-          # 3. Get or create simulator
-          SIM_ID=$(xcrun simctl list devices available | grep -i "iPhone" | head -n1 | grep -oE '[0-9A-F-]{36}' || true)
-          if [ -z "$SIM_ID" ]; then
-            echo "No available device; creating CI simulator..."
-            SIM_ID=$(xcrun simctl create "ci-iPhone-14" "iPhone 14" "$RUNTIME")
-            if [ -z "$SIM_ID" ]; then
-              echo "Failed to create simulator for runtime: $RUNTIME" >&2
-              xcrun simctl list runtimes
-              xcrun simctl list devices
-              exit 1
-            fi
-          fi
-          echo "Using simulator: $SIM_ID"
-          
-          # Ensure clean state
-          xcrun simctl erase "$SIM_ID" || true
-          echo "Booting simulator $SIM_ID..."
-          xcrun simctl boot "$SIM_ID" || true
-          
-          # 4. Wait for simulator to be fully ready using a portable polling loop
-          echo "Waiting for simulator to boot..."
-          MAX_WAIT=60
-          SLEEP_INTERVAL=2
-          elapsed=0
-          
-          while [ $elapsed -lt $MAX_WAIT ]; do
-            DEV_LINE=$(xcrun simctl list devices | grep -i "$SIM_ID" || true)
-            echo "Device state line: $DEV_LINE"
-            
-            if echo "$DEV_LINE" | grep -qi "Booted"; then
-              echo "Simulator $SIM_ID is Booted!"
-              break
-            fi
-            
-            sleep $SLEEP_INTERVAL
-            elapsed=$((elapsed + SLEEP_INTERVAL))
-          done
-          
-          if ! echo "$DEV_LINE" | grep -qi "Booted"; then
-            echo "Error: Simulator failed to boot within ${MAX_WAIT}s" >&2
-            xcrun simctl list devices
+          if [ -z "$RUNTIME" ] || [ -z "$DEVICE_TYPE" ]; then
+            echo "Error: Missing strict Runtime or Device Type identifier" >&2
+            xcrun simctl list runtimes
             exit 1
           fi
           
-          # 5. Execute xcodebuild with result bundle path
+          # 3. Create and Boot Simulator
+          SIM_ID=$(xcrun simctl list devices available | grep -i "iPhone" | head -n1 | grep -oE '[0-9A-F-]{36}' || true)
+          if [ -z "$SIM_ID" ]; then
+            SIM_ID=$(xcrun simctl create "ci-iPhone-14" "$DEVICE_TYPE" "$RUNTIME")
+          fi
+          
+          xcrun simctl erase "$SIM_ID" || true
+          xcrun simctl boot "$SIM_ID" || true
+          
+          # 4. Wait for Boot (using our portable loop)
+          MAX_WAIT=120
+          elapsed=0
+          while [ $elapsed -lt $MAX_WAIT ]; do
+            if xcrun simctl list devices | grep -i "$SIM_ID" | grep -qi "Booted"; then break; fi
+            sleep 2; elapsed=$((elapsed + 2))
+          done
+          
+          # 5. Run Tests and capture logs on failure
           RESULT_BUNDLE="$PWD/build/TestResults.xcresult"
-          mkdir -p "$(dirname "$RESULT_BUNDLE")"
+          mkdir -p "build/Logs"
           
           xcodebuild test \
           -project Apps/IronScan/IronScan.xcodeproj \
@@ -140,11 +119,16 @@ jobs:
           -destination "id=$SIM_ID" \
           -resultBundlePath "$RESULT_BUNDLE" \
           CODE_SIGNING_ALLOWED='NO' \
-          | xcbeautify
+          | xcbeautify || {
+            echo "Test crashed! Pulling simulator crash logs..."
+            xcrun simctl spawn "$SIM_ID" log show --style compact --last 10m > build/Logs/sim_crash_log.txt || true
+            xcrun simctl spawn "$SIM_ID" log collect --output build/Logs/sim_log_collected.logarchive || true
+            exit 65
+          }
 
       - name: Upload Test Results Artifact
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: TestResults
-          path: build/TestResults.xcresult
+          path: build/
