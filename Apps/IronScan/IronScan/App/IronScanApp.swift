@@ -11,7 +11,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
         #if canImport(FirebaseCore)
-        FirebaseApp.configure()
+        let isUnitTesting = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+        if !isUnitTesting {
+            FirebaseApp.configure()
+        }
         #endif
         
         return true
