@@ -73,7 +73,7 @@ jobs:
           EOF
           echo "Created dummy GoogleService-Info.plist at Apps/IronScan/IronScan/App/"
 
-      - name: Run iOS Tests (Strict Diagnostic Mode)
+      - name: Run iOS Tests (Absolute Path Diagnostic Mode)
         run: |
           set -o pipefail
           set -x
@@ -88,41 +88,70 @@ jobs:
           if [ -z "$RUNTIME" ] || [ -z "$DEVICE_TYPE" ]; then
             echo "Error: Missing strict Runtime or Device Type identifier" >&2
             xcrun simctl list runtimes
+            xcrun simctl list devicetypes
             exit 1
           fi
           
-          # 3. Create and Boot Simulator
-          SIM_ID=$(xcrun simctl list devices available | grep -i "iPhone" | head -n1 | grep -oE '[0-9A-F-]{36}' || true)
+          # 3. Use Absolute Paths to prevent simctl spawn write failures
+          WORKDIR="$PWD"
+          RESULT_BUNDLE="$WORKDIR/build/TestResults.xcresult"
+          DERIVED_DATA="$WORKDIR/build/DerivedData"
+          LOG_DIR="$WORKDIR/build/Logs"
+          mkdir -p "$LOG_DIR" "$DERIVED_DATA"
+          
+          # 4. Create uniquely named simulator
+          SIM_NAME="ci-iPhone-14-$(date +%s)"
+          SIM_ID=$(xcrun simctl create "$SIM_NAME" "$DEVICE_TYPE" "$RUNTIME" 2>/dev/null || true)
+          
           if [ -z "$SIM_ID" ]; then
-            SIM_ID=$(xcrun simctl create "ci-iPhone-14" "$DEVICE_TYPE" "$RUNTIME")
+            SIM_ID=$(xcrun simctl list devices available | grep -i "iPhone" | head -n1 | grep -oE '[0-9A-F-]{36}' || true)
           fi
           
+          if [ -z "$SIM_ID" ]; then
+            echo "Failed to locate or create simulator" >&2
+            exit 1
+          fi
+          
+          # 5. Erase & Boot
           xcrun simctl erase "$SIM_ID" || true
           xcrun simctl boot "$SIM_ID" || true
           
-          # 4. Wait for Boot (using our portable loop)
+          # Wait for boot (Polling to avoid bootstatus flag bugs)
           MAX_WAIT=120
           elapsed=0
           while [ $elapsed -lt $MAX_WAIT ]; do
             if xcrun simctl list devices | grep -i "$SIM_ID" | grep -qi "Booted"; then break; fi
             sleep 2; elapsed=$((elapsed + 2))
           done
+          sleep 5
           
-          # 5. Run Tests and capture logs on failure
-          RESULT_BUNDLE="$PWD/build/TestResults.xcresult"
-          mkdir -p "build/Logs"
-          
+          # 6. Execute xcodebuild with absolute paths and derived data isolation
           xcodebuild test \
           -project Apps/IronScan/IronScan.xcodeproj \
           -scheme IronScan \
           -sdk iphonesimulator \
           -destination "id=$SIM_ID" \
           -resultBundlePath "$RESULT_BUNDLE" \
+          -derivedDataPath "$DERIVED_DATA" \
           CODE_SIGNING_ALLOWED='NO' \
           | xcbeautify || {
-            echo "Test crashed! Pulling simulator crash logs..."
-            xcrun simctl spawn "$SIM_ID" log show --style compact --last 10m > build/Logs/sim_crash_log.txt || true
-            xcrun simctl spawn "$SIM_ID" log collect --output build/Logs/sim_log_collected.logarchive || true
+            echo "Test crashed! Pulling logs with absolute paths..."
+            
+            SIM_CRASH_LOG="$LOG_DIR/sim_crash_log.txt"
+            SIM_LOG_ARCHIVE="$LOG_DIR/sim_log_collected.logarchive"
+            CRASH_DIR="$LOG_DIR/CrashReports"
+            mkdir -p "$CRASH_DIR"
+            
+            xcrun simctl spawn "$SIM_ID" log show --style compact --last 10m > "$SIM_CRASH_LOG" || true
+            xcrun simctl spawn "$SIM_ID" log collect --output "$SIM_LOG_ARCHIVE" || true
+            
+            # Safely collect actual OS-level crash reports
+            cp -R "$HOME/Library/Logs/DiagnosticReports/"* "$CRASH_DIR" 2>/dev/null || true
+            
+            echo "==== Diagnostic Log Files Created ===="
+            ls -la "$LOG_DIR" || true
+            ls -la "$CRASH_DIR" || true
+            
             exit 65
           }
 
@@ -131,4 +160,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: TestResults
-          path: build/
+          path: ${{ github.workspace }}/build/
