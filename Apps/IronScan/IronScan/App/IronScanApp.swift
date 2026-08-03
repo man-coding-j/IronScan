@@ -11,21 +11,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
         #if canImport(FirebaseCore)
-        let isUnitTesting = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        
-        if FirebaseApp.app() == nil {
-            if isUnitTesting {
-                // CI/Test fallback: minimal dummy options so Auth won't crash
-                let options = FirebaseOptions(googleAppID: "1:dummy:ios:dummy", gcmSenderID: "dummy_sender_id")
-                options.projectID = "dummy-project-id"
-                options.bundleID = Bundle.main.bundleIdentifier ?? "com.dummy.app"
-                options.apiKey = "dummy_api_key_for_ci"
-                FirebaseApp.configure(options: options)
-            } else {
-                // Normal production launch
-                FirebaseApp.configure()
-            }
-        }
+        #if !CI
+        // This code physically will not compile into the app on the CI server
+        FirebaseApp.configure()
+        #else
+        print("Running in CI Environment: Firebase initialization skipped to prevent launch crashes.")
+        #endif
         #endif
         
         return true

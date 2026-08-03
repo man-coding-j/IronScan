@@ -130,12 +130,12 @@ jobs:
           xcrun simctl spawn "$SIM_ID" log stream --style compact --level debug > "$SIM_LOG_STREAM" 2>&1 &
           LOG_STREAM_PID=$!
           
-          # 7. Execute xcodebuild with strict architecture flags
+          # 7. Execute xcodebuild with static destination and CI compile flag
           xcodebuild test \
             -project Apps/IronScan/IronScan.xcodeproj \
             -scheme IronScan \
             -sdk iphonesimulator \
-            -destination "id=$SIM_ID" \
+            -destination "platform=iOS Simulator,name=iPhone 14,OS=18.5" \
             -resultBundlePath "$RESULT_BUNDLE" \
             -derivedDataPath "$DERIVED_DATA" \
             CODE_SIGNING_ALLOWED='NO' \
@@ -143,6 +143,7 @@ jobs:
             CODE_SIGNING_REQUIRED='NO' \
             EXCLUDED_ARCHS='arm64' \
             ONLY_ACTIVE_ARCH=YES \
+            SWIFT_ACTIVE_COMPILATION_CONDITIONS='CI' \
           | xcbeautify || {
             echo "Test crashed! Stopping log stream..."
             if [ -n "$LOG_STREAM_PID" ]; then kill $LOG_STREAM_PID || true; fi
