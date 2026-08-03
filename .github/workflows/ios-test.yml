@@ -125,7 +125,12 @@ jobs:
           done
           sleep 5
           
-          # 6. Execute xcodebuild with absolute paths, derived data isolation, and signing overrides
+          # 6. Start continuous log stream in background
+          SIM_LOG_STREAM="$LOG_DIR/sim_stream.log"
+          xcrun simctl spawn "$SIM_ID" log stream --style compact --level debug > "$SIM_LOG_STREAM" 2>&1 &
+          LOG_STREAM_PID=$!
+          
+          # 7. Execute xcodebuild with strict architecture flags
           xcodebuild test \
             -project Apps/IronScan/IronScan.xcodeproj \
             -scheme IronScan \
@@ -136,8 +141,11 @@ jobs:
             CODE_SIGNING_ALLOWED='NO' \
             CODE_SIGN_IDENTITY='' \
             CODE_SIGNING_REQUIRED='NO' \
+            EXCLUDED_ARCHS='arm64' \
+            ONLY_ACTIVE_ARCH=YES \
           | xcbeautify || {
-            echo "Test crashed! Pulling logs with absolute paths..."
+            echo "Test crashed! Stopping log stream..."
+            if [ -n "$LOG_STREAM_PID" ]; then kill $LOG_STREAM_PID || true; fi
             
             SIM_CRASH_LOG="$LOG_DIR/sim_crash_log.txt"
             SIM_LOG_ARCHIVE="$LOG_DIR/sim_log_collected.logarchive"
@@ -157,6 +165,9 @@ jobs:
             
             exit 65
           }
+          
+          # Stop log stream on success
+          if [ -n "$LOG_STREAM_PID" ]; then kill $LOG_STREAM_PID || true; fi
 
       - name: Upload Test Results Artifact
         if: failure()
