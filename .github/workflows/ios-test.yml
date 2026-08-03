@@ -125,15 +125,17 @@ jobs:
           done
           sleep 5
           
-          # 6. Execute xcodebuild with absolute paths and derived data isolation
+          # 6. Execute xcodebuild with absolute paths, derived data isolation, and signing overrides
           xcodebuild test \
-          -project Apps/IronScan/IronScan.xcodeproj \
-          -scheme IronScan \
-          -sdk iphonesimulator \
-          -destination "id=$SIM_ID" \
-          -resultBundlePath "$RESULT_BUNDLE" \
-          -derivedDataPath "$DERIVED_DATA" \
-          CODE_SIGNING_ALLOWED='NO' \
+            -project Apps/IronScan/IronScan.xcodeproj \
+            -scheme IronScan \
+            -sdk iphonesimulator \
+            -destination "id=$SIM_ID" \
+            -resultBundlePath "$RESULT_BUNDLE" \
+            -derivedDataPath "$DERIVED_DATA" \
+            CODE_SIGNING_ALLOWED='NO' \
+            CODE_SIGN_IDENTITY='' \
+            CODE_SIGNING_REQUIRED='NO' \
           | xcbeautify || {
             echo "Test crashed! Pulling logs with absolute paths..."
             
@@ -144,13 +146,14 @@ jobs:
             
             xcrun simctl spawn "$SIM_ID" log show --style compact --last 10m > "$SIM_CRASH_LOG" || true
             xcrun simctl spawn "$SIM_ID" log collect --output "$SIM_LOG_ARCHIVE" || true
-            
-            # Safely collect actual OS-level crash reports
             cp -R "$HOME/Library/Logs/DiagnosticReports/"* "$CRASH_DIR" 2>/dev/null || true
             
-            echo "==== Diagnostic Log Files Created ===="
-            ls -la "$LOG_DIR" || true
-            ls -la "$CRASH_DIR" || true
+            echo "==== Crash Report Head ===="
+            if ls "$CRASH_DIR"/IronScan*.ips >/dev/null 2>&1; then
+              head -n 200 "$CRASH_DIR"/IronScan*.ips || true
+            else
+              echo "No .ips crash report found in $CRASH_DIR"
+            fi
             
             exit 65
           }
