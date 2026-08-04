@@ -104,6 +104,7 @@ jobs:
           rm -rf "$DERIVED_DATA/SourcePackages" || true
           
           xcodebuild -project Apps/IronScan/IronScan.xcodeproj \
+            -scheme IronScan \
             -resolvePackageDependencies \
             -derivedDataPath "$DERIVED_DATA"
             
