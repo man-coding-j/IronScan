@@ -87,42 +87,17 @@ jobs:
           
           if [ -z "$RUNTIME" ] || [ -z "$DEVICE_TYPE" ]; then
             echo "Error: Missing strict Runtime or Device Type identifier" >&2
-            xcrun simctl list runtimes
-            xcrun simctl list devicetypes
             exit 1
           fi
           
-          # 3. Use Absolute Paths to prevent simctl spawn write failures
+          # Use Absolute Paths
           WORKDIR="$PWD"
           RESULT_BUNDLE="$WORKDIR/build/TestResults.xcresult"
           DERIVED_DATA="$WORKDIR/build/DerivedData"
           LOG_DIR="$WORKDIR/build/Logs"
           mkdir -p "$LOG_DIR" "$DERIVED_DATA"
           
-          # 3.5 Resolve and Pre-build Swift Packages to prevent missing module errors
-          echo "Resolving Swift package dependencies..."
-          rm -rf "$DERIVED_DATA/SourcePackages" || true
-          
-          xcodebuild -project Apps/IronScan/IronScan.xcodeproj \
-            -scheme IronScan \
-            -resolvePackageDependencies \
-            -derivedDataPath "$DERIVED_DATA"
-            
-          echo "Pre-building project dependencies..."
-          xcodebuild build \
-            -project Apps/IronScan/IronScan.xcodeproj \
-            -scheme IronScan \
-            -sdk iphonesimulator \
-            -derivedDataPath "$DERIVED_DATA" \
-            CODE_SIGNING_ALLOWED='NO' \
-            CODE_SIGN_IDENTITY='' \
-            CODE_SIGNING_REQUIRED='NO' \
-            EXCLUDED_ARCHS='arm64' \
-            ONLY_ACTIVE_ARCH=YES \
-            SWIFT_ACTIVE_COMPILATION_CONDITIONS='CI' \
-          | xcbeautify || true
-          
-          # 4. Create uniquely named simulator
+          # 3. Create uniquely named simulator FIRST
           SIM_NAME="ci-iPhone-14-$(date +%s)"
           SIM_ID=$(xcrun simctl create "$SIM_NAME" "$DEVICE_TYPE" "$RUNTIME" 2>/dev/null || true)
           
@@ -135,11 +110,10 @@ jobs:
             exit 1
           fi
           
-          # 5. Erase & Boot
+          # 4. Erase & Boot Simulator
           xcrun simctl erase "$SIM_ID" || true
           xcrun simctl boot "$SIM_ID" || true
           
-          # Wait for boot (Polling to avoid bootstatus flag bugs)
           MAX_WAIT=120
           elapsed=0
           while [ $elapsed -lt $MAX_WAIT ]; do
@@ -148,12 +122,37 @@ jobs:
           done
           sleep 5
           
-          # 6. Start continuous log stream in background
+          # 5. Resolve and pre-build packages using the EXACT simulator ID
+          echo "Resolving Swift package dependencies for simulator id=$SIM_ID..."
+          rm -rf "$DERIVED_DATA/SourcePackages" || true
+          
+          xcodebuild -project Apps/IronScan/IronScan.xcodeproj \
+            -scheme IronScan \
+            -resolvePackageDependencies \
+            -destination "id=$SIM_ID" \
+            -derivedDataPath "$DERIVED_DATA"
+            
+          echo "Pre-building project dependencies..."
+          xcodebuild build \
+            -project Apps/IronScan/IronScan.xcodeproj \
+            -scheme IronScan \
+            -sdk iphonesimulator \
+            -destination "id=$SIM_ID" \
+            -derivedDataPath "$DERIVED_DATA" \
+            CODE_SIGNING_ALLOWED='NO' \
+            CODE_SIGN_IDENTITY='' \
+            CODE_SIGNING_REQUIRED='NO' \
+            EXCLUDED_ARCHS='arm64' \
+            ONLY_ACTIVE_ARCH=YES \
+            SWIFT_ACTIVE_COMPILATION_CONDITIONS='CI' \
+          | xcbeautify || true
+          
+          # 6. Start continuous log stream
           SIM_LOG_STREAM="$LOG_DIR/sim_stream.log"
           xcrun simctl spawn "$SIM_ID" log stream --style compact --level debug > "$SIM_LOG_STREAM" 2>&1 &
           LOG_STREAM_PID=$!
           
-          # 7. Execute xcodebuild with dynamic destination using created simulator UDID
+          # 7. Execute tests
           xcodebuild test \
             -project Apps/IronScan/IronScan.xcodeproj \
             -scheme IronScan \
