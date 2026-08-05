@@ -76,7 +76,7 @@ jobs:
       - name: Run iOS Tests (Absolute Path Diagnostic Mode)
         run: |
           set -o pipefail
-          set -x
+          set -x    
           
           # 1. Clean existing simulator states
           xcrun simctl shutdown all || true
@@ -122,22 +122,28 @@ jobs:
           done
           sleep 5
           
-          # 5. Resolve and pre-build packages using the EXACT simulator ID
+          # 5. Resolve Swift package dependencies
           echo "Resolving Swift package dependencies for simulator id=$SIM_ID..."
           rm -rf "$DERIVED_DATA/SourcePackages" || true
           
           xcodebuild -project Apps/IronScan/IronScan.xcodeproj \
             -scheme IronScan \
             -resolvePackageDependencies \
-            -destination "id=$SIM_ID" \
-            -derivedDataPath "$DERIVED_DATA"
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath "$DERIVED_DATA" \
+            -sdk iphonesimulator \
+            EXCLUDED_ARCHS='arm64' \
+            CODE_SIGNING_ALLOWED='NO' \
+            CODE_SIGN_IDENTITY='' \
+            CODE_SIGNING_REQUIRED='NO'
             
-          echo "Pre-building project dependencies..."
-          xcodebuild build \
+          # 6. Build for testing (includes all transitive dependencies)
+          echo "Building project with dependencies..."
+          xcodebuild build-for-testing \
             -project Apps/IronScan/IronScan.xcodeproj \
             -scheme IronScan \
             -sdk iphonesimulator \
-            -destination "id=$SIM_ID" \
+            -destination "platform=iOS Simulator,id=$SIM_ID" \
             -derivedDataPath "$DERIVED_DATA" \
             CODE_SIGNING_ALLOWED='NO' \
             CODE_SIGN_IDENTITY='' \
@@ -147,25 +153,19 @@ jobs:
             SWIFT_ACTIVE_COMPILATION_CONDITIONS='CI' \
           | xcbeautify || true
           
-          # 6. Start continuous log stream
+          # 7. Start continuous log stream
           SIM_LOG_STREAM="$LOG_DIR/sim_stream.log"
           xcrun simctl spawn "$SIM_ID" log stream --style compact --level debug > "$SIM_LOG_STREAM" 2>&1 &
           LOG_STREAM_PID=$!
           
-          # 7. Execute tests
-          xcodebuild test \
+          # 8. Execute tests (test-without-building)
+          xcodebuild test-without-building \
             -project Apps/IronScan/IronScan.xcodeproj \
             -scheme IronScan \
             -sdk iphonesimulator \
             -destination "platform=iOS Simulator,id=$SIM_ID" \
             -resultBundlePath "$RESULT_BUNDLE" \
             -derivedDataPath "$DERIVED_DATA" \
-            CODE_SIGNING_ALLOWED='NO' \
-            CODE_SIGN_IDENTITY='' \
-            CODE_SIGNING_REQUIRED='NO' \
-            EXCLUDED_ARCHS='arm64' \
-            ONLY_ACTIVE_ARCH=YES \
-            SWIFT_ACTIVE_COMPILATION_CONDITIONS='CI' \
           | xcbeautify || {
             echo "Test crashed! Stopping log stream..."
             if [ -n "$LOG_STREAM_PID" ]; then kill $LOG_STREAM_PID || true; fi
