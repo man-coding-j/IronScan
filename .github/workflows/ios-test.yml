@@ -125,6 +125,7 @@ jobs:
           # 5. Resolve Swift package dependencies
           echo "Resolving Swift package dependencies for simulator id=$SIM_ID..."
           rm -rf "$DERIVED_DATA/SourcePackages" || true
+          rm -rf ~/Library/Developer/Xcode/DerivedData/* || true
           
           xcodebuild -project Apps/IronScan/IronScan.xcodeproj \
             -scheme IronScan \
@@ -135,7 +136,8 @@ jobs:
             EXCLUDED_ARCHS='arm64' \
             CODE_SIGNING_ALLOWED='NO' \
             CODE_SIGN_IDENTITY='' \
-            CODE_SIGNING_REQUIRED='NO'
+            CODE_SIGNING_REQUIRED='NO' \
+            -verbose
             
           # 6. Build for testing (includes all transitive dependencies)
           echo "Building project with dependencies..."
@@ -148,6 +150,8 @@ jobs:
             CODE_SIGNING_ALLOWED='NO' \
             CODE_SIGN_IDENTITY='' \
             CODE_SIGNING_REQUIRED='NO' \
+            DEVELOPMENT_TEAM='' \
+            PRODUCT_BUNDLE_IDENTIFIER='com.namanjain.IronScan' \
             EXCLUDED_ARCHS='arm64' \
             ONLY_ACTIVE_ARCH=YES \
             SWIFT_ACTIVE_COMPILATION_CONDITIONS='CI' \
@@ -158,7 +162,7 @@ jobs:
           xcrun simctl spawn "$SIM_ID" log stream --style compact --level debug > "$SIM_LOG_STREAM" 2>&1 &
           LOG_STREAM_PID=$!
           
-          # 8. Execute tests (test-without-building)
+          # 8. Execute tests
           xcodebuild test-without-building \
             -project Apps/IronScan/IronScan.xcodeproj \
             -scheme IronScan \
@@ -166,6 +170,11 @@ jobs:
             -destination "platform=iOS Simulator,id=$SIM_ID" \
             -resultBundlePath "$RESULT_BUNDLE" \
             -derivedDataPath "$DERIVED_DATA" \
+            CODE_SIGNING_ALLOWED='NO' \
+            CODE_SIGN_IDENTITY='' \
+            CODE_SIGNING_REQUIRED='NO' \
+            DEVELOPMENT_TEAM='' \
+            PRODUCT_BUNDLE_IDENTIFIER='com.namanjain.IronScan' \
           | xcbeautify || {
             echo "Test crashed! Stopping log stream..."
             if [ -n "$LOG_STREAM_PID" ]; then kill $LOG_STREAM_PID || true; fi
