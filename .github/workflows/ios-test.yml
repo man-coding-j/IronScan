@@ -73,15 +73,14 @@ jobs:
           EOF
           echo "Created dummy GoogleService-Info.plist at Apps/IronScan/IronScan/App/"
 
-      - name: Run iOS Tests (Absolute Path Diagnostic Mode)
+      - name: Run iOS Tests (Clean Architecture Mode)
         run: |
           set -o pipefail
-          set -x    
+          set -x
           
-          # 1. Clean existing simulator states
           xcrun simctl shutdown all || true
           
-          # 2. Strict ID extraction for Runtime and Device Type
+          # 1. Strict Runtime/Device
           RUNTIME=$(xcrun simctl list runtimes | grep -Eo 'com.apple.CoreSimulator.SimRuntime.iOS[-0-9.]+' | head -n1)
           DEVICE_TYPE=$(xcrun simctl list devicetypes | awk -F '[()]' '/iPhone 14/{print $2; exit}')
           
@@ -90,27 +89,23 @@ jobs:
             exit 1
           fi
           
-          # Use Absolute Paths
           WORKDIR="$PWD"
           RESULT_BUNDLE="$WORKDIR/build/TestResults.xcresult"
           DERIVED_DATA="$WORKDIR/build/DerivedData"
           LOG_DIR="$WORKDIR/build/Logs"
           mkdir -p "$LOG_DIR" "$DERIVED_DATA"
           
-          # 3. Create uniquely named simulator FIRST
+          # 2. Simulator Creation
           SIM_NAME="ci-iPhone-14-$(date +%s)"
           SIM_ID=$(xcrun simctl create "$SIM_NAME" "$DEVICE_TYPE" "$RUNTIME" 2>/dev/null || true)
-          
           if [ -z "$SIM_ID" ]; then
             SIM_ID=$(xcrun simctl list devices available | grep -i "iPhone" | head -n1 | grep -oE '[0-9A-F-]{36}' || true)
           fi
-          
           if [ -z "$SIM_ID" ]; then
             echo "Failed to locate or create simulator" >&2
             exit 1
           fi
           
-          # 4. Erase & Boot Simulator
           xcrun simctl erase "$SIM_ID" || true
           xcrun simctl boot "$SIM_ID" || true
           
@@ -122,7 +117,7 @@ jobs:
           done
           sleep 5
           
-          # 5. Resolve Swift package dependencies
+          # 3. Resolve Packages (NO architecture overrides)
           echo "Resolving Swift package dependencies for simulator id=$SIM_ID..."
           rm -rf "$DERIVED_DATA/SourcePackages" || true
           rm -rf ~/Library/Developer/Xcode/DerivedData/* || true
@@ -133,14 +128,13 @@ jobs:
             -destination "generic/platform=iOS Simulator" \
             -derivedDataPath "$DERIVED_DATA" \
             -sdk iphonesimulator \
-            EXCLUDED_ARCHS='arm64' \
             CODE_SIGNING_ALLOWED='NO' \
             CODE_SIGN_IDENTITY='' \
             CODE_SIGNING_REQUIRED='NO' \
             -verbose
             
-          # 6. Build for testing (includes all transitive dependencies)
-          echo "Building project with dependencies..."
+          # 4. Explicitly build the app
+          echo "Building project for testing..."
           xcodebuild build-for-testing \
             -project Apps/IronScan/IronScan.xcodeproj \
             -scheme IronScan \
@@ -152,17 +146,30 @@ jobs:
             CODE_SIGNING_REQUIRED='NO' \
             DEVELOPMENT_TEAM='' \
             PRODUCT_BUNDLE_IDENTIFIER='com.namanjain.IronScan' \
-            EXCLUDED_ARCHS='arm64' \
-            ONLY_ACTIVE_ARCH=YES \
             SWIFT_ACTIVE_COMPILATION_CONDITIONS='CI' \
           | xcbeautify || true
           
-          # 7. Start continuous log stream
+          # 5. Sanity check
+          APP_PATH="$DERIVED_DATA/Build/Products/Debug-iphonesimulator/IronScan.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "Built app not found at $APP_PATH" >&2
+            ls -la "$DERIVED_DATA/Build/Products" || true
+            exit 1
+          fi
+          
+          BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP_PATH/Info.plist" 2>/dev/null || true)
+          if [ -z "$BUNDLE_ID" ]; then
+            echo "Built app missing CFBundleIdentifier in Info.plist" >&2
+            plutil -p "$APP_PATH/Info.plist" || true
+            exit 1
+          fi
+          echo "App bundle id: $BUNDLE_ID"
+          
+          # 6. Run tests
           SIM_LOG_STREAM="$LOG_DIR/sim_stream.log"
           xcrun simctl spawn "$SIM_ID" log stream --style compact --level debug > "$SIM_LOG_STREAM" 2>&1 &
           LOG_STREAM_PID=$!
           
-          # 8. Execute tests
           xcodebuild test-without-building \
             -project Apps/IronScan/IronScan.xcodeproj \
             -scheme IronScan \
@@ -198,7 +205,6 @@ jobs:
             exit 65
           }
           
-          # Stop log stream on success
           if [ -n "$LOG_STREAM_PID" ]; then kill $LOG_STREAM_PID || true; fi
 
       - name: Upload Test Results Artifact
