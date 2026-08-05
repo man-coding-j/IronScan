@@ -117,17 +117,16 @@ jobs:
           done
           sleep 5
           
-          # 3. Resolve Packages (NO architecture overrides)
+          # 3. Resolve Packages (Using EXACT Simulator ID)
           echo "Resolving Swift package dependencies for simulator id=$SIM_ID..."
           rm -rf "$DERIVED_DATA/SourcePackages" || true
-          rm -rf ~/Library/Developer/Xcode/DerivedData/* || true
           
           xcodebuild -project Apps/IronScan/IronScan.xcodeproj \
             -scheme IronScan \
             -resolvePackageDependencies \
-            -destination "generic/platform=iOS Simulator" \
-            -derivedDataPath "$DERIVED_DATA" \
+            -destination "platform=iOS Simulator,id=$SIM_ID" \
             -sdk iphonesimulator \
+            -derivedDataPath "$DERIVED_DATA" \
             CODE_SIGNING_ALLOWED='NO' \
             CODE_SIGN_IDENTITY='' \
             CODE_SIGNING_REQUIRED='NO' \
