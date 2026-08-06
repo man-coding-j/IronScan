@@ -73,7 +73,7 @@ jobs:
           EOF
           echo "Created dummy GoogleService-Info.plist at Apps/IronScan/IronScan/App/"
 
-      - name: Run iOS Tests (Clean Architecture Mode)
+      - name: Run iOS Tests (Fail-Fast SPM Fix)
         run: |
           set -o pipefail
           set -x
@@ -117,22 +117,18 @@ jobs:
           done
           sleep 5
           
-          # 3. Resolve Packages (Using EXACT Simulator ID)
-          echo "Resolving Swift package dependencies for simulator id=$SIM_ID..."
+          # 3. Clean Package Cache & Resolve Dependencies
+          echo "Resolving Swift package dependencies..."
           rm -rf "$DERIVED_DATA/SourcePackages" || true
           
           xcodebuild -project Apps/IronScan/IronScan.xcodeproj \
             -scheme IronScan \
             -resolvePackageDependencies \
-            -destination "platform=iOS Simulator,id=$SIM_ID" \
-            -sdk iphonesimulator \
             -derivedDataPath "$DERIVED_DATA" \
             CODE_SIGNING_ALLOWED='NO' \
-            CODE_SIGN_IDENTITY='' \
-            CODE_SIGNING_REQUIRED='NO' \
             -verbose
             
-          # 4. Explicitly build the app
+          # 4. Build for Testing (FAIL-FAST: No '|| true')
           echo "Building project for testing..."
           xcodebuild build-for-testing \
             -project Apps/IronScan/IronScan.xcodeproj \
@@ -146,25 +142,21 @@ jobs:
             DEVELOPMENT_TEAM='' \
             PRODUCT_BUNDLE_IDENTIFIER='com.namanjain.IronScan' \
             SWIFT_ACTIVE_COMPILATION_CONDITIONS='CI' \
-          | xcbeautify || true
+          | xcbeautify
           
-          # 5. Sanity check
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then
+            echo "Error: build-for-testing failed!" >&2
+            exit 1
+          fi
+          
+          # 5. Sanity Check Built Bundle
           APP_PATH="$DERIVED_DATA/Build/Products/Debug-iphonesimulator/IronScan.app"
           if [ ! -d "$APP_PATH" ]; then
-            echo "Built app not found at $APP_PATH" >&2
-            ls -la "$DERIVED_DATA/Build/Products" || true
+            echo "Error: Built app not found at $APP_PATH" >&2
             exit 1
           fi
           
-          BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP_PATH/Info.plist" 2>/dev/null || true)
-          if [ -z "$BUNDLE_ID" ]; then
-            echo "Built app missing CFBundleIdentifier in Info.plist" >&2
-            plutil -p "$APP_PATH/Info.plist" || true
-            exit 1
-          fi
-          echo "App bundle id: $BUNDLE_ID"
-          
-          # 6. Run tests
+          # 6. Execute Tests
           SIM_LOG_STREAM="$LOG_DIR/sim_stream.log"
           xcrun simctl spawn "$SIM_ID" log stream --style compact --level debug > "$SIM_LOG_STREAM" 2>&1 &
           LOG_STREAM_PID=$!
