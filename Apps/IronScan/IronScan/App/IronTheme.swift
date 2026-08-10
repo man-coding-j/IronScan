@@ -22,6 +22,7 @@ enum IronTheme {
     static let slateText = textSlate
     static let cardGlass = Color.white.opacity(0.65)
     static let warning = Color(red: 205 / 255, green: 116 / 255, blue: 70 / 255)
+    static let criticalGlassTint = Color.red.opacity(0.28)
 
     static let mintBackground = creamBackground
     static let tealPrimary = terracottaPrimary
@@ -44,14 +45,25 @@ private struct OrganicGlassEffectModifier<EffectShape: Shape>: ViewModifier {
     @ViewBuilder
     func body(content: Content) -> some View {
         let resolvedTint = tint ?? IronTheme.cardGlass
-        content
-            .background(.ultraThinMaterial, in: shape)
-            .background(resolvedTint.opacity(interactive ? 0.64 : 0.58), in: shape)
-            .overlay {
-                shape.stroke(Color.white.opacity(interactive ? 0.8 : 0.76), lineWidth: interactive ? 0.8 : 0.6)
+        if #available(iOS 26.0, *) {
+            content
+                .glassEffect(
+                    interactive
+                    ? .regular.tint(resolvedTint).interactive()
+                    : .regular.tint(resolvedTint),
+                    in: shape
+                )
+        } else {
+            content
+                .background(.ultraThinMaterial, in: shape)
+                .background(resolvedTint.opacity(interactive ? 0.64 : 0.58), in: shape)
+                .overlay {
+                    shape.stroke(Color.white.opacity(interactive ? 0.8 : 0.76), lineWidth: interactive ? 0.8 : 0.6)
+                }
             }
-    }
-}
+        }
+    } 
+
 
 private struct OrganicTypographyModifier: ViewModifier {
     func body(content: Content) -> some View {
@@ -89,18 +101,49 @@ struct OrganicPrimaryButtonStyle: ButtonStyle {
             .padding(.horizontal, 20)
             .padding(.vertical, 16)
             .frame(maxWidth: .infinity)
-            .background(buttonBackground(pressed: configuration.isPressed), in: Capsule())
-            .overlay {
-                Capsule()
-                    .stroke(Color.white.opacity(0.22), lineWidth: 0.8)
-            }
-            .scaleEffect(configuration.isPressed ? 0.975 : 1)
-            .shadow(
-                color: IronTheme.terracottaPrimary.opacity(0.28),
-                radius: 18,
-                y: 10
-            )
+            .modifier(OrganicPrimaryButtonChrome(isPressed: configuration.isPressed))
             .animation(.easeOut(duration: 0.16), value: configuration.isPressed)
+    }
+}
+
+private struct OrganicPrimaryButtonChrome: ViewModifier {
+    let isPressed: Bool
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .glassEffect(
+                    .regular
+                        .tint(IronTheme.terracottaPrimary.opacity(isPressed ? 0.86 : 0.96))
+                        .interactive(),
+                    in: Capsule()
+                )
+                .overlay {
+                    Capsule()
+                        .stroke(Color.white.opacity(0.22), lineWidth: 0.8)
+                }
+                .scaleEffect(isPressed ? 0.975 : 1)
+                .shadow(
+                    color: IronTheme.terracottaPrimary.opacity(0.28),
+                    radius: 18,
+                    y: 10
+                )
+        } else {
+            content
+                .background(buttonBackground(pressed: isPressed), in: Capsule())
+                .overlay {
+                    Capsule()
+                        .stroke(Color.white.opacity(0.22), lineWidth: 0.8)
+                }
+                .scaleEffect(isPressed ? 0.975 : 1)
+                .shadow(
+                    color: IronTheme.terracottaPrimary.opacity(0.28),
+                    radius: 18,
+                    y: 10
+                )
+            }
+        }
     }
 
     private func buttonBackground(pressed: Bool) -> LinearGradient {
@@ -113,7 +156,7 @@ struct OrganicPrimaryButtonStyle: ButtonStyle {
             endPoint: .trailing
         )
     }
-}
+
 
 typealias TealPrimaryButtonStyle = OrganicPrimaryButtonStyle
 

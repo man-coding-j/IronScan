@@ -53,7 +53,9 @@ final class IDARiskEngineTests: XCTestCase {
             rejectionReasons: ["Insufficient scans"],
             configurationIdentifier: "test",
             configurationVersion: "1",
-            mode: .researchValidated
+            mode: .researchValidated,
+            calibrationCategory: .generalResearchProfile,
+            calibratedDecisionThreshold: 0.5
         )
 
         let assessment = IDARiskEngine().evaluate(
@@ -73,7 +75,9 @@ final class IDARiskEngineTests: XCTestCase {
             rejectionReasons: [],
             configurationIdentifier: "test",
             configurationVersion: "1",
-            mode: .researchValidated
+            mode: .researchValidated,
+            calibrationCategory: .generalResearchProfile,
+            calibratedDecisionThreshold: 0.5
         )
     }
 

@@ -48,7 +48,7 @@ struct IronScanApp: App {
     @StateObject private var dependencies = IronScanAppDependencies()
     @StateObject var authManager = AuthManager()
     
-    @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
+    @AppStorage(DemographicStorageKeys.hasCompletedOnboarding) private var hasCompletedOnboarding = false
     @AppStorage(OnboardingConsent.storageKey) private var acceptedResearchConsent = false
 
     var body: some Scene {
@@ -56,13 +56,13 @@ struct IronScanApp: App {
             Group {
                 if dependencies.isReady {
                     if authManager.isAuthenticated {
-                        if hasSeenOnboarding {
+                        if hasCompletedOnboarding {
                             MainTabView()
                                 .transition(appRouteTransition)
                         } else {
-                            OnboardingFlowView {
+                            OnboardingProfileView {
                                 acceptedResearchConsent = true
-                                hasSeenOnboarding = true
+                                hasCompletedOnboarding = true
                             }
                             .transition(appRouteTransition)
                         }
@@ -79,13 +79,17 @@ struct IronScanApp: App {
                 }
             }
             .animation(.spring(response: 0.5, dampingFraction: 0.8), value: authManager.isAuthenticated)
-            .animation(.spring(response: 0.5, dampingFraction: 0.8), value: hasSeenOnboarding)
+            .animation(.spring(response: 0.5, dampingFraction: 0.8), value: hasCompletedOnboarding)
             .animation(.spring(response: 0.5, dampingFraction: 0.8), value: dependencies.isReady)
             .environmentObject(authManager)
             .environmentObject(dependencies)
             .background(IronTheme.creamBackground.ignoresSafeArea())
             .tint(IronTheme.terracottaPrimary)
             .organicTypography()
+            .task {
+                DemographicProfileStore.syncLegacyOnboardingFlagIfNeeded()
+                hasCompletedOnboarding = UserDefaults.standard.bool(forKey: DemographicStorageKeys.hasCompletedOnboarding)
+            }
         }
     }
 }

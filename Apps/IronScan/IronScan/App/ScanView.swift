@@ -6,6 +6,7 @@ struct ScanView: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = ScanViewModel()
+    @Namespace private var glassNamespace
 
     var body: some View {
         NavigationStack {
@@ -15,13 +16,23 @@ struct ScanView: View {
                     if viewModel.showsPermissionInstructions {
                         permissionInstructions
                     } else {
-                        cameraPanel
-                        lightingControl
-                        captureControls
+                        if #available(iOS 26.0, *) {
+                            GlassEffectContainer(spacing: 20) {
+                                cameraPanel
+                                lightingControl
+                                captureControls
+                            }
+                        } else {
+                            cameraPanel
+                            lightingControl
+                            captureControls
+                        }
                     }
                     if let report = viewModel.liveVisualAttributeReport {
                         MultiHealthDashboardView(report: report) {
-                            viewModel.resetLiveScan()
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                viewModel.resetLiveScan()
+                            }
                         }
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
@@ -42,7 +53,6 @@ struct ScanView: View {
                 .animation(.spring(response: 0.42, dampingFraction: 0.86), value: viewModel.result)
                 .animation(.spring(response: 0.42, dampingFraction: 0.86), value: viewModel.liveScanningState)
             }
-            .background(Color(uiColor: .systemGroupedBackground))
             .navigationTitle("IronScan")
             .task { viewModel.start() }
             .onDisappear { viewModel.stop() }
@@ -82,13 +92,13 @@ struct ScanView: View {
                         openURL(settingsURL)
                     }
                 }
-                .buttonStyle(.borderedProminent)
+                .liquidGlassButtonStyle(prominent: true)
                 .controlSize(.large)
             }
         }
         .padding(28)
         .frame(maxWidth: .infinity)
-        .background(.background, in: RoundedRectangle(cornerRadius: 22))
+        .liquidGlassCard(cornerRadius: 22, tint: IronTheme.criticalGlassTint, interactive: true)
     }
 
     private var cameraPanel: some View {
@@ -114,8 +124,9 @@ struct ScanView: View {
                                 .font(.title3.weight(.semibold))
                                 .foregroundStyle(.white)
                                 .frame(width: 46, height: 46)
-                                .background(.black.opacity(0.62), in: Circle())
+                                .liquidGlassPanel(in: Circle(), interactive: true)
                         }
+                        .liquidGlassButtonStyle()
                         .disabled(viewModel.isBusy)
                         .accessibilityLabel(viewModel.lensPosition == .front ? "Use back camera" : "Use front camera")
                         Spacer()
@@ -137,6 +148,10 @@ struct ScanView: View {
         .transaction { transaction in
             transaction.animation = nil
         }
+        .modifier(ScanGlassIdentity(
+            id: "scan.camera.panel",
+            namespace: glassNamespace
+        ))
     }
 
     private var lightingControl: some View {
@@ -160,18 +175,24 @@ struct ScanView: View {
             .disabled(!viewModel.isTorchAvailable || viewModel.isBusy)
         }
         .padding()
-        .background(.background, in: RoundedRectangle(cornerRadius: 16))
+        .liquidGlassCard(cornerRadius: 16, interactive: true)
+        .modifier(ScanGlassIdentity(
+            id: "scan.lighting.panel",
+            namespace: glassNamespace
+        ))
     }
 
     private var captureControls: some View {
         VStack(spacing: 12) {
             Button {
-                viewModel.capture()
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    viewModel.capture()
+                }
             } label: {
                 Label(viewModel.previewSource.isSimulated ? "Capture simulated frame" : "Capture standardized image", systemImage: "camera.fill")
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
+            .liquidGlassButtonStyle(prominent: true)
             .controlSize(.large)
             .disabled(!viewModel.canCapture)
 
@@ -187,10 +208,14 @@ struct ScanView: View {
                 Label("Run 100-scan ML benchmark", systemImage: "gauge.with.dots.needle.67percent")
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.bordered)
+            .liquidGlassButtonStyle()
             .disabled(!viewModel.canRunSyntheticWork)
             #endif
         }
+        .modifier(ScanGlassIdentity(
+            id: "scan.capture.controls",
+            namespace: glassNamespace
+        ))
     }
 
     private func resultCard(_ result: ScanResultSummary) -> some View {
@@ -224,7 +249,9 @@ struct ScanView: View {
             LabeledContent("Segmented area", value: result.segmentationAreaRatio.formatted(.percent.precision(.fractionLength(1))))
             LabeledContent("Inference time", value: "\(result.inferenceDurationMs.formatted(.number.precision(.fractionLength(1)))) ms")
             Button {
-                viewModel.resetForNextScan()
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    viewModel.resetForNextScan()
+                }
             } label: {
                 Label(
                     viewModel.canStartAnotherScan ? "Scan again" : "Preparing next scan…",
@@ -232,18 +259,26 @@ struct ScanView: View {
                 )
                 .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
+            .liquidGlassButtonStyle(prominent: true)
             .controlSize(.large)
             .disabled(!viewModel.canStartAnotherScan)
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.background, in: RoundedRectangle(cornerRadius: 20))
+        .liquidGlassCard(
+            cornerRadius: 20,
+            tint: result.decision == .possibleRisk ? IronTheme.criticalGlassTint : nil,
+            interactive: true
+        )
         .overlay(alignment: .leading) {
             UnevenRoundedRectangle(topLeadingRadius: 20, bottomLeadingRadius: 20)
                 .fill(resultColor(result.decision))
                 .frame(width: 5)
         }
+        .modifier(ScanGlassIdentity(
+            id: "scan.primary.result",
+            namespace: glassNamespace
+        ))
     }
 
     private func benchmarkCard(_ benchmark: InferenceBenchmarkSummary) -> some View {
@@ -261,7 +296,7 @@ struct ScanView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.background, in: RoundedRectangle(cornerRadius: 16))
+        .liquidGlassCard(cornerRadius: 16, interactive: true)
     }
 
     private func resultColor(_ decision: RiskDecision) -> Color {
@@ -331,14 +366,27 @@ struct AIProcessingOverlay: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Capsule())
+                    .liquidGlassPanel(in: Capsule(), interactive: true)
             }
         }
         .onAppear {
             withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: false)) {
                 isPulsing = true
             }
+        }
+    }
+}
+
+private struct ScanGlassIdentity: ViewModifier {
+    let id: String
+    let namespace: Namespace.ID
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.glassEffectID(id, in: namespace)
+        } else {
+            content
         }
     }
 }

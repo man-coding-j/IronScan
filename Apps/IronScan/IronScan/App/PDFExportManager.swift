@@ -1,34 +1,79 @@
 import SwiftUI
 import UIKit
 
+struct PDFLatestDiagnosticResult: Sendable {
+    let tissueSummary: String
+    let riskScore: Double?
+    let qualitativeFindings: String
+}
+
+struct PDFReportPayload: Sendable {
+    let generatedAt: Date
+    let profile: DemographicProfile
+    let calibrationCategory: DemographicCalibrationCategory
+    let latestDiagnosticResult: PDFLatestDiagnosticResult
+    let history: [ScanHistoryRecord]
+}
+
 @MainActor
-final class PDFExportManager {
-    static let shared = PDFExportManager()
+final class PDFReportGenerator {
+    static let shared = PDFReportGenerator()
 
     private init() {}
 
-    func exportClinicalPDF(
-        timestamp: Date,
+    func generateDoctorReport(
         result: TriangulationResult,
-        outputs: [TissueSite: TissueScreeningOutput]
+        outputs: [TissueSite: TissueScreeningOutput],
+        history: [ScanHistoryRecord],
+        defaults: UserDefaults = .standard
     ) throws -> URL {
+        let payload = PDFReportPayload(
+            generatedAt: Date(),
+            profile: DemographicProfileStore.load(defaults: defaults),
+            calibrationCategory: result.calibrationCategory,
+            latestDiagnosticResult: PDFLatestDiagnosticResult(
+                tissueSummary: tissueSummary(from: result, outputs: outputs),
+                riskScore: result.opticalPallorIndex,
+                qualitativeFindings: qualitativeFindings(for: result)
+            ),
+            history: history
+        )
+        return try generateDoctorReport(payload: payload)
+    }
+
+    func generateDoctorReport(
+        latestRecord: ScanHistoryRecord?,
+        history: [ScanHistoryRecord],
+        defaults: UserDefaults = .standard
+    ) throws -> URL {
+        let profile = DemographicProfileStore.load(defaults: defaults)
+        let calibrationCategory = latestRecord?.calibrationCategory ?? profile.calibration.category
+        let payload = PDFReportPayload(
+            generatedAt: Date(),
+            profile: profile,
+            calibrationCategory: calibrationCategory,
+            latestDiagnosticResult: PDFLatestDiagnosticResult(
+                tissueSummary: latestRecord?.tissues.isEmpty == false
+                    ? latestRecord?.tissues.joined(separator: ", ") ?? "Multi-tissue screening"
+                    : "Multi-tissue screening",
+                riskScore: latestRecord?.opticalPatternIndex,
+                qualitativeFindings: latestRecord.map { qualitativeFindings(for: $0) } ?? "No completed scan has been saved yet."
+            ),
+            history: history
+        )
+        return try generateDoctorReport(payload: payload)
+    }
+
+    func generateDoctorReport(payload: PDFReportPayload) throws -> URL {
         let pageSize = CGSize(width: 595.2, height: 841.8)
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime]
-        let stamp = formatter.string(from: timestamp)
-            .replacingOccurrences(of: ":", with: "-")
-        let fileName = "IronScan-Clinical-\(stamp).pdf"
+        let fileName = "IronScan-Doctor-Report-\(timestampSlug(for: payload.generatedAt)).pdf"
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
 
-        let content = ClinicalPDFPage(
-            timestamp: timestamp,
-            result: result,
-            outputs: outputs
-        )
-        .frame(width: pageSize.width, height: pageSize.height, alignment: .topLeading)
-        .background(Color.white)
+        let page = PDFReportPage(payload: payload)
+            .frame(width: pageSize.width, height: pageSize.height, alignment: .topLeading)
+            .background(Color.white)
 
-        let renderer = ImageRenderer(content: content)
+        let renderer = ImageRenderer(content: page)
         renderer.proposedSize = ProposedViewSize(pageSize)
         renderer.scale = 1
 
@@ -42,272 +87,255 @@ final class PDFExportManager {
 
         return url
     }
-}
 
-private struct ClinicalPDFPage: View {
-    let timestamp: Date
-    let result: TriangulationResult
-    let outputs: [TissueSite: TissueScreeningOutput]
-
-    private var score: Double {
-        min(max(result.opticalPallorIndex ?? 0, 0), 1)
+    private func timestampSlug(for date: Date) -> String {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+        return formatter.string(from: date).replacingOccurrences(of: ":", with: "-")
     }
 
-    private var tier: ClinicalRiskTier {
-        ClinicalRiskTier(score: score)
+    private func tissueSummary(
+        from result: TriangulationResult,
+        outputs: [TissueSite: TissueScreeningOutput]
+    ) -> String {
+        let included = result.contributions
+            .filter { $0.status == .included }
+            .map { $0.tissue.glassTitle }
+        if !included.isEmpty {
+            return included.joined(separator: ", ")
+        }
+        let available = TissueSite.allCases.compactMap { tissue in
+            outputs[tissue] != nil ? tissue.glassTitle : nil
+        }
+        return available.isEmpty ? "Multi-tissue screening" : available.joined(separator: ", ")
+    }
+
+    private func qualitativeFindings(for result: TriangulationResult) -> String {
+        switch result.summary {
+        case .lowerObservedRisk:
+            return "Lower observed visual pallor signal across the completed scan."
+        case .possibleAnemiaRisk:
+            return "Possible visual pallor signal detected. Laboratory confirmation is recommended."
+        case .unableToAssess:
+            return result.rejectionReasons.first ?? "The scan could not be assessed confidently."
+        }
+    }
+
+    private func qualitativeFindings(for record: ScanHistoryRecord) -> String {
+        switch record.summary {
+        case .lowerObservedRisk:
+            return "Lower observed visual pallor signal across the saved scan."
+        case .possibleAnemiaRisk:
+            return "Possible visual pallor signal detected in the saved scan."
+        case .unableToAssess:
+            return "This saved scan was marked unable to assess."
+        }
+    }
+}
+
+private struct PDFReportPage: View {
+    let payload: PDFReportPayload
+
+    private var versionString: String {
+        Bundle.main.ironScanDisplayVersion
+    }
+
+    private var displayedHistory: [ScanHistoryRecord] {
+        Array(payload.history.prefix(8))
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 22) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("IronScan Clinical Export")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color.black)
-                Text("Generated \(timestamp.formatted(date: .abbreviated, time: .shortened))")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(Color.black.opacity(0.6))
-            }
-
-            HStack(alignment: .top, spacing: 16) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Risk Score")
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundStyle(Color.black.opacity(0.65))
-                    Text(score.formatted(.number.precision(.fractionLength(2))))
-                        .font(.system(size: 42, weight: .black, design: .rounded))
-                        .foregroundStyle(Color.black)
-                    Text(tier.title)
-                        .font(.system(size: 15, weight: .bold))
-                        .foregroundStyle(tier.uiColor.swiftUIColor)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(tier.uiColor.swiftUIColor.opacity(0.12), in: Capsule())
-                }
-
-                Spacer()
-
-                ScoreScaleBlock(score: score, tier: tier)
-                    .frame(width: 190, height: 120)
-            }
-            .padding(20)
-            .background(Color(red: 0.98, green: 0.97, blue: 0.96), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
-
-            VStack(alignment: .leading, spacing: 12) {
-                Text("WHO Risk Tier Guide")
-                    .font(.system(size: 18, weight: .bold))
-                tierRow(color: ClinicalRiskTier.low.uiColor, title: ClinicalRiskTier.low.title, range: ClinicalRiskTier.low.rangeLabel, detail: ClinicalRiskTier.low.explanation)
-                tierRow(color: ClinicalRiskTier.moderate.uiColor, title: ClinicalRiskTier.moderate.title, range: ClinicalRiskTier.moderate.rangeLabel, detail: ClinicalRiskTier.moderate.explanation)
-                tierRow(color: ClinicalRiskTier.high.uiColor, title: ClinicalRiskTier.high.title, range: ClinicalRiskTier.high.rangeLabel, detail: ClinicalRiskTier.high.explanation)
-            }
-
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Tissue Breakdown")
-                    .font(.system(size: 18, weight: .bold))
-
-                ForEach(TissueSite.allCases, id: \.self) { tissue in
-                    HStack(alignment: .top) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(tissue.displayName)
-                                .font(.system(size: 15, weight: .bold))
-                            Text(statusText(for: tissue))
-                                .font(.system(size: 12, weight: .regular))
-                                .foregroundStyle(Color.black.opacity(0.66))
-                        }
-                        Spacer()
-                        VStack(alignment: .trailing, spacing: 4) {
-                            Text(probabilityText(for: tissue))
-                                .font(.system(size: 15, weight: .bold))
-                            Text(weightText(for: tissue))
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundStyle(Color.black.opacity(0.66))
-                        }
-                    }
-                    .padding(.vertical, 10)
-
-                    if tissue != TissueSite.allCases.last {
-                        Divider()
-                    }
-                }
-            }
-            .padding(18)
-            .background(Color.white, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .stroke(Color.black.opacity(0.08), lineWidth: 1)
-            }
-
-            Spacer()
-
-            Text("Research prototype only. This PDF summarizes the app’s fused optical risk output and does not establish a medical diagnosis.")
-                .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(Color.black.opacity(0.55))
+        VStack(alignment: .leading, spacing: 18) {
+            header
+            profileSummary
+            latestResults
+            historyTable
+            Spacer(minLength: 0)
+            footer
         }
-        .padding(36)
+        .padding(32)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Color.white)
     }
 
-    private func tierRow(color: UIColor, title: String, range: String, detail: String) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .fill(color.swiftUIColor)
-                .frame(width: 10, height: 44)
+    private var header: some View {
+        HStack(alignment: .top) {
+            HStack(spacing: 12) {
+                Image(systemName: "drop.fill")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(IronTheme.terracottaPrimary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("IronScan Medical Report")
+                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.black)
+                    Text("Educational screening summary for clinician review")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(Color.black.opacity(0.58))
+                }
+            }
 
-            VStack(alignment: .leading, spacing: 4) {
+            Spacer()
+
+            VStack(alignment: .trailing, spacing: 4) {
+                Text(payload.generatedAt.formatted(date: .abbreviated, time: .shortened))
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color.black)
+                Text("Version \(versionString)")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(Color.black.opacity(0.58))
+            }
+        }
+    }
+
+    private var profileSummary: some View {
+        reportSection(title: "Patient Profile Summary") {
+            VStack(alignment: .leading, spacing: 10) {
+                summaryRow("Age", payload.profile.ageDescription)
+                summaryRow("Biological Sex", payload.profile.biologicalSex.rawValue)
+                summaryRow("Calibration", payload.calibrationCategory.badgeTitle)
+                summaryRow("Reference Hb Baseline", payload.calibrationCategory.normalHemoglobinReference)
+            }
+        }
+    }
+
+    private var latestResults: some View {
+        reportSection(title: "Latest Diagnostic Results") {
+            VStack(alignment: .leading, spacing: 10) {
+                summaryRow("Tissue Type", payload.latestDiagnosticResult.tissueSummary)
+                summaryRow(
+                    "Estimated Risk Score",
+                    payload.latestDiagnosticResult.riskScore?.formatted(.number.precision(.fractionLength(2))) ?? "Unavailable"
+                )
+                Text(payload.latestDiagnosticResult.qualitativeFindings)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(Color.black.opacity(0.78))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private var historyTable: some View {
+        reportSection(title: "Historical Trend") {
+            VStack(spacing: 0) {
                 HStack {
-                    Text(title)
-                        .font(.system(size: 14, weight: .bold))
+                    tableHeader("Date")
                     Spacer()
-                    Text(range)
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(Color.black.opacity(0.6))
+                    tableHeader("Score")
+                    Spacer()
+                    tableHeader("Summary")
                 }
-                Text(detail)
-                    .font(.system(size: 12))
-                    .foregroundStyle(Color.black.opacity(0.68))
-            }
-        }
-        .padding(14)
-        .background(color.swiftUIColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-    }
+                .padding(.bottom, 8)
 
-    private func probabilityText(for tissue: TissueSite) -> String {
-        if let output = outputs[tissue] {
-            return output.probability.formatted(.number.precision(.fractionLength(2)))
-        }
-        if let contribution = result.contribution(for: tissue) {
-            return contribution.probability.formatted(.number.precision(.fractionLength(2)))
-        }
-        return "--"
-    }
-
-    private func weightText(for tissue: TissueSite) -> String {
-        guard let contribution = result.contribution(for: tissue) else { return "Weight unavailable" }
-        return "Weight \(contribution.weight.formatted(.percent.precision(.fractionLength(0))))"
-    }
-
-    private func statusText(for tissue: TissueSite) -> String {
-        guard let contribution = result.contribution(for: tissue) else {
-            return "Contribution unavailable."
-        }
-        switch contribution.status {
-        case .included:
-            return contribution.proxySignalObserved
-                ? "Included with elevated visual proxy signal."
-                : "Included with lower visual proxy signal."
-        case .uncertainRescanRecommended:
-            return "Uncertain contribution; re-scan recommended."
-        case .qualityRejected:
-            return "Quality rejected for final fusion."
-        }
-    }
-}
-
-private struct ScoreScaleBlock: View {
-    let score: Double
-    let tier: ClinicalRiskTier
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Scale")
-                .font(.system(size: 13, weight: .bold))
-                .foregroundStyle(Color.black.opacity(0.6))
-
-            GeometryReader { geometry in
-                ZStack(alignment: .leading) {
-                    Capsule(style: .continuous)
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    ClinicalRiskTier.low.uiColor.swiftUIColor,
-                                    ClinicalRiskTier.moderate.uiColor.swiftUIColor,
-                                    ClinicalRiskTier.high.uiColor.swiftUIColor
-                                ],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-
-                    Circle()
-                        .fill(Color.white)
-                        .frame(width: 18, height: 18)
-                        .overlay {
-                            Circle()
-                                .stroke(tier.uiColor.swiftUIColor, lineWidth: 3)
+                if displayedHistory.isEmpty {
+                    Text("No historical scans are stored yet.")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(Color.black.opacity(0.58))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 12)
+                } else {
+                    ForEach(Array(displayedHistory.enumerated()), id: \.element.id) { index, record in
+                        HStack {
+                            tableValue(record.capturedAt.formatted(date: .abbreviated, time: .omitted))
+                            Spacer()
+                            tableValue(record.opticalPatternIndex?.formatted(.number.precision(.fractionLength(2))) ?? "--")
+                            Spacer()
+                            tableValue(summaryTitle(for: record.summary))
                         }
-                        .shadow(color: Color.black.opacity(0.12), radius: 4, y: 2)
-                        .offset(x: max(0, (geometry.size.width - 18) * score))
+                        .padding(.vertical, 10)
+
+                        if index < displayedHistory.count - 1 {
+                            Divider()
+                        }
+                    }
                 }
             }
-            .frame(height: 18)
+        }
+    }
 
-            HStack {
-                Text("0.00")
-                Spacer()
-                Text("1.00")
-            }
-            .font(.system(size: 11, weight: .medium))
-            .foregroundStyle(Color.black.opacity(0.55))
+    private var footer: some View {
+        Text("MEDICAL DISCLAIMER: IronScan is for preliminary screening only and does not diagnose anemia or any medical condition. Confirm all findings with a licensed physician and laboratory testing.")
+            .font(.system(size: 11, weight: .bold))
+            .foregroundStyle(Color.black)
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color(red: 0.99, green: 0.95, blue: 0.92), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+    }
+
+    private func reportSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.system(size: 17, weight: .bold))
+                .foregroundStyle(Color.black)
+            content()
+        }
+        .padding(18)
+        .background(Color(red: 0.98, green: 0.97, blue: 0.96), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+    }
+
+    private func summaryRow(_ title: String, _ value: String) -> some View {
+        HStack(alignment: .top) {
+            Text(title)
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(Color.black.opacity(0.62))
+                .frame(width: 150, alignment: .leading)
+            Text(value)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(Color.black)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private func tableHeader(_ value: String) -> some View {
+        Text(value)
+            .font(.system(size: 11, weight: .bold))
+            .foregroundStyle(Color.black.opacity(0.54))
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func tableValue(_ value: String) -> some View {
+        Text(value)
+            .font(.system(size: 12, weight: .medium))
+            .foregroundStyle(Color.black)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func summaryTitle(for summary: OpticalRiskSummary) -> String {
+        switch summary {
+        case .lowerObservedRisk:
+            return "Lower Risk"
+        case .possibleAnemiaRisk:
+            return "Possible Risk"
+        case .unableToAssess:
+            return "Unable to Assess"
         }
     }
 }
 
-private enum ClinicalRiskTier {
-    case low
-    case moderate
-    case high
+struct ActivityShareSheet: UIViewControllerRepresentable {
+    let activityItems: [Any]
 
-    init(score: Double) {
-        if score <= 0.30 {
-            self = .low
-        } else if score < 0.70 {
-            self = .moderate
-        } else {
-            self = .high
-        }
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
     }
 
-    var title: String {
-        switch self {
-        case .low: "Low Risk"
-        case .moderate: "Moderate Risk"
-        case .high: "High Risk"
-        }
-    }
-
-    var rangeLabel: String {
-        switch self {
-        case .low: "0.00 - 0.30"
-        case .moderate: "0.30 - 0.70"
-        case .high: "0.70 - 1.00"
-        }
-    }
-
-    var explanation: String {
-        switch self {
-        case .low:
-            "Lower fused visual signal across the three tissue sites."
-        case .moderate:
-            "Intermediate fused signal that benefits from follow-up context and repeat review."
-        case .high:
-            "Higher fused visual signal that should be clinically confirmed with lab testing."
-        }
-    }
-
-    var uiColor: UIColor {
-        switch self {
-        case .low:
-            UIColor(red: 141 / 255, green: 170 / 255, blue: 130 / 255, alpha: 1)
-        case .moderate:
-            UIColor(red: 242 / 255, green: 199 / 255, blue: 71 / 255, alpha: 1)
-        case .high:
-            UIColor(red: 1, green: 107 / 255, blue: 53 / 255, alpha: 1)
-        }
-    }
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
-private extension UIColor {
-    var swiftUIColor: Color {
-        Color(uiColor: self)
+struct ShareablePDFDocument: Identifiable {
+    let id = UUID()
+    let url: URL
+}
+
+private extension Bundle {
+    var ironScanDisplayVersion: String {
+        if let shortVersion = object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String,
+           !shortVersion.isEmpty {
+            return shortVersion
+        }
+        if let bundleVersion = object(forInfoDictionaryKey: "CFBundleVersion") as? String,
+           !bundleVersion.isEmpty {
+            return bundleVersion
+        }
+        return "Development"
     }
 }

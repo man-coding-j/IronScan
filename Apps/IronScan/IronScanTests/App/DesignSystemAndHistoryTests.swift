@@ -62,7 +62,9 @@ final class DesignSystemAndHistoryTests: XCTestCase {
             rejectionReasons: [],
             configurationIdentifier: "org.ironscan.test",
             configurationVersion: "1.0.0",
-            mode: .prototypeDemo
+            mode: .prototypeDemo,
+            calibrationCategory: .generalResearchProfile,
+            calibratedDecisionThreshold: 0.5
         )
     }
 }

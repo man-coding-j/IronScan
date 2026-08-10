@@ -25,7 +25,7 @@ enum CoreMLInferenceManagerError: LocalizedError {
     }
 }
 
-struct CoreMLInferenceManager {
+struct CoreMLInferenceManager: Sendable {
     func prepareCapturedFrame(
         _ frame: CapturedFrame,
         tissue: TissueSite,

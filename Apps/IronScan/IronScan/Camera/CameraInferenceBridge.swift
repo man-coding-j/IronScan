@@ -6,10 +6,10 @@ import Foundation
 final class CameraInferenceBridge: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, @unchecked Sendable {
     var onPreviewFrame: (@Sendable (AnalyzableFrame) -> Void)?
     var onInferenceFrame: (@Sendable (AnalyzableFrame) -> Void)?
-    private var inferenceThrottle = FrameStrideThrottle(stride: 24)
+    private var inferenceThrottle = FrameStrideThrottle(maximumRate: 4)
 
-    func configureInferenceStride(_ stride: Int) {
-        inferenceThrottle = FrameStrideThrottle(stride: stride)
+    func configureMaximumInferenceRate(_ maximumRate: Double) {
+        inferenceThrottle = FrameStrideThrottle(maximumRate: maximumRate)
     }
 
     func captureOutput(
@@ -17,17 +17,19 @@ final class CameraInferenceBridge: NSObject, AVCaptureVideoDataOutputSampleBuffe
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
-        guard CMSampleBufferDataIsReady(sampleBuffer),
-              let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
-            return
-        }
-        let frame = AnalyzableFrame(
-            pixelBuffer: pixelBuffer,
-            timestamp: CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-        )
-        onPreviewFrame?(frame)
-        if inferenceThrottle.shouldProcessNextFrame() {
-            onInferenceFrame?(frame)
+        autoreleasepool {
+            guard CMSampleBufferDataIsReady(sampleBuffer),
+                  let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+                return
+            }
+            let frame = AnalyzableFrame(
+                pixelBuffer: pixelBuffer,
+                timestamp: CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+            )
+            onPreviewFrame?(frame)
+            if inferenceThrottle.shouldProcessNextFrame(timestamp: frame.timestamp) {
+                onInferenceFrame?(frame)
+            }
         }
     }
 }

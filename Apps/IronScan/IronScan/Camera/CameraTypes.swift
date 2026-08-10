@@ -243,7 +243,7 @@ struct CameraConfiguration: Equatable, Sendable {
     var stabilizationTimeout: Duration = .seconds(5)
     var exposureTargetTolerance: Float = 0.35
     var maximumAnalysisRate: Double = 5
-    var liveInferenceFrameStride = 24
+    var maximumLiveInferenceRate: Double = 4
     var requiredStableFrames = 2
     var burstCount = 3
     var clippingThreshold = 0.08

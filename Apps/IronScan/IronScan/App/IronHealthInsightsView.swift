@@ -69,17 +69,27 @@ struct IronHealthInsightsView: View {
 
     var body: some View {
         if !insights.isEmpty {
-            VStack(alignment: .leading, spacing: 12) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Label("Iron education", systemImage: "lightbulb.fill")
-                        .font(.headline)
-                    Text("General information only—not a personalized diet or treatment plan.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+            if #available(iOS 26.0, *) {
+                GlassEffectContainer(spacing: 20) {
+                    insightsContent
                 }
-                ForEach(insights) { insight in
-                    insightCard(insight)
-                }
+            } else {
+                insightsContent
+            }
+        }
+    }
+
+    private var insightsContent: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 3) {
+                Label("Iron education", systemImage: "lightbulb.fill")
+                    .font(.headline)
+                Text("General information only—not a personalized diet or treatment plan.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            ForEach(insights) { insight in
+                insightCard(insight)
             }
         }
     }
@@ -101,12 +111,7 @@ struct IronHealthInsightsView: View {
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.regularMaterial)
-        .cornerRadius(24)
-        .overlay(
-            RoundedRectangle(cornerRadius: 24)
-                .stroke(Color.white.opacity(0.3), lineWidth: 1)
-        )
+        .liquidGlassCard(cornerRadius: 24, interactive: true)
         .foregroundColor(.primary)
     }
 }

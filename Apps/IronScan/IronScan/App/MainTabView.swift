@@ -36,111 +36,33 @@ struct MainTabView: View {
     @State private var selection = MainTab.home
 
     var body: some View {
-        GeometryReader { geometry in
-            let outerPadding = min(max(geometry.size.width * 0.05, 18), 42)
-            let contentWidth = min(geometry.size.width - (outerPadding * 2), 700)
+        TabView(selection: $selection) {
+                HistoryView(history: dependencies.history!)
+                    .tag(MainTab.history)
+                    .tabItem { Label(MainTab.history.title, systemImage: MainTab.history.symbol) }
 
-            ZStack(alignment: .bottom) {
-                IronScreenBackground()
-
-                Group {
-                    switch selection {
-                    case .home:
-                        HeroDashboardView {
-                            selection = .scan
-                        }
-                    case .history:
-                        HistoryView(history: dependencies.history!)
-                    case .scan:
-                        MultiScanHubView(inference: dependencies.multiTissueInference!) { result in
-                            Task {
-                                await dependencies.history?.saveScan(result)
-                            }
-                        }
-                    case .learn:
-                        LearnView(history: dependencies.history!)
-                    case .profile:
-                        ProfileView(history: dependencies.history!)
+                MultiScanHubView(inference: dependencies.multiTissueInference!) { result in
+                    Task {
+                        await dependencies.history?.saveScan(result)
                     }
                 }
-                .frame(maxWidth: contentWidth)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(.horizontal, outerPadding)
+                .tag(MainTab.scan)
+                .tabItem { Label(MainTab.scan.title, systemImage: MainTab.scan.symbol) }
 
-                tabBar
-                    .frame(maxWidth: min(contentWidth, 560))
-                    .padding(.horizontal, outerPadding)
-                    .padding(.bottom, 12)
-            }
-            .tint(IronTheme.terracottaPrimary)
-            .organicTypography()
-            .animation(.spring(response: 0.4, dampingFraction: 0.8), value: selection)
-            .task {
-                await dependencies.history?.fetchHistory()
-            }
+                LearnView(history: dependencies.history!)
+                    .tag(MainTab.learn)
+                    .tabItem { Label(MainTab.learn.title, systemImage: MainTab.learn.symbol) }
+
+                ProfileView(history: dependencies.history!)
+                    .tag(MainTab.profile)
+                    .tabItem { Label(MainTab.profile.title, systemImage: MainTab.profile.symbol) }
         }
-    }
-
-    private var tabBar: some View {
-        ZStack {
-            HStack(spacing: 0) {
-                tabButton(for: .home)
-                tabButton(for: .history)
-                Spacer(minLength: 90)
-                tabButton(for: .learn)
-                tabButton(for: .profile)
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .liquidGlassCard(cornerRadius: 28)
-
-            Button {
-                selection = .scan
-            } label: {
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    IronTheme.terracottaPrimary,
-                                    Color(red: 1, green: 126 / 255, blue: 76 / 255)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-
-                    Image(systemName: MainTab.scan.symbol)
-                        .font(.system(size: 26, weight: .bold))
-                        .foregroundStyle(.white)
-                }
-                .frame(width: 72, height: 72)
-                .overlay {
-                    Circle()
-                        .stroke(Color.white.opacity(0.8), lineWidth: 1)
-                }
-                .shadow(color: IronTheme.terracottaPrimary.opacity(0.26), radius: 18, y: 10)
-            }
-            .buttonStyle(.plain)
-            .offset(y: -26)
+        .tint(IronTheme.terracottaPrimary)
+        .organicTypography()
+        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: selection)
+        .task {
+            await dependencies.history?.fetchHistory()
         }
-    }
-
-    private func tabButton(for tab: MainTab) -> some View {
-        Button {
-            selection = tab
-        } label: {
-            VStack(spacing: 4) {
-                Image(systemName: tab.symbol)
-                    .font(.system(size: 18, weight: .semibold))
-                Text(tab.title)
-                    .font(.caption2.weight(.bold))
-            }
-            .foregroundStyle(selection == tab ? IronTheme.terracottaPrimary : IronTheme.textMuted)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-        }
-        .buttonStyle(.plain)
     }
 }
 
@@ -166,11 +88,7 @@ private struct HeroDashboardView: View {
                     Circle()
                         .fill(Color.white.opacity(0.54))
                         .frame(width: 256, height: 256)
-                        .background(.ultraThinMaterial, in: Circle())
-                        .overlay {
-                            Circle()
-                                .stroke(Color.white.opacity(0.84), lineWidth: 1)
-                        }
+                        .liquidGlassPanel(in: Circle(), interactive: false)
 
                     GlossyTerracottaDrop()
                         .frame(width: 126, height: 166)
@@ -197,6 +115,8 @@ private struct HeroDashboardView: View {
 
 struct HistoryView: View {
     @ObservedObject var history: ScanHistoryStore
+    @State private var shareDocument: ShareablePDFDocument?
+    @State private var exportError: String?
 
     private var points: [HistoryPoint] {
         if history.records.isEmpty {
@@ -284,8 +204,55 @@ struct HistoryView: View {
                 }
                 .padding(20)
                 .liquidGlassCard()
+
+                Button(action: exportPDF) {
+                    IronCTAButtonLabel(title: "Export PDF for Doctor")
+                }
+                .buttonStyle(OrganicPrimaryButtonStyle())
             }
             .padding(.bottom, 128)
+        }
+        .sheet(item: $shareDocument) { document in
+            ActivityShareSheet(activityItems: [document.url])
+        }
+        .alert("PDF Export Unavailable", isPresented: exportAlertBinding) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(exportError ?? "The PDF could not be created.")
+        }
+    }
+
+    private func tier(for score: Double) -> RiskBand {
+        switch score {
+        case ..<0.30:
+            RiskBand(title: "Low Risk", color: .green)
+        case ..<0.70:
+            RiskBand(title: "Moderate", color: .yellow)
+        default:
+            RiskBand(title: "High Risk", color: IronTheme.terracottaPrimary)
+        }
+    }
+
+    private func color(for band: RiskBand) -> Color {
+        band.color
+    }
+
+    private var exportAlertBinding: Binding<Bool> {
+        Binding(
+            get: { exportError != nil },
+            set: { if !$0 { exportError = nil } }
+        )
+    }
+
+    private func exportPDF() {
+        do {
+            let url = try PDFReportGenerator.shared.generateDoctorReport(
+                latestRecord: history.records.first,
+                history: history.records
+            )
+            shareDocument = ShareablePDFDocument(url: url)
+        } catch {
+            exportError = error.localizedDescription
         }
     }
 }
@@ -392,12 +359,7 @@ struct LearnView: View {
                 .foregroundStyle(IronTheme.textMuted)
         }
         .padding(20)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 26, style: .continuous)
-                .stroke(Color.white.opacity(0.82), lineWidth: 1)
-        }
-        .shadow(color: IronTheme.terracottaPrimary.opacity(0.12), radius: 18, y: 10)
+        .liquidGlassCard(cornerRadius: 26, interactive: true)
     }
 
     private var featuredRecommendationDetail: String {
@@ -413,6 +375,9 @@ struct LearnView: View {
 
 struct ProfileView: View {
     @ObservedObject var history: ScanHistoryStore
+    @AppStorage(DemographicStorageKeys.userAge) private var userAge = 18
+    @AppStorage(DemographicStorageKeys.userBiologicalSex) private var userBiologicalSex = UserBiologicalSex.other.rawValue
+    @AppStorage(DemographicStorageKeys.isPregnant) private var isPregnant = false
     @State private var remindersEnabled = true
 
     var body: some View {
@@ -460,9 +425,13 @@ struct ProfileView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Personal Info")
                             .font(IronTheme.roundedFont(.headline, weight: .bold))
-                        profileRow("Age Group", "18 – 25")
+                        profileRow("Age", "\(userAge)")
                         Divider()
-                        profileRow("Gender", "Female")
+                        profileRow("Biological Sex", userBiologicalSex)
+                        if userBiologicalSex == UserBiologicalSex.female.rawValue {
+                            Divider()
+                            profileRow("Pregnancy Status", isPregnant ? "Currently Pregnant" : "Not Pregnant")
+                        }
                         Divider()
                         profileRow("Saved Scans", "\(history.records.count)")
                     }
@@ -559,19 +528,4 @@ private struct HistoryPoint {
 private struct RiskBand {
     let title: String
     let color: Color
-}
-
-private func tier(for score: Double) -> RiskBand {
-    switch score {
-    case ..<0.30:
-        RiskBand(title: "Low Risk", color: .green)
-    case ..<0.70:
-        RiskBand(title: "Moderate", color: .yellow)
-    default:
-        RiskBand(title: "High Risk", color: IronTheme.terracottaPrimary)
-    }
-}
-
-private func color(for band: RiskBand) -> Color {
-    band.color
 }

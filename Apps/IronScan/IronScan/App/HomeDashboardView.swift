@@ -14,19 +14,25 @@ struct ScanHistoryRecord: Codable, Equatable, Identifiable, Sendable {
     let summary: OpticalRiskSummary
     let opticalPatternIndex: Double?
     let includedTissues: Int
+    let tissues: [String]
+    let calibrationCategoryRawValue: String
 
     init(
         id: UUID = UUID(),
         capturedAt: Date = Date(),
         summary: OpticalRiskSummary,
         opticalPatternIndex: Double?,
-        includedTissues: Int
+        includedTissues: Int,
+        tissues: [String] = [],
+        calibrationCategory: DemographicCalibrationCategory = .generalResearchProfile
     ) {
         self.id = id
         self.capturedAt = capturedAt
         self.summary = summary
         self.opticalPatternIndex = opticalPatternIndex
         self.includedTissues = includedTissues
+        self.tissues = tissues
+        calibrationCategoryRawValue = calibrationCategory.rawValue
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -35,6 +41,8 @@ struct ScanHistoryRecord: Codable, Equatable, Identifiable, Sendable {
         case summary
         case opticalPatternIndex
         case includedTissues
+        case tissues
+        case calibrationCategoryRawValue
     }
 
     init(from decoder: Decoder) throws {
@@ -45,6 +53,9 @@ struct ScanHistoryRecord: Codable, Equatable, Identifiable, Sendable {
         summary = OpticalRiskSummary(rawValue: summaryValue) ?? .unableToAssess
         opticalPatternIndex = try container.decodeIfPresent(Double.self, forKey: .opticalPatternIndex)
         includedTissues = try container.decode(Int.self, forKey: .includedTissues)
+        tissues = try container.decodeIfPresent([String].self, forKey: .tissues) ?? []
+        calibrationCategoryRawValue = try container.decodeIfPresent(String.self, forKey: .calibrationCategoryRawValue)
+            ?? DemographicCalibrationCategory.generalResearchProfile.rawValue
     }
 
     func encode(to encoder: Encoder) throws {
@@ -54,6 +65,12 @@ struct ScanHistoryRecord: Codable, Equatable, Identifiable, Sendable {
         try container.encode(summary.rawValue, forKey: .summary)
         try container.encodeIfPresent(opticalPatternIndex, forKey: .opticalPatternIndex)
         try container.encode(includedTissues, forKey: .includedTissues)
+        try container.encode(tissues, forKey: .tissues)
+        try container.encode(calibrationCategoryRawValue, forKey: .calibrationCategoryRawValue)
+    }
+
+    var calibrationCategory: DemographicCalibrationCategory {
+        DemographicCalibrationCategory(rawValue: calibrationCategoryRawValue) ?? .generalResearchProfile
     }
 }
 
@@ -78,7 +95,11 @@ final class ScanHistoryStore: ObservableObject {
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         records = []
-        userProfile = nil
+        let profile = DemographicProfileStore.load(defaults: defaults)
+        userProfile = ScanUserProfile(
+            age: profile.age.map { String($0) },
+            gender: profile.biologicalSex.rawValue
+        )
         persistenceError = nil
         guard let data = defaults.data(forKey: Self.storageKey) else { return }
         do {
@@ -94,7 +115,9 @@ final class ScanHistoryStore: ObservableObject {
             capturedAt: capturedAt,
             summary: result.summary,
             opticalPatternIndex: result.opticalPallorIndex,
-            includedTissues: result.contributions.filter { $0.status == .included }.count
+            includedTissues: result.contributions.filter { $0.status == .included }.count,
+            tissues: result.contributions.map { $0.tissue.glassTitle },
+            calibrationCategory: result.calibrationCategory
         )
         insert(record)
     }
@@ -105,7 +128,9 @@ final class ScanHistoryStore: ObservableObject {
             capturedAt: capturedAt,
             summary: result.summary,
             opticalPatternIndex: result.opticalPallorIndex,
-            includedTissues: result.contributions.filter { $0.status == .included }.count
+            includedTissues: result.contributions.filter { $0.status == .included }.count,
+            tissues: result.contributions.map { $0.tissue.glassTitle },
+            calibrationCategory: result.calibrationCategory
         )
         insert(record)
 
@@ -115,7 +140,8 @@ final class ScanHistoryStore: ObservableObject {
         var payload: [String: Any] = [
             "timestamp": Timestamp(date: capturedAt),
             "anemiaRiskLevel": result.summary.rawValue,
-            "tissuesScanned": result.contributions.map(\.tissue.rawValue)
+            "tissuesScanned": result.contributions.map(\.tissue.rawValue),
+            "calibrationCategory": result.calibrationCategory.rawValue
         ]
         if let confidenceScore = result.opticalPallorIndex {
             payload["confidenceScore"] = confidenceScore
@@ -135,11 +161,13 @@ final class ScanHistoryStore: ObservableObject {
     }
 
     func fetchHistory() async {
+        syncUserProfileFromLocalDefaults()
         #if canImport(FirebaseAuth) && canImport(FirebaseFirestore)
         guard let user = Auth.auth().currentUser else { return }
 
         do {
             let database = Firestore.firestore()
+            let localProfile = DemographicProfileStore.load(defaults: defaults)
             let userSnapshot = try await database
                 .collection("users")
                 .document(user.uid)
@@ -147,8 +175,8 @@ final class ScanHistoryStore: ObservableObject {
 
             if userSnapshot.exists {
                 userProfile = ScanUserProfile(
-                    age: userSnapshot.get("age") as? String,
-                    gender: userSnapshot.get("gender") as? String
+                    age: localProfile.age.map { String($0) } ?? (userSnapshot.get("age") as? String),
+                    gender: localProfile.biologicalSex.rawValue
                 )
             }
 
@@ -165,13 +193,17 @@ final class ScanHistoryStore: ObservableObject {
                 let summaryRawValue = document.get("anemiaRiskLevel") as? String ?? OpticalRiskSummary.unableToAssess.rawValue
                 let tissuesScanned = document.get("tissuesScanned") as? [String] ?? []
                 let confidenceScore = document.get("confidenceScore") as? Double
+                let calibrationRawValue = document.get("calibrationCategory") as? String
+                    ?? DemographicCalibrationCategory.generalResearchProfile.rawValue
 
                 return ScanHistoryRecord(
                     id: UUID(uuidString: document.documentID) ?? UUID(),
                     capturedAt: timestamp,
                     summary: OpticalRiskSummary(rawValue: summaryRawValue) ?? .unableToAssess,
                     opticalPatternIndex: confidenceScore,
-                    includedTissues: tissuesScanned.count
+                    includedTissues: tissuesScanned.count,
+                    tissues: tissuesScanned.map(Self.displayName(for:)),
+                    calibrationCategory: DemographicCalibrationCategory(rawValue: calibrationRawValue) ?? .generalResearchProfile
                 )
             }
             persist()
@@ -202,12 +234,35 @@ final class ScanHistoryStore: ObservableObject {
             records.removeLast(records.count - Self.maximumRecordCount)
         }
         persist()
+        syncUserProfileFromLocalDefaults()
+    }
+
+    private func syncUserProfileFromLocalDefaults() {
+        let profile = DemographicProfileStore.load(defaults: defaults)
+        userProfile = ScanUserProfile(
+            age: profile.age.map { String($0) },
+            gender: profile.biologicalSex.rawValue
+        )
+    }
+
+    private static func displayName(for rawTissue: String) -> String {
+        switch TissueSite(rawValue: rawTissue) {
+        case .eye:
+            return TissueSite.eye.glassTitle
+        case .nail:
+            return TissueSite.nail.glassTitle
+        case .tongue:
+            return TissueSite.tongue.glassTitle
+        case .none:
+            return rawTissue.capitalized
+        }
     }
 }
 
 struct HomeDashboardView: View {
     @ObservedObject var history: ScanHistoryStore
     let startScan: () -> Void
+    @Namespace private var dashboardGlassNamespace
 
     private var latest: ScanHistoryRecord? {
         history.records.first
@@ -229,11 +284,17 @@ struct HomeDashboardView: View {
                     privacyNote
                 }
                 .padding(.horizontal, 18)
-                .padding(.top, 12)
+                .padding(.top, 8)
                 .padding(.bottom, 120)
             }
             .background(IronTheme.mintBackground.ignoresSafeArea())
-            .toolbar(.hidden, for: .navigationBar)
+            .safeAreaInset(edge: .top) {
+                dashboardFloatingActions
+                    .padding(.horizontal, 18)
+                    .padding(.top, 6)
+            }
+            .navigationTitle("Dashboard")
+            .navigationBarTitleDisplayMode(.large)
         }
     }
 
@@ -281,7 +342,7 @@ struct HomeDashboardView: View {
             Spacer()
         }
         .padding(18)
-        .liquidGlassCard()
+        .dashboardContentCard()
     }
 
     private var trendCard: some View {
@@ -330,7 +391,7 @@ struct HomeDashboardView: View {
             }
         }
         .padding(18)
-        .liquidGlassCard()
+        .dashboardContentCard()
     }
 
     private var recentScans: some View {
@@ -350,7 +411,7 @@ struct HomeDashboardView: View {
                     .foregroundStyle(.secondary)
                     .padding(18)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .liquidGlassCard(cornerRadius: 20)
+                    .dashboardContentCard(cornerRadius: 20)
             } else {
                 ScrollView(.horizontal) {
                     LazyHStack(spacing: 12) {
@@ -384,7 +445,38 @@ struct HomeDashboardView: View {
         }
         .padding(16)
         .frame(width: 210, height: 130, alignment: .topLeading)
-        .liquidGlassCard(cornerRadius: 20)
+        .dashboardContentCard(cornerRadius: 20)
+    }
+
+    private var dashboardFloatingActions: some View {
+        HStack {
+            Spacer()
+
+            if #available(iOS 26.0, *) {
+                GlassEffectContainer(spacing: 12) {
+                    HStack(spacing: 12) {
+                        dashboardToggle(title: "History", systemName: "clock.arrow.circlepath", id: "dashboard.history")
+                        dashboardToggle(title: "Saved", systemName: "photo.on.rectangle", id: "dashboard.saved")
+                        dashboardToggle(title: "Latest", systemName: "waveform.path.ecg", id: "dashboard.latest")
+                    }
+                }
+            } else {
+                HStack(spacing: 12) {
+                    dashboardToggle(title: "History", systemName: "clock.arrow.circlepath", id: "dashboard.history")
+                    dashboardToggle(title: "Saved", systemName: "photo.on.rectangle", id: "dashboard.saved")
+                    dashboardToggle(title: "Latest", systemName: "waveform.path.ecg", id: "dashboard.latest")
+                }
+            }
+        }
+    }
+
+    private func dashboardToggle(title: String, systemName: String, id: String) -> some View {
+        Label(title, systemImage: systemName)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.primary)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .dashboardGlassCapsule(id: id, in: dashboardGlassNamespace)
     }
 
     private var privacyNote: some View {
@@ -446,5 +538,39 @@ struct HomeDashboardView: View {
         case .possibleAnemiaRisk: IronTheme.warning
         case .unableToAssess: .gray
         }
+    }
+}
+
+private struct DashboardGlassCapsuleModifier: ViewModifier {
+    let id: String
+    let namespace: Namespace.ID
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .glassEffect(.regular.interactive(), in: Capsule())
+                .glassEffectID(id, in: namespace)
+        } else {
+            content
+                .background(.ultraThinMaterial, in: Capsule())
+                .overlay {
+                    Capsule().stroke(Color.white.opacity(0.35), lineWidth: 0.8)
+                }
+        }
+    }
+}
+
+private extension View {
+    func dashboardContentCard(cornerRadius: CGFloat = 24) -> some View {
+        background(.regularMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .stroke(Color.white.opacity(0.35), lineWidth: 0.8)
+            }
+    }
+
+    func dashboardGlassCapsule(id: String, in namespace: Namespace.ID) -> some View {
+        modifier(DashboardGlassCapsuleModifier(id: id, namespace: namespace))
     }
 }

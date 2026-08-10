@@ -326,7 +326,7 @@ actor CameraSessionActor: CameraSessionControlling {
         inferenceBridge.onPreviewFrame = { frame in
             Task { await processor.submit(frame) }
         }
-        inferenceBridge.configureInferenceStride(configuration.liveInferenceFrameStride)
+        inferenceBridge.configureMaximumInferenceRate(configuration.maximumLiveInferenceRate)
         inferenceBridge.onInferenceFrame = { [weak self] frame in
             Task { await self?.publishLiveFrame(frame) }
         }

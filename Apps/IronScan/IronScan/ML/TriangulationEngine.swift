@@ -28,6 +28,7 @@ struct TriangulationConfiguration: Equatable, Sendable {
     let inverseVarianceEpsilon: Double
     let highVarianceThreshold: Double
     let decisionThreshold: Double
+    let calibrationCategory: DemographicCalibrationCategory
     let modelVersions: [TissueSite: String]
     let preprocessingVersions: [TissueSite: String]
 
@@ -39,6 +40,7 @@ struct TriangulationConfiguration: Equatable, Sendable {
         inverseVarianceEpsilon: Double = 0.001,
         highVarianceThreshold: Double = 0.15,
         decisionThreshold: Double,
+        calibrationCategory: DemographicCalibrationCategory = .generalResearchProfile,
         modelVersions: [TissueSite: String],
         preprocessingVersions: [TissueSite: String]
     ) throws {
@@ -75,6 +77,7 @@ struct TriangulationConfiguration: Equatable, Sendable {
         self.inverseVarianceEpsilon = inverseVarianceEpsilon
         self.highVarianceThreshold = highVarianceThreshold
         self.decisionThreshold = decisionThreshold
+        self.calibrationCategory = calibrationCategory
         self.modelVersions = modelVersions
         self.preprocessingVersions = preprocessingVersions
     }
@@ -179,6 +182,8 @@ struct TriangulationResult: Equatable, Sendable {
     let configurationIdentifier: String
     let configurationVersion: String
     let mode: TriangulationMode
+    let calibrationCategory: DemographicCalibrationCategory
+    let calibratedDecisionThreshold: Double
 
     func contribution(for tissue: TissueSite) -> TissueContribution? {
         contributions.first { $0.tissue == tissue }
@@ -272,7 +277,9 @@ struct TriangulationEngine: Sendable {
                     : rejectionReasons,
                 configurationIdentifier: configuration.identifier,
                 configurationVersion: configuration.semanticVersion,
-                mode: configuration.mode
+                mode: configuration.mode,
+                calibrationCategory: configuration.calibrationCategory,
+                calibratedDecisionThreshold: configuration.decisionThreshold
             )
         }
 
@@ -308,7 +315,9 @@ struct TriangulationEngine: Sendable {
             rejectionReasons: rejectionReasons,
             configurationIdentifier: configuration.identifier,
             configurationVersion: configuration.semanticVersion,
-            mode: configuration.mode
+            mode: configuration.mode,
+            calibrationCategory: configuration.calibrationCategory,
+            calibratedDecisionThreshold: configuration.decisionThreshold
         )
     }
 
@@ -347,7 +356,9 @@ struct TriangulationEngine: Sendable {
             rejectionReasons: [reason],
             configurationIdentifier: configuration.identifier,
             configurationVersion: configuration.semanticVersion,
-            mode: configuration.mode
+            mode: configuration.mode,
+            calibrationCategory: configuration.calibrationCategory,
+            calibratedDecisionThreshold: configuration.decisionThreshold
         )
     }
 }

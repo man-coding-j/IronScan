@@ -122,6 +122,7 @@ private final class PreviewView: UIView {
 
     func updateConnection() {
         guard let connection = previewLayer.connection else { return }
+        connection.isEnabled = true
         if #available(iOS 17.0, *) {
             let angle = captureOrientation.videoRotationAngle
             if connection.isVideoRotationAngleSupported(angle) {

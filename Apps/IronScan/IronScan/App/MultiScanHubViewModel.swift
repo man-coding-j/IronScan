@@ -38,6 +38,7 @@ final class MultiScanHubViewModel: ObservableObject {
     private let coreMLInferenceManager = CoreMLInferenceManager()
     private let triangulation = TriangulationEngine()
     private let haptics = ScanHapticsManager()
+    private let liveInferenceMaximumRate: Double = 4
     private var readiness: MultiTissueReadiness?
     private var latestQuality = QualityObservation.unavailable
     private var capturedFrames: [TissueSite: CapturedFrame] = [:]
@@ -46,6 +47,7 @@ final class MultiScanHubViewModel: ObservableObject {
     private var liveEyeTask: Task<Void, Never>?
     private var motionTask: Task<Void, Never>?
     private var autoCaptureTask: Task<Void, Never>?
+    private var lastLiveInferenceStartedAt: ContinuousClock.Instant?
 
     init(
         camera: any CameraSessionControlling = CameraControllerFactory.makeDefault(),
@@ -273,7 +275,8 @@ final class MultiScanHubViewModel: ObservableObject {
               cameraState == .ready,
               !isBusy,
               !isSwitchingCamera,
-              liveEyeTask == nil else {
+              liveEyeTask == nil,
+              shouldStartLiveInference() else {
             return
         }
         let tissue = currentTissue
@@ -281,7 +284,11 @@ final class MultiScanHubViewModel: ObservableObject {
         let isAutoCaptureEnabled = isAutoCaptureEnabled
         let usesSyntheticAlignment = previewSource.isSimulated && latestQuality.readiness == .ready
         liveEyeTask = Task { [weak self, inference, autoCaptureManager] in
-            defer { self?.liveEyeTask = nil }
+            defer {
+                Task { @MainActor [weak self] in
+                    self?.liveEyeTask = nil
+                }
+            }
             if isAutoCaptureEnabled {
                 do {
                     try await Task.detached(priority: .userInitiated) {
@@ -293,7 +300,9 @@ final class MultiScanHubViewModel: ObservableObject {
                         )
                     }.value
                 } catch {
-                    self?.statusText = "Automatic alignment is unavailable. Use manual capture."
+                    await MainActor.run {
+                        self?.statusText = "Automatic alignment is unavailable. Use manual capture."
+                    }
                     await autoCaptureManager.reset(for: tissue)
                 }
             }
@@ -303,21 +312,27 @@ final class MultiScanHubViewModel: ObservableObject {
                     try await inference.assessEyePreview(pixelBuffer: frame.pixelBuffer)
                 }.value
                 guard !Task.isCancelled else { return }
-                self?.eyePredictiveUncertainty = assessment.predictiveUncertainty
-                self?.eyeGuidanceText = assessment.uncertaintyAccepted
-                    ? "Conjunctiva located — hold still"
-                    : "High image uncertainty: move to better lighting and lower your eyelid to expose the conjunctiva."
+                await MainActor.run {
+                    self?.eyePredictiveUncertainty = assessment.predictiveUncertainty
+                    self?.eyeGuidanceText = assessment.uncertaintyAccepted
+                        ? "Conjunctiva located — hold still"
+                        : "High image uncertainty: move to better lighting and lower your eyelid to expose the conjunctiva."
+                }
             } catch let error as ConjunctivaCropError {
-                self?.eyePredictiveUncertainty = nil
-                self?.eyeGuidanceText = switch error {
-                case .faceNotDetected:
-                    "Center your face and eye inside the guide."
-                case .eyeLandmarksNotDetected, .regionTooSmall:
-                    "Lower your eyelid so the conjunctiva is clearly visible."
+                await MainActor.run {
+                    self?.eyePredictiveUncertainty = nil
+                    self?.eyeGuidanceText = switch error {
+                    case .faceNotDetected:
+                        "Center your face and eye inside the guide."
+                    case .eyeLandmarksNotDetected, .regionTooSmall:
+                        "Lower your eyelid so the conjunctiva is clearly visible."
+                    }
                 }
             } catch {
-                self?.eyePredictiveUncertainty = nil
-                self?.eyeGuidanceText = "Hold still while the eye region is checked."
+                await MainActor.run {
+                    self?.eyePredictiveUncertainty = nil
+                    self?.eyeGuidanceText = "Hold still while the eye region is checked."
+                }
             }
         }
     }
@@ -330,49 +345,74 @@ final class MultiScanHubViewModel: ObservableObject {
         isBusy = true
         lastError = nil
         let tissue = currentTissue
-        let preparedFrame: CapturedFrame
-        if tissue == .tongue {
-            do {
-                let payload = try coreMLInferenceManager.prepareCapturedFrame(
-                    frame,
-                    tissue: tissue,
-                    lensPosition: lensPosition,
-                    captureOrientation: captureOrientation
-                )
-                guard let previewImage = payload.previewImage else {
-                    fail("Scan incomplete. Please retake the tongue photo.")
-                    return
-                }
-                latestTongueImage = previewImage
-                preparedFrame = payload.frame
-                isAnalyzingTongueCapture = true
-            } catch {
-                fail("Scan incomplete. Please retake the tongue photo.")
-                return
-            }
-        } else {
-            preparedFrame = frame
-        }
+        let lensPosition = lensPosition
+        let captureOrientation = captureOrientation
         processingTask?.cancel()
-        processingTask = Task { [weak self, inference] in
+        processingTask = Task { [weak self, inference, coreMLInferenceManager] in
             do {
+                let preparedFrame: CapturedFrame
+                if tissue == .tongue {
+                    await MainActor.run {
+                        self?.isAnalyzingTongueCapture = true
+                    }
+                    let payload = try await Task.detached(priority: .userInitiated) {
+                        try coreMLInferenceManager.prepareCapturedFrame(
+                            frame,
+                            tissue: tissue,
+                            lensPosition: lensPosition,
+                            captureOrientation: captureOrientation
+                        )
+                    }.value
+                    guard let previewImage = payload.previewImage else {
+                        await MainActor.run {
+                            self?.fail("Scan incomplete. Please retake the tongue photo.")
+                        }
+                        return
+                    }
+                    await MainActor.run {
+                        self?.latestTongueImage = previewImage
+                    }
+                    preparedFrame = payload.frame
+                } else {
+                    preparedFrame = frame
+                }
+
                 let output = try await Task.detached(priority: .userInitiated) {
                     try await inference.predict(frame: preparedFrame, tissue: tissue)
                 }.value
                 guard !Task.isCancelled else { return }
                 guard output.qualityAccepted else {
-                    self?.fail(output.rejectionReasons.first ?? "Capture quality was not accepted")
+                    await MainActor.run {
+                        self?.fail(output.rejectionReasons.first ?? "Capture quality was not accepted")
+                    }
                     return
                 }
-                self?.completedOutputs[tissue] = output
-                self?.capturedFrames[tissue] = preparedFrame
-                self?.advance(after: tissue)
+                await MainActor.run {
+                    self?.completedOutputs[tissue] = output
+                    self?.capturedFrames[tissue] = preparedFrame
+                    self?.advance(after: tissue)
+                }
             } catch let error as ConjunctivaCropError {
-                self?.fail(self?.conjunctivaMessage(for: error) ?? "Unable to locate the conjunctiva")
+                await MainActor.run {
+                    self?.fail(self?.conjunctivaMessage(for: error) ?? "Unable to locate the conjunctiva")
+                }
             } catch {
-                self?.fail("Unable to process the \(tissue.displayName.lowercased()) image: \(error.localizedDescription)")
+                await MainActor.run {
+                    self?.fail("Unable to process the \(tissue.displayName.lowercased()) image: \(error.localizedDescription)")
+                }
             }
         }
+    }
+
+    private func shouldStartLiveInference() -> Bool {
+        let now = ContinuousClock.now
+        let minimumInterval = Duration.seconds(1 / max(liveInferenceMaximumRate, 0.1))
+        if let lastLiveInferenceStartedAt,
+           lastLiveInferenceStartedAt.duration(to: now) < minimumInterval {
+            return false
+        }
+        lastLiveInferenceStartedAt = now
+        return true
     }
 
     private func advance(after tissue: TissueSite) {
@@ -410,11 +450,13 @@ final class MultiScanHubViewModel: ObservableObject {
             return
         }
         do {
+            let demographicCalibration = DemographicProfileStore.calibration()
             let configuration = try TriangulationConfiguration(
                 identifier: "org.ironscan.prototype-demo.triangulation",
                 semanticVersion: "0.2.0-engineering.1",
                 mode: .prototypeDemo,
-                decisionThreshold: 0.5,
+                decisionThreshold: demographicCalibration.decisionThreshold,
+                calibrationCategory: demographicCalibration.category,
                 modelVersions: readiness.modelVersions,
                 preprocessingVersions: readiness.preprocessingVersions
             )
