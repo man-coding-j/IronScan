@@ -72,12 +72,14 @@
 		A3C57300BFF390AB1770B7AF /* CameraProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB6AA327A15381DF435F33B6 /* CameraProtocols.swift */; };
 		A5FE700388FF3C4A5F529939 /* ModelManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA1A790A7584C9AE802FA3F /* ModelManifest.swift */; };
 		A7C409CDD3BE36F377D186E1 /* GoldenInputs in Resources */ = {isa = PBXBuildFile; fileRef = B331AFD4156DE3F78DBC23CA /* GoldenInputs */; };
+		AA0000000000000000000001 /* Models in Resources */ = {isa = PBXBuildFile; fileRef = 0D7A23A682BDA80B83764377 /* Models */; };
 		AB93B24C5E4DF15EAB3223F6 /* HomeDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BBB970EAF7F97D55BFCFF8 /* HomeDashboardView.swift */; };
 		AD670F0E966AFF3A67DD2ABE /* GeneratedModelInterfaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B0FAA5331B7ED8A17F1476 /* GeneratedModelInterfaces.swift */; };
 		B23CAF3130198BD0004DF14C /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = B23CAF3030198BD0004DF14C /* FirebaseAuth */; };
 		B23CAF3330198BDF004DF14C /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = B23CAF3230198BDF004DF14C /* FirebaseCore */; settings = {ATTRIBUTES = (Required, ); }; };
 		B23CAF3530198BE6004DF14C /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = B23CAF3430198BE6004DF14C /* FirebaseFirestore */; };
 		B23CAF3B3019C454004DF14C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B23CAF3A3019C454004DF14C /* GoogleService-Info.plist */; };
+		B24E6D8830323F83004593E8 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = B24E6D8730323F83004593E8 /* Supabase */; };
 		B4247B4B0D0BEF810488F2DC /* AvailabilityEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF081E85AE18E47ECCDE44FF /* AvailabilityEngine.swift */; };
 		B48EBF54043AA3DE398AF662 /* CameraTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1428C9A7E7B879C5CD7864D /* CameraTypes.swift */; };
 		B524FEDF784AAC5670D77161 /* CalibrationTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 360F897047DC964664E5CBF6 /* CalibrationTypes.swift */; };
@@ -97,7 +99,6 @@
 		D19E3E2A28862730646F0F99 /* LatestFrameProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C687323CDFF8CBFB6C28AF /* LatestFrameProcessor.swift */; };
 		D4C035BD0CD8F4E0C9D9A9C4 /* MultiScanHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D654FBEECD0C973CF6F522A /* MultiScanHubView.swift */; };
 		D757A71B1B455A8D86C15A79 /* Models in Resources */ = {isa = PBXBuildFile; fileRef = 0D7A23A682BDA80B83764377 /* Models */; };
-		AA0000000000000000000001 /* Models in Resources */ = {isa = PBXBuildFile; fileRef = 0D7A23A682BDA80B83764377 /* Models */; };
 		DE636CBC229FD1ABEEE56EB1 /* PersonalizedPlanEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4457EDACDD6892570E750178 /* PersonalizedPlanEngineTests.swift */; };
 		E377DC54A9943F538E1ABB5F /* ScanPipelineActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649273439084E53AF490FF85 /* ScanPipelineActor.swift */; };
 		E39D3072EA64EFDFFB731631 /* ScanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A9EE179039AF10C116D439 /* ScanViewModel.swift */; };
@@ -233,6 +234,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B24E6D8830323F83004593E8 /* Supabase in Frameworks */,
 				B23CAF3330198BDF004DF14C /* FirebaseCore in Frameworks */,
 				B23CAF3130198BD0004DF14C /* FirebaseAuth in Frameworks */,
 				B23CAF3530198BE6004DF14C /* FirebaseFirestore in Frameworks */,
@@ -521,6 +523,7 @@
 				B23CAF3030198BD0004DF14C /* FirebaseAuth */,
 				B23CAF3230198BDF004DF14C /* FirebaseCore */,
 				B23CAF3430198BE6004DF14C /* FirebaseFirestore */,
+				B24E6D8730323F83004593E8 /* Supabase */,
 			);
 			productName = IronScan;
 			productReference = 5AE95ECB149F429B61206F24 /* IronScan.app */;
@@ -551,6 +554,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				B23CAF2E30198BB4004DF14C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				B24E6D8630323F83004593E8 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D75E8C5F8D7C0E3A66A4BE3E /* Products */;
@@ -955,6 +959,14 @@
 				minimumVersion = 12.17.0;
 			};
 		};
+		B24E6D8630323F83004593E8 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -972,6 +984,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B23CAF2E30198BB4004DF14C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		B24E6D8730323F83004593E8 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B24E6D8630323F83004593E8 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

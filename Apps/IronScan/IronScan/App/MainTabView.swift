@@ -1,6 +1,14 @@
 import Charts
 import SwiftUI
 
+enum UserBiologicalSex: String, Codable, CaseIterable, Identifiable {
+    case male = "Male"
+    case female = "Female"
+    case other = "Other"
+
+    var id: String { rawValue }
+}
+
 enum MainTab: String, CaseIterable, Identifiable {
     case home
     case history
@@ -36,26 +44,39 @@ struct MainTabView: View {
     @State private var selection = MainTab.home
 
     var body: some View {
-        TabView(selection: $selection) {
-                HistoryView(history: dependencies.history!)
-                    .tag(MainTab.history)
-                    .tabItem { Label(MainTab.history.title, systemImage: MainTab.history.symbol) }
-
-                MultiScanHubView(inference: dependencies.multiTissueInference!) { result in
-                    Task {
-                        await dependencies.history?.saveScan(result)
+        Group {
+            if let history = dependencies.history,
+               let inference = dependencies.multiTissueInference {
+                TabView(selection: $selection) {
+                    HomeDashboardView(history: history) {
+                        selection = .scan
                     }
+                    .tag(MainTab.home)
+                    .tabItem { Label(MainTab.home.title, systemImage: MainTab.home.symbol) }
+
+                    HistoryView(history: history)
+                        .tag(MainTab.history)
+                        .tabItem { Label(MainTab.history.title, systemImage: MainTab.history.symbol) }
+
+                    MultiScanHubView(inference: inference) { result in
+                        Task {
+                            await history.saveScan(result)
+                        }
+                    }
+                    .tag(MainTab.scan)
+                    .tabItem { Label(MainTab.scan.title, systemImage: MainTab.scan.symbol) }
+
+                    LearnView(history: history)
+                        .tag(MainTab.learn)
+                        .tabItem { Label(MainTab.learn.title, systemImage: MainTab.learn.symbol) }
+
+                    ProfileView(history: history)
+                        .tag(MainTab.profile)
+                        .tabItem { Label(MainTab.profile.title, systemImage: MainTab.profile.symbol) }
                 }
-                .tag(MainTab.scan)
-                .tabItem { Label(MainTab.scan.title, systemImage: MainTab.scan.symbol) }
-
-                LearnView(history: dependencies.history!)
-                    .tag(MainTab.learn)
-                    .tabItem { Label(MainTab.learn.title, systemImage: MainTab.learn.symbol) }
-
-                ProfileView(history: dependencies.history!)
-                    .tag(MainTab.profile)
-                    .tabItem { Label(MainTab.profile.title, systemImage: MainTab.profile.symbol) }
+            } else {
+                ProgressView("Loading history")
+            }
         }
         .tint(IronTheme.terracottaPrimary)
         .organicTypography()
@@ -119,16 +140,6 @@ struct HistoryView: View {
     @State private var exportError: String?
 
     private var points: [HistoryPoint] {
-        if history.records.isEmpty {
-            return [
-                HistoryPoint(label: "May 1", score: 0.38, color: .yellow),
-                HistoryPoint(label: "May 15", score: 0.28, color: .green),
-                HistoryPoint(label: "May 30", score: 0.45, color: .yellow),
-                HistoryPoint(label: "Jun 14", score: 0.32, color: .green),
-                HistoryPoint(label: "Today", score: 0.58, color: IronTheme.terracottaPrimary)
-            ]
-        }
-
         let formatter = DateFormatter()
         formatter.setLocalizedDateFormatFromTemplate("MMM d")
         return history.records
@@ -158,46 +169,64 @@ struct HistoryView: View {
                 }
                 .padding(.top, 16)
 
-                VStack(alignment: .leading, spacing: 16) {
-                    Chart(Array(points.enumerated()), id: \.offset) { _, point in
-                        LineMark(
-                            x: .value("Date", point.label),
-                            y: .value("Score", point.score)
-                        )
-                        .foregroundStyle(IronTheme.sageAccent)
-                        .interpolationMethod(.catmullRom)
+                Group {
+                    if points.isEmpty {
+                        VStack(spacing: 14) {
+                            Image(systemName: "chart.line.uptrend.xyaxis")
+                                .font(.system(size: 30, weight: .semibold))
+                                .foregroundStyle(IronTheme.textMuted)
+                            Text("No scans yet")
+                                .font(IronTheme.roundedFont(.headline, weight: .bold))
+                                .foregroundStyle(IronTheme.textSlate)
+                            Text("Take your first scan to see your trends!")
+                                .font(IronTheme.roundedFont(.subheadline))
+                                .foregroundStyle(IronTheme.textMuted)
+                                .multilineTextAlignment(.center)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 180)
+                    } else {
+                        VStack(alignment: .leading, spacing: 16) {
+                            Chart(Array(points.enumerated()), id: \.offset) { _, point in
+                                LineMark(
+                                    x: .value("Date", point.label),
+                                    y: .value("Score", point.score)
+                                )
+                                .foregroundStyle(IronTheme.sageAccent)
+                                .interpolationMethod(.catmullRom)
 
-                        PointMark(
-                            x: .value("Date", point.label),
-                            y: .value("Score", point.score)
-                        )
-                        .foregroundStyle(point.color)
-                        .symbolSize(90)
-                    }
-                    .chartYScale(domain: 0 ... 1)
-                    .chartYAxis(.hidden)
-                    .frame(height: 180)
-
-                    VStack(spacing: 0) {
-                        ForEach(Array(points.enumerated()), id: \.offset) { index, point in
-                            HStack {
-                                Text(point.label)
-                                    .foregroundStyle(IronTheme.textMuted)
-                                Spacer()
-                                Text(point.score.formatted(.number.precision(.fractionLength(2))))
-                                    .fontWeight(.bold)
-                                Text(tier(for: point.score).title)
-                                    .font(.caption.weight(.bold))
-                                    .foregroundStyle(color(for: tier(for: point.score)))
-                                Circle()
-                                    .fill(color(for: tier(for: point.score)))
-                                    .frame(width: 8, height: 8)
+                                PointMark(
+                                    x: .value("Date", point.label),
+                                    y: .value("Score", point.score)
+                                )
+                                .foregroundStyle(point.color)
+                                .symbolSize(90)
                             }
-                            .font(IronTheme.roundedFont(.subheadline))
-                            .padding(.vertical, 14)
+                            .chartYScale(domain: 0 ... 1)
+                            .chartYAxis(.hidden)
+                            .frame(height: 180)
 
-                            if index < points.count - 1 {
-                                Divider()
+                            VStack(spacing: 0) {
+                                ForEach(Array(points.enumerated()), id: \.offset) { index, point in
+                                    HStack {
+                                        Text(point.label)
+                                            .foregroundStyle(IronTheme.textMuted)
+                                        Spacer()
+                                        Text(point.score.formatted(.number.precision(.fractionLength(2))))
+                                            .fontWeight(.bold)
+                                        Text(tier(for: point.score).title)
+                                            .font(.caption.weight(.bold))
+                                            .foregroundStyle(color(for: tier(for: point.score)))
+                                        Circle()
+                                            .fill(color(for: tier(for: point.score)))
+                                            .frame(width: 8, height: 8)
+                                    }
+                                    .font(IronTheme.roundedFont(.subheadline))
+                                    .padding(.vertical, 14)
+
+                                    if index < points.count - 1 {
+                                        Divider()
+                                    }
+                                }
                             }
                         }
                     }
@@ -245,14 +274,10 @@ struct HistoryView: View {
     }
 
     private func exportPDF() {
-        do {
-            let url = try PDFReportGenerator.shared.generateDoctorReport(
-                latestRecord: history.records.first,
-                history: history.records
-            )
+        if let url = PDFReportGenerator.generateReport(for: history.records.first, history: history.records) {
             shareDocument = ShareablePDFDocument(url: url)
-        } catch {
-            exportError = error.localizedDescription
+        } else {
+            exportError = "The PDF could not be created."
         }
     }
 }
@@ -303,8 +328,8 @@ struct LearnView: View {
     }
 
     private var personalizedArticles: [LearnArticle] {
-        let isHighRisk = latestScan?.summary == .possibleAnemiaRisk
-        let isFemale = history.userProfile?.gender?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "female"
+        let isHighRisk = latestScan?.summary == OpticalRiskSummary.possibleAnemiaRisk.rawValue
+        let isFemale = history.userProfile?.gender?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).lowercased() == "female"
 
         return allArticles
             .map { article in
@@ -363,10 +388,10 @@ struct LearnView: View {
     }
 
     private var featuredRecommendationDetail: String {
-        if latestScan?.summary == .possibleAnemiaRisk {
+        if latestScan?.summary == OpticalRiskSummary.possibleAnemiaRisk.rawValue {
             return "Your recent result suggests prioritizing nutrition guidance and follow-up care articles first."
         }
-        if history.userProfile?.gender?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "female" {
+        if history.userProfile?.gender?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).lowercased() == "female" {
             return "Your feed highlights ferritin and women’s health topics alongside the core anemia basics."
         }
         return "Your feed starts with the most useful anemia education and next-step guidance for new scan data."
@@ -375,9 +400,9 @@ struct LearnView: View {
 
 struct ProfileView: View {
     @ObservedObject var history: ScanHistoryStore
-    @AppStorage(DemographicStorageKeys.userAge) private var userAge = 18
-    @AppStorage(DemographicStorageKeys.userBiologicalSex) private var userBiologicalSex = UserBiologicalSex.other.rawValue
-    @AppStorage(DemographicStorageKeys.isPregnant) private var isPregnant = false
+    @AppStorage("userAge") private var userAge = 18
+    @AppStorage("userBiologicalSex") private var userBiologicalSex = "Other"
+    @AppStorage("isPregnant") private var isPregnant = false
     @State private var remindersEnabled = true
 
     var body: some View {
@@ -452,8 +477,10 @@ struct ProfileView: View {
                 .padding(20)
                 .liquidGlassCard()
             }
+            .padding(.horizontal, 20)
             .padding(.bottom, 128)
         }
+        .background(IronScreenBackground())
     }
 
     private func profileRow(_ title: String, _ value: String) -> some View {

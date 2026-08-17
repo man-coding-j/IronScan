@@ -1,5 +1,15 @@
 import Foundation
 
+enum DemographicCalibrationCategory: String, Codable, CaseIterable, Identifiable, Equatable, Sendable {
+    case adultMale = "Adult Male"
+    case adultFemale = "Adult Female"
+    case pregnantFemale = "Pregnant Female"
+    case pediatric = "Pediatric"
+    case defaultCategory = "Standard / General"
+
+    var id: String { rawValue }
+}
+
 enum TissueSite: String, CaseIterable, Sendable {
     case eye
     case nail
@@ -40,7 +50,7 @@ struct TriangulationConfiguration: Equatable, Sendable {
         inverseVarianceEpsilon: Double = 0.001,
         highVarianceThreshold: Double = 0.15,
         decisionThreshold: Double,
-        calibrationCategory: DemographicCalibrationCategory = .generalResearchProfile,
+        calibrationCategory: DemographicCalibrationCategory = .defaultCategory,
         modelVersions: [TissueSite: String],
         preprocessingVersions: [TissueSite: String]
     ) throws {
@@ -188,6 +198,23 @@ struct TriangulationResult: Equatable, Sendable {
     func contribution(for tissue: TissueSite) -> TissueContribution? {
         contributions.first { $0.tissue == tissue }
     }
+
+    static func unableToAssess(
+        reason: String,
+        configuration: TriangulationConfiguration
+    ) -> TriangulationResult {
+        TriangulationResult(
+            summary: OpticalRiskSummary.unableToAssess,
+            opticalPallorIndex: nil,
+            contributions: [],
+            rejectionReasons: [reason],
+            configurationIdentifier: configuration.identifier,
+            configurationVersion: configuration.semanticVersion,
+            mode: configuration.mode,
+            calibrationCategory: configuration.calibrationCategory,
+            calibratedDecisionThreshold: configuration.decisionThreshold
+        )
+    }
 }
 
 struct TriangulationEngine: Sendable {
@@ -197,7 +224,7 @@ struct TriangulationEngine: Sendable {
         allowEngineeringFixtures: Bool
     ) -> TriangulationResult {
         guard Set(outputs.keys) == Set(TissueSite.allCases) else {
-            return unableToAssess(
+            return TriangulationResult.unableToAssess(
                 reason: "All three tissue scans are required.",
                 configuration: configuration
             )
@@ -285,7 +312,7 @@ struct TriangulationEngine: Sendable {
 
         let inverseVarianceTotal = candidates.reduce(0) { $0 + $1.inverseVarianceWeight }
         guard inverseVarianceTotal.isFinite, inverseVarianceTotal > 0 else {
-            return unableToAssess(
+            return TriangulationResult.unableToAssess(
                 reason: "The uncertainty weights could not be normalized.",
                 configuration: configuration
             )
@@ -308,8 +335,8 @@ struct TriangulationEngine: Sendable {
         let opticalPallorIndex = min(max(rawOpticalPallorIndex, 0), 1)
         return TriangulationResult(
             summary: opticalPallorIndex >= configuration.decisionThreshold
-                ? .possibleAnemiaRisk
-                : .lowerObservedRisk,
+                ? OpticalRiskSummary.possibleAnemiaRisk
+                : OpticalRiskSummary.lowerObservedRisk,
             opticalPallorIndex: opticalPallorIndex,
             contributions: ordered(includedContributions + excludedContributions),
             rejectionReasons: rejectionReasons,
@@ -343,23 +370,6 @@ struct TriangulationEngine: Sendable {
         TissueSite.allCases.compactMap { tissue in
             contributions.first { $0.tissue == tissue }
         }
-    }
-
-    private func unableToAssess(
-        reason: String,
-        configuration: TriangulationConfiguration
-    ) -> TriangulationResult {
-        TriangulationResult(
-            summary: .unableToAssess,
-            opticalPallorIndex: nil,
-            contributions: [],
-            rejectionReasons: [reason],
-            configurationIdentifier: configuration.identifier,
-            configurationVersion: configuration.semanticVersion,
-            mode: configuration.mode,
-            calibrationCategory: configuration.calibrationCategory,
-            calibratedDecisionThreshold: configuration.decisionThreshold
-        )
     }
 }
 

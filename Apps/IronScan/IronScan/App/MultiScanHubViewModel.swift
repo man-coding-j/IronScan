@@ -450,13 +450,30 @@ final class MultiScanHubViewModel: ObservableObject {
             return
         }
         do {
-            let demographicCalibration = DemographicProfileStore.calibration()
+            // Read directly from UserDefaults to bypass scope issues
+            let savedSex = UserDefaults.standard.string(forKey: "userBiologicalSex") ?? "Unknown"
+            let isPregnant = UserDefaults.standard.bool(forKey: "isPregnant")
+            let savedAge = UserDefaults.standard.integer(forKey: "userAge")
+
+            let resolvedCategory: DemographicCalibrationCategory
+            if isPregnant {
+                resolvedCategory = .pregnantFemale
+            } else if savedSex == "Female" {
+                resolvedCategory = .adultFemale
+            } else if savedSex == "Male" {
+                resolvedCategory = .adultMale
+            } else if savedAge > 0 && savedAge < 18 {
+                resolvedCategory = .pediatric
+            } else {
+                resolvedCategory = .defaultCategory
+            }
+
             let configuration = try TriangulationConfiguration(
                 identifier: "org.ironscan.prototype-demo.triangulation",
                 semanticVersion: "0.2.0-engineering.1",
                 mode: .prototypeDemo,
-                decisionThreshold: demographicCalibration.decisionThreshold,
-                calibrationCategory: demographicCalibration.category,
+                decisionThreshold: 0.5, // Standard baseline threshold
+                calibrationCategory: resolvedCategory,
                 modelVersions: readiness.modelVersions,
                 preprocessingVersions: readiness.preprocessingVersions
             )

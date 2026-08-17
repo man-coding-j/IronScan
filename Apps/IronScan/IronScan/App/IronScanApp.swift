@@ -1,24 +1,8 @@
-// MARK: - Application Entry Point (Triggering fresh CI Build)
 import SwiftUI
-#if canImport(FirebaseCore)
-import FirebaseCore
-#endif
 
-// 1. The Official Firebase Setup
-// This guarantees Firebase wakes up at the exact right moment, and keeps the Swizzler perfectly happy.
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        
-        #if canImport(FirebaseCore)
-        #if !CI
-        // This code physically will not compile into the app on the CI server
-        FirebaseApp.configure()
-        #else
-        print("Running in CI Environment: Firebase initialization skipped to prevent launch crashes.")
-        #endif
-        #endif
-        
         return true
     }
 }
@@ -41,14 +25,12 @@ final class IronScanAppDependencies: ObservableObject {
 
 @main
 struct IronScanApp: App {
-    // 2. Attach the AppDelegate to iOS
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
-    // 3. SwiftUI is smart enough to wait until AFTER the AppDelegate runs to load these!
     @StateObject private var dependencies = IronScanAppDependencies()
     @StateObject var authManager = AuthManager()
     
-    @AppStorage(DemographicStorageKeys.hasCompletedOnboarding) private var hasCompletedOnboarding = false
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @AppStorage(OnboardingConsent.storageKey) private var acceptedResearchConsent = false
 
     var body: some Scene {
@@ -60,10 +42,7 @@ struct IronScanApp: App {
                             MainTabView()
                                 .transition(appRouteTransition)
                         } else {
-                            OnboardingProfileView {
-                                acceptedResearchConsent = true
-                                hasCompletedOnboarding = true
-                            }
+                            OnboardingProfileView()
                             .transition(appRouteTransition)
                         }
                     } else {
@@ -87,8 +66,7 @@ struct IronScanApp: App {
             .tint(IronTheme.terracottaPrimary)
             .organicTypography()
             .task {
-                DemographicProfileStore.syncLegacyOnboardingFlagIfNeeded()
-                hasCompletedOnboarding = UserDefaults.standard.bool(forKey: DemographicStorageKeys.hasCompletedOnboarding)
+                hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
             }
         }
     }
@@ -123,5 +101,141 @@ private struct AppLaunchLoadingView: View {
             }
             .padding(28)
         }
+    }
+}
+
+struct ScanUserProfile: Codable, Sendable {
+    var age: String
+    var gender: String?
+}
+
+struct ScanHistoryRecord: Codable, Identifiable, Sendable {
+    var id: UUID = UUID()
+    var capturedAt: Date = Date()
+    var summary: String
+    var opticalPatternIndex: Double?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case capturedAt = "captured_at"
+        case summary
+        case opticalPatternIndex = "optical_pattern_index"
+    }
+}
+
+@MainActor
+final class ScanHistoryStore: ObservableObject {
+    static let storageKey = "ironscan.local.scan-history.v1"
+    static let maximumRecordCount = 30
+
+    @Published private(set) var records: [ScanHistoryRecord] = []
+    @Published private(set) var userProfile: ScanUserProfile?
+    @Published private(set) var persistenceError: String?
+
+    private let defaults: UserDefaults
+    private let encoder = JSONEncoder()
+    private let decoder = JSONDecoder()
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+
+        let savedAge = defaults.integer(forKey: "userAge")
+        let savedGender = defaults.string(forKey: "userBiologicalSex") ?? "Unknown"
+        userProfile = ScanUserProfile(
+            age: savedAge > 0 ? String(savedAge) : "Unknown",
+            gender: savedGender
+        )
+
+        if let data = defaults.data(forKey: Self.storageKey),
+           let decoded = try? decoder.decode([ScanHistoryRecord].self, from: data) {
+            records = decoded.sorted { $0.capturedAt > $1.capturedAt }
+        }
+    }
+
+    func fetchHistory() async {
+        // Supabase fetch logic will go here
+    }
+
+    func saveScan(_ result: Any, capturedAt: Date = Date()) async {
+        // Supabase save logic will go here
+    }
+
+    func add(_ result: TriangulationResult, capturedAt: Date = Date()) {
+        let record = ScanHistoryRecord(
+            capturedAt: capturedAt,
+            summary: result.summary.rawValue,
+            opticalPatternIndex: result.opticalPallorIndex
+        )
+        records.insert(record, at: 0)
+        if records.count > Self.maximumRecordCount {
+            records.removeLast(records.count - Self.maximumRecordCount)
+        }
+        persist()
+    }
+
+    private func persist() {
+        do {
+            defaults.set(try encoder.encode(records), forKey: Self.storageKey)
+            persistenceError = nil
+        } catch {
+            persistenceError = "Local scan history could not be saved."
+        }
+    }
+}
+
+class DemographicProfileStore: ObservableObject {
+    @AppStorage("userAge") var age: Int = 25
+    @AppStorage("userBiologicalSex") var biologicalSex: String = "Male"
+    @AppStorage("isPregnant") var isPregnant: Bool = false
+    @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding: Bool = false
+}
+
+struct OnboardingProfileView: View {
+    @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding: Bool = false
+    
+    var body: some View {
+        ZStack {
+            IronScreenBackground()
+
+            VStack {
+                Spacer(minLength: 48)
+
+                VStack(alignment: .leading, spacing: 24) {
+                    Text("Welcome to IronScan")
+                        .font(IronTheme.roundedFont(.largeTitle, weight: .bold))
+                        .foregroundStyle(IronTheme.textPrimary)
+
+                    Text("IronScan is an educational screening tool and does not provide medical diagnoses. Always consult a licensed physician.")
+                        .font(IronTheme.roundedFont(.body))
+                        .foregroundStyle(IronTheme.textSecondary)
+
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Prototype Access")
+                            .font(IronTheme.roundedFont(.headline, weight: .bold))
+                            .foregroundStyle(IronTheme.textPrimary)
+
+                        Text("Continue into the warm beige Liquid Glass experience and begin your first research scan.")
+                            .font(IronTheme.roundedFont(.subheadline))
+                            .foregroundStyle(IronTheme.textSecondary)
+                    }
+                    .padding(20)
+                    .modifier(LiquidGlassCardStyle(cornerRadius: 24, fill: IronTheme.cardFill))
+
+                    Button("I Agree & Continue") {
+                        hasCompletedOnboarding = true
+                    }
+                    .buttonStyle(OrganicPrimaryButtonStyle())
+                }
+                .padding(28)
+                .frame(maxWidth: 560)
+                .modifier(LiquidGlassCardStyle(cornerRadius: 32))
+                .padding(.horizontal, 20)
+
+                Spacer(minLength: 24)
+            }
+        }
+        .padding()
+        .background(IronTheme.beigeBackground.ignoresSafeArea())
+        .organicTypography()
     }
 }

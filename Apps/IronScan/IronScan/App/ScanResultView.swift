@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct ScanResultView: View {
     @EnvironmentObject private var dependencies: IronScanAppDependencies
@@ -22,7 +23,8 @@ struct ScanResultView: View {
         NavigationStack {
             GeometryReader { geometry in
                 let horizontalPadding = min(max(geometry.size.width * 0.06, 18), 42)
-                let contentWidth = min(geometry.size.width - (horizontalPadding * 2), 620)
+                let availableWidth = max(geometry.size.width - (horizontalPadding * 2), 0)
+                let contentWidth = max(0, min(availableWidth, 620))
 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 20) {
@@ -79,7 +81,7 @@ struct ScanResultView: View {
                 .liquidGlassButtonStyle()
             }
         }
-        .frame(maxWidth: contentWidth)
+        .frame(maxWidth: max(0, contentWidth))
         .frame(maxWidth: .infinity)
         .padding(.horizontal, horizontalPadding)
         .padding(.top, 16)
@@ -209,7 +211,7 @@ struct ScanResultView: View {
                 .font(.system(size: 14, weight: .bold))
                 .foregroundStyle(IronTheme.terracottaPrimary)
 
-            Text("Calibrated for: \(result.calibrationCategory.badgeTitle)")
+            Text("Calibrated for: \(result.calibrationCategory.rawValue)")
                 .font(IronTheme.roundedFont(.subheadline, weight: .bold))
                 .foregroundStyle(IronTheme.textSlate)
 
@@ -274,16 +276,12 @@ struct ScanResultView: View {
     }
 
     private func exportPDF() {
-        do {
-            let history = dependencies.history?.records ?? []
-            let url = try PDFReportGenerator.shared.generateDoctorReport(
-                result: result,
-                outputs: outputs,
-                history: history
-            )
+        let historyRecords = dependencies.history?.records ?? []
+        
+        if let url = PDFReportGenerator.generateReport(for: result, history: historyRecords) {
             shareDocument = ShareablePDFDocument(url: url)
-        } catch {
-            exportError = error.localizedDescription
+        } else {
+            exportError = "The PDF could not be created."
         }
     }
 }
@@ -429,11 +427,7 @@ private struct ResultGlassCapsuleModifier: ViewModifier {
 
 private extension View {
     func resultContentCard(cornerRadius: CGFloat = 24) -> some View {
-        background(.regularMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .stroke(Color.white.opacity(0.35), lineWidth: 0.8)
-            }
+        liquidGlassCard(cornerRadius: cornerRadius, interactive: true)
     }
 
     func resultGlassCapsule(id: String, in namespace: Namespace.ID, active: Bool) -> some View {
@@ -488,6 +482,140 @@ extension TissueSite {
             "hand.raised.fill"
         case .tongue:
             "mouth.fill"
+        }
+    }
+}
+
+struct ShareablePDFDocument: Identifiable {
+    let id = UUID()
+    let url: URL
+}
+
+struct ActivityShareSheet: UIViewControllerRepresentable {
+    let activityItems: [Any]
+    
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+    }
+    
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+class PDFReportGenerator {
+    static func generateReport(for result: Any?, history: [Any]? = nil) -> URL? {
+        let outputURL = FileManager.default.temporaryDirectory.appendingPathComponent("IronScan_Report.pdf")
+        let bounds = CGRect(x: 0, y: 0, width: 612, height: 792)
+        let renderer = UIGraphicsPDFRenderer(bounds: bounds)
+
+        let summaryText: String = {
+            if let triangulation = result as? TriangulationResult {
+                switch triangulation.summary {
+                case .lowerObservedRisk:
+                    return "Lower observed risk"
+                case .possibleAnemiaRisk:
+                    return "Possible anemia risk"
+                case .unableToAssess:
+                    return "Unable to assess"
+                }
+            }
+
+            if let record = result as? ScanHistoryRecord {
+                return record.summary
+            }
+
+            return "No scan summary available."
+        }()
+
+        let timestampText: String = {
+            if let triangulation = result as? TriangulationResult {
+                return DateFormatter.localizedString(from: Date(), dateStyle: .medium, timeStyle: .short)
+            }
+
+            if let record = result as? ScanHistoryRecord {
+                return DateFormatter.localizedString(from: record.capturedAt, dateStyle: .medium, timeStyle: .short)
+            }
+
+            return DateFormatter.localizedString(from: Date(), dateStyle: .medium, timeStyle: .short)
+        }()
+
+        let historyCount = history?.count ?? 0
+
+        do {
+            try renderer.writePDF(to: outputURL) { context in
+                context.beginPage()
+
+                let titleAttributes: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 24, weight: .bold),
+                    .foregroundColor: UIColor.black
+                ]
+                let headingAttributes: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 14, weight: .semibold),
+                    .foregroundColor: UIColor.darkGray
+                ]
+                let bodyAttributes: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 16, weight: .regular),
+                    .foregroundColor: UIColor.black
+                ]
+                let noteAttributes: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 12, weight: .regular),
+                    .foregroundColor: UIColor.darkGray
+                ]
+
+                let margin: CGFloat = 48
+                var cursorY: CGFloat = 56
+
+                NSString(string: "IronScan Medical Summary").draw(
+                    at: CGPoint(x: margin, y: cursorY),
+                    withAttributes: titleAttributes
+                )
+                cursorY += 48
+
+                NSString(string: "Generated").draw(
+                    at: CGPoint(x: margin, y: cursorY),
+                    withAttributes: headingAttributes
+                )
+                cursorY += 22
+
+                NSString(string: timestampText).draw(
+                    in: CGRect(x: margin, y: cursorY, width: bounds.width - margin * 2, height: 24),
+                    withAttributes: bodyAttributes
+                )
+                cursorY += 52
+
+                NSString(string: "Diagnostic Summary").draw(
+                    at: CGPoint(x: margin, y: cursorY),
+                    withAttributes: headingAttributes
+                )
+                cursorY += 24
+
+                NSString(string: summaryText).draw(
+                    in: CGRect(x: margin, y: cursorY, width: bounds.width - margin * 2, height: 60),
+                    withAttributes: bodyAttributes
+                )
+                cursorY += 84
+
+                NSString(string: "Stored History Count").draw(
+                    at: CGPoint(x: margin, y: cursorY),
+                    withAttributes: headingAttributes
+                )
+                cursorY += 24
+
+                NSString(string: "\(historyCount) scan record(s)").draw(
+                    in: CGRect(x: margin, y: cursorY, width: bounds.width - margin * 2, height: 24),
+                    withAttributes: bodyAttributes
+                )
+                cursorY += 52
+
+                let disclaimer = "Research prototype only. IronScan does not diagnose anemia or any medical condition. Confirm all findings with a licensed physician and laboratory testing."
+                NSString(string: disclaimer).draw(
+                    in: CGRect(x: margin, y: cursorY, width: bounds.width - margin * 2, height: 120),
+                    withAttributes: noteAttributes
+                )
+            }
+
+            return outputURL
+        } catch {
+            return nil
         }
     }
 }

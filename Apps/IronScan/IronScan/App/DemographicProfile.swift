@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 enum DemographicStorageKeys {
     static let hasCompletedOnboarding = "hasCompletedOnboarding"
@@ -14,39 +15,6 @@ enum UserBiologicalSex: String, CaseIterable, Identifiable, Codable, Sendable {
     case other = "Other"
 
     var id: String { rawValue }
-}
-
-enum DemographicCalibrationCategory: String, Codable, Sendable {
-    case adultMale
-    case adultFemale
-    case pregnantFemale
-    case generalResearchProfile
-
-    var badgeTitle: String {
-        switch self {
-        case .adultMale:
-            "Adult Male"
-        case .adultFemale:
-            "Adult Female"
-        case .pregnantFemale:
-            "Pregnant Female"
-        case .generalResearchProfile:
-            "General Research Profile"
-        }
-    }
-
-    var normalHemoglobinReference: String {
-        switch self {
-        case .adultMale:
-            "13.5-17.5 g/dL"
-        case .adultFemale:
-            "12.0-15.5 g/dL"
-        case .pregnantFemale:
-            "11.0+ g/dL"
-        case .generalResearchProfile:
-            "Research default"
-        }
-    }
 }
 
 struct DemographicProfile: Equatable, Sendable {
@@ -81,8 +49,11 @@ struct DemographicCalibration: Equatable, Sendable {
         } else if isAdult, profile.biologicalSex == .female {
             category = .adultFemale
             decisionThreshold = 0.50
+        } else if let age = profile.age, age > 0 {
+            category = .pediatric
+            decisionThreshold = 0.52
         } else {
-            category = .generalResearchProfile
+            category = .defaultCategory
             decisionThreshold = Self.defaultDecisionThreshold
         }
     }
@@ -90,7 +61,12 @@ struct DemographicCalibration: Equatable, Sendable {
     var badgeTitle: String { category.badgeTitle }
 }
 
-enum DemographicProfileStore {
+class DemographicProfileStore: ObservableObject {
+    @AppStorage("userAge") var age: Int = 25
+    @AppStorage("userBiologicalSex") var biologicalSex: String = "Male"
+    @AppStorage("isPregnant") var isPregnant: Bool = false
+    @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding: Bool = false
+
     static func load(defaults: UserDefaults = .standard) -> DemographicProfile {
         let storedAge = defaults.object(forKey: DemographicStorageKeys.userAge) as? Int
         let rawSex = defaults.string(forKey: DemographicStorageKeys.userBiologicalSex)

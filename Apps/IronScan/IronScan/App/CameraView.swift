@@ -40,12 +40,23 @@ struct CameraView: View {
             viewfinderOverlay
                 .ignoresSafeArea()
 
-            controlsOverlay
+            VStack(spacing: 0) {
+                topBar
+
+                Spacer(minLength: 0)
+
+                bottomBar
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
         .environment(\.colorScheme, .dark)
         .toolbar(.hidden, for: .tabBar)
         .onAppear {
             showsResultCards = shouldShowResultCards
+            startCameraSessionIfNeeded()
+        }
+        .onDisappear {
+            stopCameraSessionIfNeeded()
         }
         .onChange(of: shouldShowResultCards) { _, newValue in
             withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
@@ -57,143 +68,14 @@ struct CameraView: View {
         .animation(.spring(response: 0.4, dampingFraction: 0.8), value: autoCapturePhase)
     }
 
-    private var controlsOverlay: some View {
-        VStack(spacing: 18) {
-            topControls
-
-            diagnosticOverlay
-
-            Spacer(minLength: 0)
-
-            bottomControls
-        }
-        .padding(.horizontal, 20)
-        .padding(.top, 12)
-        .padding(.bottom, 24)
-    }
-
-    private var topControls: some View {
-        HStack(alignment: .top, spacing: 12) {
-            secondaryControlButton(systemName: "xmark", action: onClose)
-                .accessibilityLabel("Abort scan and return home")
-
-            VStack(spacing: 4) {
-                Text(currentTitle)
-                    .font(.headline.weight(.bold))
-                    .foregroundStyle(.primary)
-                    .multilineTextAlignment(.center)
-
-                Text(stepLabel)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 12)
-            .cameraFloatingGlass(in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-
-            secondaryControlButton(
-                systemName: isTorchEnabled ? "flashlight.on.fill" : "flashlight.off.fill",
-                action: onToggleTorch,
-                enabled: isTorchAvailable
-            )
-            .accessibilityLabel(isTorchEnabled ? "Turn flashlight off" : "Turn flashlight on")
-        }
-    }
-
-    private var diagnosticOverlay: some View {
+    private var topBar: some View {
         VStack(spacing: 14) {
-            if #available(iOS 26.0, *) {
-                GlassEffectContainer(spacing: 16) {
-                    diagnosticContent
-                }
-            } else {
-                diagnosticContent
-            }
-
-            if let warningText {
-                warningTag(text: warningText)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var diagnosticContent: some View {
-        if showsResultCards {
-            resultCards
-                .transition(.scale(scale: 0.96).combined(with: .opacity))
-        } else {
-            scanningTags
-                .transition(.scale(scale: 0.96).combined(with: .opacity))
-        }
-    }
-
-    private var scanningTags: some View {
-        VStack(spacing: 12) {
-            diagnosticTag(
-                title: scanningTitle,
-                subtitle: statusText,
-                systemName: scanningSymbol,
-                tint: scanTint,
-                glassID: "scanTag"
-            )
-
             HStack(spacing: 12) {
-                diagnosticTag(
-                    title: lightingText,
-                    subtitle: lightingDetailText,
-                    systemName: lightingSymbol,
-                    tint: outlineTint.opacity(0.22),
-                    glassID: "scanQuality"
-                )
+                secondaryControlButton(systemName: "xmark", action: onClose)
+                    .accessibilityLabel("Abort scan and return home")
 
-                if tissue == .eye, let eyeGuidanceText {
-                    diagnosticTag(
-                        title: "Guidance",
-                        subtitle: eyeGuidanceText,
-                        systemName: "viewfinder",
-                        tint: IronTheme.cardGlass.opacity(0.24),
-                        glassID: "scanGuidance"
-                    )
-                }
-            }
-        }
-    }
+                Spacer(minLength: 0)
 
-    private var resultCards: some View {
-        VStack(spacing: 12) {
-            resultCard(
-                title: resultTitle,
-                subtitle: resultSubtitle,
-                systemName: "checkmark.circle.fill",
-                tint: outlineTint.opacity(0.22),
-                glassID: "scanTag"
-            )
-
-            HStack(spacing: 12) {
-                resultCard(
-                    title: "Lighting",
-                    subtitle: lightingText,
-                    systemName: lightingSymbol,
-                    tint: outlineTint.opacity(0.18),
-                    glassID: "scanQuality"
-                )
-
-                resultCard(
-                    title: "Capture",
-                    subtitle: captureStateText,
-                    systemName: "camera.macro",
-                    tint: IronTheme.cardGlass.opacity(0.22),
-                    glassID: "scanGuidance"
-                )
-            }
-        }
-    }
-
-    private var bottomControls: some View {
-        VStack(spacing: 14) {
-            HStack(alignment: .center, spacing: 14) {
                 if supportsCameraToggle {
                     secondaryControlButton(
                         systemName: "camera.rotate.fill",
@@ -202,6 +84,53 @@ struct CameraView: View {
                     )
                     .accessibilityLabel("Switch camera")
                 }
+
+                secondaryControlButton(
+                    systemName: isTorchEnabled ? "flashlight.on.fill" : "flashlight.off.fill",
+                    action: onToggleTorch,
+                    enabled: isTorchAvailable
+                )
+                .accessibilityLabel(isTorchEnabled ? "Turn flashlight off" : "Turn flashlight on")
+            }
+
+            VStack(spacing: 12) {
+                VStack(spacing: 4) {
+                    Text(currentTitle)
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.primary)
+                        .multilineTextAlignment(.center)
+
+                    Text(stepLabel)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 12)
+                .cameraFloatingGlass(in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+
+                if let warningText {
+                    warningTag(text: warningText)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 16)
+    }
+
+    private var bottomBar: some View {
+        VStack(spacing: 14) {
+            if showsResultCards {
+                compactDiagnosticStrip
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            } else {
+                compactScanningStrip
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+
+            HStack {
+                Spacer(minLength: 0)
 
                 Button {
                     shutterImpact.impactOccurred()
@@ -214,20 +143,67 @@ struct CameraView: View {
                             .font(.headline.weight(.bold))
                             .foregroundStyle(.primary)
                     }
-                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 20)
                     .padding(.vertical, 8)
                 }
                 .primaryGlassButtonStyle()
                 .disabled(isBusy)
                 .accessibilityLabel("Capture \(tissue.displayName) image")
 
-                secondaryControlButton(
-                    systemName: isTorchEnabled ? "bolt.fill" : "bolt.slash.fill",
-                    action: onToggleTorch,
-                    enabled: isTorchAvailable
-                )
-                .accessibilityLabel(isTorchEnabled ? "Disable flash" : "Enable flash")
+                Spacer(minLength: 0)
             }
+        }
+        .padding(.horizontal, 20)
+        .padding(.bottom, 26)
+    }
+
+    private var compactScanningStrip: some View {
+        VStack(spacing: 10) {
+            diagnosticTag(
+                title: scanningTitle,
+                subtitle: statusText,
+                systemName: scanningSymbol,
+                tint: scanTint,
+                glassID: "scanTag"
+            )
+
+            if tissue == .eye, let eyeGuidanceText {
+                diagnosticTag(
+                    title: "Guidance",
+                    subtitle: eyeGuidanceText,
+                    systemName: "viewfinder",
+                    tint: IronTheme.cardGlass.opacity(0.24),
+                    glassID: "scanGuidance"
+                )
+            } else {
+                diagnosticTag(
+                    title: lightingText,
+                    subtitle: lightingDetailText,
+                    systemName: lightingSymbol,
+                    tint: outlineTint.opacity(0.22),
+                    glassID: "scanQuality"
+                )
+            }
+        }
+    }
+
+    private var compactDiagnosticStrip: some View {
+        VStack(spacing: 10) {
+            resultCard(
+                title: resultTitle,
+                subtitle: resultSubtitle,
+                systemName: "checkmark.circle.fill",
+                tint: outlineTint.opacity(0.22),
+                glassID: "scanTag"
+            )
+
+            diagnosticTag(
+                title: "Capture",
+                subtitle: captureStateText,
+                systemName: "camera.macro",
+                tint: IronTheme.cardGlass.opacity(0.22),
+                glassID: "scanGuidance"
+            )
         }
     }
 
@@ -353,6 +329,20 @@ struct CameraView: View {
     private func handleCameraToggle() {
         guard supportsCameraToggle, !isSwitchingCamera else { return }
         onToggleCamera()
+    }
+
+    private func startCameraSessionIfNeeded() {
+        guard let session = source.session, !session.isRunning else { return }
+        DispatchQueue.global(qos: .userInitiated).async {
+            session.startRunning()
+        }
+    }
+
+    private func stopCameraSessionIfNeeded() {
+        guard let session = source.session, session.isRunning else { return }
+        DispatchQueue.global(qos: .userInitiated).async {
+            session.stopRunning()
+        }
     }
 
     private var shouldShowResultCards: Bool {

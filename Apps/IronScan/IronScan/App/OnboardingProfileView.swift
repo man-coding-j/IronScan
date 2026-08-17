@@ -3,9 +3,9 @@ import SwiftUI
 struct OnboardingProfileView: View {
     let onComplete: () -> Void
 
-    @AppStorage(DemographicStorageKeys.userAge) private var storedAge = 18
-    @AppStorage(DemographicStorageKeys.userBiologicalSex) private var biologicalSexRaw = UserBiologicalSex.other.rawValue
-    @AppStorage(DemographicStorageKeys.isPregnant) private var storedPregnancyStatus = false
+    @AppStorage("userAge") private var storedAge = 18
+    @AppStorage("userBiologicalSex") private var biologicalSexRaw = UserBiologicalSex.other.rawValue
+    @AppStorage("isPregnant") private var storedPregnancyStatus = false
 
     @State private var ageText = ""
     @State private var disclaimerAccepted = false
@@ -25,18 +25,31 @@ struct OnboardingProfileView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 22) {
-                    header
-                    formSection
-                    disclaimerSection
-                    actionSection
+            ZStack {
+                IronScreenBackground()
+
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack {
+                        Spacer(minLength: 48)
+
+                        VStack(alignment: .leading, spacing: 24) {
+                            header
+                            fieldsSection
+                            disclaimerSection
+                            primaryAction
+                        }
+                        .padding(28)
+                        .frame(maxWidth: 560)
+                        .modifier(LiquidGlassCardStyle(cornerRadius: 32))
+                        .padding(.horizontal, 20)
+
+                        Spacer(minLength: 24)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 24)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
-                .padding(.bottom, 32)
+                .scrollIndicators(.hidden)
             }
-            .background(IronScreenBackground())
             .toolbar(.hidden, for: .navigationBar)
             .onAppear {
                 if ageText.isEmpty {
@@ -48,53 +61,42 @@ struct OnboardingProfileView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Create Your Screening Profile")
+            Text("Welcome to IronScan")
                 .font(IronTheme.roundedFont(.largeTitle, weight: .bold))
-                .foregroundStyle(IronTheme.textSlate)
+                .foregroundStyle(IronTheme.textPrimary)
 
-            Text("These demographics are stored locally and used only to calibrate IronScan's educational screening baseline.")
-                .font(IronTheme.roundedFont(.body, weight: .medium))
-                .foregroundStyle(IronTheme.textMuted)
+            Text("Set up your local screening profile for a calmer, more personalized prototype experience.")
+                .font(IronTheme.roundedFont(.body))
+                .foregroundStyle(IronTheme.textSecondary)
         }
     }
 
-    @ViewBuilder
-    private var formSection: some View {
-        if #available(iOS 26.0, *) {
-            GlassEffectContainer(spacing: 16) {
-                profileFields
-            }
-            .padding(20)
-            .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 28, style: .continuous))
-        } else {
-            profileFields
-                .padding(20)
-                .liquidGlassCard(cornerRadius: 28, interactive: true)
-        }
-    }
-
-    private var profileFields: some View {
+    private var fieldsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
+            Text("Profile Details")
+                .font(IronTheme.roundedFont(.headline, weight: .bold))
+                .foregroundStyle(IronTheme.textPrimary)
+
             VStack(alignment: .leading, spacing: 8) {
                 Text("Age")
-                    .font(IronTheme.roundedFont(.headline, weight: .bold))
-                    .foregroundStyle(IronTheme.textSlate)
+                    .font(IronTheme.roundedFont(.subheadline, weight: .semibold))
+                    .foregroundStyle(IronTheme.textSecondary)
 
                 TextField("Enter your age", text: $ageText)
                     .keyboardType(.numberPad)
                     .textInputAutocapitalization(.never)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 12)
-                    .background(Color.white.opacity(0.72), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .padding(.horizontal, 16)
+                    .frame(minHeight: 56)
+                    .modifier(LiquidGlassCardStyle(cornerRadius: 20, fill: Color.white.opacity(0.28)))
             }
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("Biological Sex")
-                    .font(IronTheme.roundedFont(.headline, weight: .bold))
-                    .foregroundStyle(IronTheme.textSlate)
+                    .font(IronTheme.roundedFont(.subheadline, weight: .semibold))
+                    .foregroundStyle(IronTheme.textSecondary)
 
                 Picker("Biological Sex", selection: $biologicalSexRaw) {
-                    ForEach(UserBiologicalSex.allCases) { sex in
+                    ForEach(UserBiologicalSex.allCases, id: \.rawValue) { sex in
                         Text(sex.rawValue).tag(sex.rawValue)
                     }
                 }
@@ -110,41 +112,27 @@ struct OnboardingProfileView: View {
     }
 
     private var disclaimerSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("IronScan is an educational screening tool and does not provide medical diagnoses. Always consult a licensed physician.")
-                .font(IronTheme.roundedFont(.body, weight: .bold))
-                .foregroundStyle(IronTheme.warning)
+                .font(IronTheme.roundedFont(.body, weight: .medium))
+                .foregroundStyle(IronTheme.textSecondary)
 
-            Toggle("I understand and agree to the Terms & Medical Disclaimer", isOn: $disclaimerAccepted)
+            Toggle("I understand and agree to continue", isOn: $disclaimerAccepted)
                 .font(IronTheme.roundedFont(.body, weight: .medium))
                 .tint(IronTheme.terracottaPrimary)
         }
         .padding(20)
-        .liquidGlassCard(cornerRadius: 24, tint: IronTheme.criticalGlassTint, interactive: true)
+        .modifier(LiquidGlassCardStyle(cornerRadius: 24, fill: IronTheme.criticalGlassTint))
     }
 
-    @ViewBuilder
-    private var actionSection: some View {
-        if #available(iOS 26.0, *) {
-            GlassEffectContainer(spacing: 12) {
-                actionButton
-            }
-            .padding(16)
-            .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 26, style: .continuous))
-        } else {
-            actionButton
-                .padding(16)
-                .liquidGlassCard(cornerRadius: 26, interactive: true)
-        }
-    }
-
-    private var actionButton: some View {
+    private var primaryAction: some View {
         Button(action: saveAndContinue) {
-            IronCTAButtonLabel(title: "Save Profile & Continue")
+            Text("Continue")
+                .frame(maxWidth: .infinity)
         }
         .buttonStyle(OrganicPrimaryButtonStyle())
         .disabled(!canContinue)
-        .opacity(canContinue ? 1 : 0.6)
+        .opacity(canContinue ? 1 : 0.58)
     }
 
     private func saveAndContinue() {

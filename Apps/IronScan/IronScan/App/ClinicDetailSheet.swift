@@ -145,11 +145,9 @@ private struct ClinicActionButton: View {
             .foregroundStyle(isEnabled ? IronTheme.tealDeep : Color.secondary)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
-            .organicGlassEffect(
-                in: Capsule(),
-                tint: IronTheme.cardGlass,
-                interactive: true
-            )
+            .background(.ultraThinMaterial, in: Capsule())
+            .overlay(Capsule().stroke(Color.white.opacity(0.6), lineWidth: 1.5))
+            .shadow(color: Color.black.opacity(0.04), radius: 10, x: 0, y: 5)
         }
         .buttonStyle(.plain)
         .disabled(!isEnabled)

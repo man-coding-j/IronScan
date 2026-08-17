@@ -54,7 +54,7 @@ final class IDARiskEngineTests: XCTestCase {
             configurationIdentifier: "test",
             configurationVersion: "1",
             mode: .researchValidated,
-            calibrationCategory: .generalResearchProfile,
+            calibrationCategory: .defaultCategory,
             calibratedDecisionThreshold: 0.5
         )
 
@@ -76,7 +76,7 @@ final class IDARiskEngineTests: XCTestCase {
             configurationIdentifier: "test",
             configurationVersion: "1",
             mode: .researchValidated,
-            calibrationCategory: .generalResearchProfile,
+            calibrationCategory: .defaultCategory,
             calibratedDecisionThreshold: 0.5
         )
     }
