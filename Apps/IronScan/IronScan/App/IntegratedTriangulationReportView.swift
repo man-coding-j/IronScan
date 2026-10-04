@@ -82,13 +82,3 @@ struct IntegratedTriangulationReportView: View {
         outputs[tissue]?.proxySignalObserved == true ? .orange : .green
     }
 }
-
-private extension TissueSite {
-    var iconName: String {
-        switch self {
-        case .eye: "eye.fill"
-        case .nail: "hand.raised.fill"
-        case .tongue: "mouth.fill"
-        }
-    }
-}

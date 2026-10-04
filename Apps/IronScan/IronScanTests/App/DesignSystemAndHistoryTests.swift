@@ -41,7 +41,7 @@ final class DesignSystemAndHistoryTests: XCTestCase {
 
         let reloaded = ScanHistoryStore(defaults: defaults)
         XCTAssertEqual(reloaded.records.count, ScanHistoryStore.maximumRecordCount)
-        XCTAssertEqual(reloaded.records.first?.summary, .lowerObservedRisk)
+        XCTAssertEqual(reloaded.records.first?.summary, OpticalRiskSummary.lowerObservedRisk.rawValue)
         XCTAssertNil(reloaded.persistenceError)
     }
 
@@ -63,7 +63,7 @@ final class DesignSystemAndHistoryTests: XCTestCase {
             configurationIdentifier: "org.ironscan.test",
             configurationVersion: "1.0.0",
             mode: .prototypeDemo,
-            calibrationCategory: .generalResearchProfile,
+            calibrationCategory: .defaultCategory,
             calibratedDecisionThreshold: 0.5
         )
     }

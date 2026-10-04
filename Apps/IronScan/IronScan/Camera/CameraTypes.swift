@@ -20,27 +20,8 @@ enum CameraOpticsProfile: String, Codable, Equatable, Sendable {
     case nail
     case tongue
 
-    var exposureBias: Float {
-        switch self {
-        case .eye: -0.5
-        case .nail, .tongue: 0
-        }
-    }
-
-    var usesNearFocusRange: Bool {
-        self == .eye || self == .nail
-    }
-
-    var locksFocusAfterStabilization: Bool {
-        self != .eye
-    }
-
-    var locksExposureAfterStabilization: Bool {
-        self != .eye
-    }
-
     var automaticTorchLevel: Float? {
-        self == .nail ? 0.2 : nil
+        0.15
     }
 }
 
@@ -199,10 +180,39 @@ struct QualityObservation: Codable, Equatable, Sendable {
     )
 }
 
+struct ImageQualityAssessment: Equatable, Sendable {
+    let isAcceptable: Bool
+    let blurScore: Double
+    let brightnessScore: Double
+    let feedbackMessage: String
+
+    static let unavailable = ImageQualityAssessment(
+        isAcceptable: false,
+        blurScore: 0,
+        brightnessScore: 0,
+        feedbackMessage: "Image quality unavailable"
+    )
+}
+
 struct CapturedFrame: @unchecked Sendable {
     let pixelBuffer: CVPixelBuffer
     let metadata: CaptureMetadata
     let quality: QualityObservation
+    /// An in-memory preview decoded by the photo capture delegate. Captured
+    /// images are deliberately not persisted as part of the capture callback.
+    let capturedImage: UIImage?
+
+    init(
+        pixelBuffer: CVPixelBuffer,
+        metadata: CaptureMetadata,
+        quality: QualityObservation,
+        capturedImage: UIImage? = nil
+    ) {
+        self.pixelBuffer = pixelBuffer
+        self.metadata = metadata
+        self.quality = quality
+        self.capturedImage = capturedImage
+    }
 }
 
 struct CameraPreviewSource: @unchecked Sendable {
@@ -218,6 +228,7 @@ struct CameraPreviewSource: @unchecked Sendable {
 
 enum CameraEvent: @unchecked Sendable {
     case state(CameraState)
+    case displayFrame(AnalyzableFrame)
     case capabilities(CameraCapabilities)
     case quality(QualityObservation)
     case interruption(String)
@@ -226,20 +237,8 @@ enum CameraEvent: @unchecked Sendable {
     case captureIssue(CameraError)
 }
 
-enum PhotoPixelFormatSelector {
-    static func select(from availableFormats: [OSType]) -> OSType? {
-        let preferredFormats = [
-            kCVPixelFormatType_32BGRA,
-            kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
-            kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
-        ]
-        return preferredFormats.first(where: availableFormats.contains) ?? availableFormats.first
-    }
-}
-
 struct CameraConfiguration: Equatable, Sendable {
     var torchLevel: Float = 0.35
-    var whiteBalanceTemperatureKelvin: Float = 5_500
     var stabilizationTimeout: Duration = .seconds(5)
     var exposureTargetTolerance: Float = 0.35
     var maximumAnalysisRate: Double = 5
@@ -255,8 +254,6 @@ enum CameraDeviceDiscovery {
         switch position {
         case .back:
             [
-                .builtInTripleCamera,
-                .builtInDualWideCamera,
                 .builtInUltraWideCamera,
                 .builtInWideAngleCamera,
             ]

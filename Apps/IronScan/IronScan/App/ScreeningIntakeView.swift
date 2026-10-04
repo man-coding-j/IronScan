@@ -125,6 +125,10 @@ struct ScreeningIntakeView: View {
                     .foregroundStyle(.secondary)
             } header: {
                 Text("Research context")
+            } footer: {
+                Text("Optional contextual data to provide a more comprehensive overview for your personal health records.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
 
             Section("Biological sex") {

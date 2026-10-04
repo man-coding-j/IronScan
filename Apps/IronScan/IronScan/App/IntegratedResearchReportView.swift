@@ -278,6 +278,7 @@ struct IntegratedResearchReportView: View {
         case .included: "Included in combined result"
         case .uncertainRescanRecommended: "Uncertain — re-scan recommended"
         case .qualityRejected: "Image quality rejected — re-scan recommended"
+        case .omitted: "Skipped by the participant for this session"
         }
     }
 

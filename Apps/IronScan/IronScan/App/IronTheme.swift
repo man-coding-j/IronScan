@@ -1,33 +1,31 @@
 import SwiftUI
 
 enum IronTheme {
-    enum Hex {
-        static let glassCream = "#F8F6F0"
-        static let terracottaPrimary = "#FF6B35"
-        static let sageAccent = "#8DAA82"
-        static let textSlate = "#2A2830"
-        static let mutedText = "#7A7885"
-        static let deepSlate = "#121214"
-        static let creamBackground = glassCream
-        static let slateText = textSlate
-    }
+    static let beigeBackground = Color(red: 0.96, green: 0.94, blue: 0.91)
+    static let creamBackground = beigeBackground
+    static let mintBackground = beigeBackground
 
-    static let glassCream = Color(red: 248 / 255, green: 246 / 255, blue: 240 / 255)
-    static let terracottaPrimary = Color(red: 1, green: 107 / 255, blue: 53 / 255)
-    static let sageAccent = Color(red: 141 / 255, green: 170 / 255, blue: 130 / 255)
-    static let textSlate = Color(red: 42 / 255, green: 40 / 255, blue: 48 / 255)
-    static let textMuted = Color(red: 122 / 255, green: 120 / 255, blue: 133 / 255)
-    static let deepSlate = Color(red: 18 / 255, green: 18 / 255, blue: 20 / 255)
-    static let creamBackground = glassCream
-    static let slateText = textSlate
-    static let cardGlass = Color.white.opacity(0.65)
-    static let warning = Color(red: 205 / 255, green: 116 / 255, blue: 70 / 255)
-    static let criticalGlassTint = Color.red.opacity(0.28)
+    static let terracottaPrimary = Color(red: 0.66, green: 0.41, blue: 0.30)
+    static let terracottaAccent = Color(red: 0.78, green: 0.54, blue: 0.40)
+    static let sageAccent = Color(red: 0.70, green: 0.74, blue: 0.64)
 
-    static let mintBackground = creamBackground
+    static let textPrimary = Color(red: 0.20, green: 0.17, blue: 0.15)
+    static let textSecondary = Color(red: 0.48, green: 0.43, blue: 0.39)
+    static let textSlate = textPrimary
+    static let slateText = textPrimary
+    static let textMuted = textSecondary
+    static let textDark = textPrimary
+    static let deepSlate = textPrimary
+
+    static let cardFill = Color.white.opacity(0.40)
+    static let cardHighlight = Color.white.opacity(0.60)
+    static let shadowColor = Color.black.opacity(0.04)
+    static let warning = Color(red: 0.76, green: 0.47, blue: 0.34)
+    static let criticalGlassTint = Color(red: 0.82, green: 0.60, blue: 0.52).opacity(0.16)
+
     static let tealPrimary = terracottaPrimary
-    static let tealDeep = slateText
-    static let textDark = slateText
+    static let tealDeep = textPrimary
+    static let cardGlass = cardFill
 
     static func roundedFont(
         _ style: Font.TextStyle,
@@ -35,61 +33,93 @@ enum IronTheme {
     ) -> Font {
         .system(style, design: .rounded, weight: weight)
     }
+
+    enum Hex {
+        static let creamBackground = "#F8F6F0"
+        static let terracottaPrimary = "#FF6B35"
+        static let slateText = "#2A2830"
+        static let sageAccent = "#8DAA82"
+    }
 }
 
-private struct OrganicGlassEffectModifier<EffectShape: Shape>: ViewModifier {
-    let shape: EffectShape
-    let tint: Color?
-    let interactive: Bool
+struct LiquidGlassCardStyle: ViewModifier {
+    var cornerRadius: CGFloat = 24
+    var fill: Color = IronTheme.cardFill
 
-    @ViewBuilder
     func body(content: Content) -> some View {
-        let resolvedTint = tint ?? IronTheme.cardGlass
-        if #available(iOS 26.0, *) {
-            content
-                .glassEffect(
-                    interactive
-                    ? .regular.tint(resolvedTint).interactive()
-                    : .regular.tint(resolvedTint),
-                    in: shape
-                )
-        } else {
-            content
-                .background(.ultraThinMaterial, in: shape)
-                .background(resolvedTint.opacity(interactive ? 0.64 : 0.58), in: shape)
-                .overlay {
-                    shape.stroke(Color.white.opacity(interactive ? 0.8 : 0.76), lineWidth: interactive ? 0.8 : 0.6)
-                }
-            }
-        }
-    } 
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
 
+        content
+            .background(.ultraThinMaterial, in: shape)
+            .background(fill, in: shape)
+            .overlay {
+                shape.stroke(IronTheme.cardHighlight, lineWidth: 1.5)
+            }
+            .shadow(color: IronTheme.shadowColor, radius: 15, x: 0, y: 8)
+    }
+}
+
+private struct LiquidGlassPanelModifier<PanelShape: Shape>: ViewModifier {
+    let shape: PanelShape
+    var fill: Color = IronTheme.cardFill
+
+    func body(content: Content) -> some View {
+        content
+            .background(.ultraThinMaterial, in: shape)
+            .background(fill, in: shape)
+            .overlay {
+                shape.stroke(IronTheme.cardHighlight, lineWidth: 1.2)
+            }
+            .shadow(color: IronTheme.shadowColor, radius: 12, x: 0, y: 6)
+    }
+}
 
 private struct OrganicTypographyModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .fontDesign(.rounded)
-            .foregroundStyle(IronTheme.slateText)
+            .foregroundStyle(IronTheme.textPrimary)
     }
 }
 
 extension View {
-    func organicGlassEffect<EffectShape: Shape>(
-        in shape: EffectShape,
+    func liquidGlassCard(
+        cornerRadius: CGFloat = 24,
         tint: Color? = nil,
         interactive: Bool = false
     ) -> some View {
         modifier(
-            OrganicGlassEffectModifier(
+            LiquidGlassCardStyle(
+                cornerRadius: cornerRadius,
+                fill: tint ?? IronTheme.cardFill.opacity(interactive ? 0.95 : 1)
+            )
+        )
+    }
+
+    func liquidGlassPanel<PanelShape: Shape>(
+        in shape: PanelShape,
+        tint: Color? = nil,
+        interactive: Bool = true
+    ) -> some View {
+        modifier(
+            LiquidGlassPanelModifier(
                 shape: shape,
-                tint: tint,
-                interactive: interactive
+                fill: tint ?? IronTheme.cardFill.opacity(interactive ? 0.95 : 1)
             )
         )
     }
 
     func organicTypography() -> some View {
         modifier(OrganicTypographyModifier())
+    }
+
+    @ViewBuilder
+    func liquidGlassButtonStyle(prominent: Bool = false) -> some View {
+        if prominent {
+            buttonStyle(OrganicPrimaryButtonStyle())
+        } else {
+            buttonStyle(.plain)
+        }
     }
 }
 
@@ -98,95 +128,60 @@ struct OrganicPrimaryButtonStyle: ButtonStyle {
         configuration.label
             .font(IronTheme.roundedFont(.headline, weight: .bold))
             .foregroundStyle(.white)
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 22)
             .padding(.vertical, 16)
             .frame(maxWidth: .infinity)
-            .modifier(OrganicPrimaryButtonChrome(isPressed: configuration.isPressed))
-            .animation(.easeOut(duration: 0.16), value: configuration.isPressed)
+            .background(
+                Capsule()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                IronTheme.terracottaPrimary.opacity(configuration.isPressed ? 0.88 : 0.96),
+                                IronTheme.terracottaAccent.opacity(configuration.isPressed ? 0.84 : 0.92)
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+            )
+            .overlay {
+                Capsule().stroke(Color.white.opacity(0.24), lineWidth: 1)
+            }
+            .shadow(color: IronTheme.terracottaPrimary.opacity(0.18), radius: 14, x: 0, y: 8)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .animation(.easeOut(duration: 0.18), value: configuration.isPressed)
     }
 }
-
-private struct OrganicPrimaryButtonChrome: ViewModifier {
-    let isPressed: Bool
-
-    @ViewBuilder
-    func body(content: Content) -> some View {
-        if #available(iOS 26.0, *) {
-            content
-                .glassEffect(
-                    .regular
-                        .tint(IronTheme.terracottaPrimary.opacity(isPressed ? 0.86 : 0.96))
-                        .interactive(),
-                    in: Capsule()
-                )
-                .overlay {
-                    Capsule()
-                        .stroke(Color.white.opacity(0.22), lineWidth: 0.8)
-                }
-                .scaleEffect(isPressed ? 0.975 : 1)
-                .shadow(
-                    color: IronTheme.terracottaPrimary.opacity(0.28),
-                    radius: 18,
-                    y: 10
-                )
-        } else {
-            content
-                .background(buttonBackground(pressed: isPressed), in: Capsule())
-                .overlay {
-                    Capsule()
-                        .stroke(Color.white.opacity(0.22), lineWidth: 0.8)
-                }
-                .scaleEffect(isPressed ? 0.975 : 1)
-                .shadow(
-                    color: IronTheme.terracottaPrimary.opacity(0.28),
-                    radius: 18,
-                    y: 10
-                )
-            }
-        }
-    }
-
-    private func buttonBackground(pressed: Bool) -> LinearGradient {
-        LinearGradient(
-            colors: [
-                IronTheme.terracottaPrimary.opacity(pressed ? 0.9 : 1),
-                Color(red: 1, green: 126 / 255, blue: 76 / 255).opacity(pressed ? 0.84 : 0.96)
-            ],
-            startPoint: .leading,
-            endPoint: .trailing
-        )
-    }
-
 
 typealias TealPrimaryButtonStyle = OrganicPrimaryButtonStyle
 
 struct IronScreenBackground: View {
     var body: some View {
         ZStack {
-            IronTheme.creamBackground
-
-            RadialGradient(
-                colors: [
-                    Color.white.opacity(0.92),
-                    IronTheme.creamBackground.opacity(0.4)
-                ],
-                center: .topLeading,
-                startRadius: 40,
-                endRadius: 420
-            )
+            IronTheme.beigeBackground
 
             LinearGradient(
                 colors: [
-                    IronTheme.sageAccent.opacity(0.08),
-                    .clear,
-                    IronTheme.terracottaPrimary.opacity(0.06)
+                    Color.white.opacity(0.55),
+                    IronTheme.beigeBackground,
+                    Color(red: 0.91, green: 0.88, blue: 0.83)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
 
-            IronLeafGlow(alignment: .bottomTrailing)
-            IronLeafGlow(alignment: .topTrailing, rotation: -18, scale: 0.82, opacity: 0.22)
+            RadialGradient(
+                colors: [
+                    Color.white.opacity(0.45),
+                    .clear
+                ],
+                center: .topLeading,
+                startRadius: 40,
+                endRadius: 380
+            )
+
+            IronLeafGlow(alignment: .topTrailing, rotation: -14, scale: 0.92, opacity: 0.16)
+            IronLeafGlow(alignment: .bottomLeading, rotation: 18, scale: 1.08, opacity: 0.12)
         }
         .ignoresSafeArea()
     }
@@ -199,13 +194,8 @@ struct IronCTAButtonLabel: View {
         HStack(spacing: 12) {
             Spacer(minLength: 0)
             Text(title)
-            ZStack {
-                Circle()
-                    .fill(Color.white.opacity(0.18))
-                    .frame(width: 28, height: 28)
-                Image(systemName: "arrow.right")
-                    .font(.system(size: 13, weight: .bold))
-            }
+            Image(systemName: "arrow.right")
+                .font(.system(size: 13, weight: .bold))
         }
     }
 }
@@ -217,9 +207,9 @@ struct GlossyTerracottaDrop: View {
                 .fill(
                     LinearGradient(
                         colors: [
-                            Color(red: 1, green: 180 / 255, blue: 150 / 255).opacity(0.9),
-                            IronTheme.terracottaPrimary,
-                            Color(red: 1, green: 146 / 255, blue: 98 / 255)
+                            Color(red: 0.93, green: 0.76, blue: 0.66),
+                            IronTheme.terracottaAccent,
+                            IronTheme.terracottaPrimary
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -227,11 +217,11 @@ struct GlossyTerracottaDrop: View {
                 )
 
             LiquidDropShape()
-                .stroke(Color.white.opacity(0.65), lineWidth: 1.2)
+                .stroke(Color.white.opacity(0.6), lineWidth: 1.2)
 
             Circle()
-                .fill(Color.white.opacity(0.55))
-                .frame(width: 24, height: 24)
+                .fill(Color.white.opacity(0.50))
+                .frame(width: 22, height: 22)
                 .blur(radius: 1)
                 .offset(x: 18, y: 12)
 
@@ -240,18 +230,17 @@ struct GlossyTerracottaDrop: View {
                     LinearGradient(
                         colors: [
                             Color.white.opacity(0.95),
-                            Color.white.opacity(0.15)
+                            Color.white.opacity(0.10)
                         ],
                         startPoint: .top,
                         endPoint: .bottom
                     )
                 )
-                .frame(width: 26, height: 56)
+                .frame(width: 24, height: 52)
                 .rotationEffect(.degrees(18))
-                .offset(x: 18, y: -20)
-                .blur(radius: 0.6)
+                .offset(x: 18, y: -18)
         }
-        .shadow(color: IronTheme.terracottaPrimary.opacity(0.24), radius: 20, y: 12)
+        .shadow(color: IronTheme.terracottaPrimary.opacity(0.20), radius: 16, x: 0, y: 10)
     }
 }
 
@@ -259,7 +248,7 @@ struct IronLeafGlow: View {
     var alignment: Alignment = .bottomTrailing
     var rotation: Double = 0
     var scale: CGFloat = 1
-    var opacity: Double = 0.28
+    var opacity: Double = 0.18
 
     var body: some View {
         GeometryReader { geometry in
@@ -275,33 +264,29 @@ struct IronLeafGlow: View {
                             endPoint: .bottom
                         )
                     )
-                    .frame(width: 96, height: 170)
-                    .rotationEffect(.degrees(-34))
+                    .frame(width: 94, height: 164)
+                    .rotationEffect(.degrees(-32))
                     .offset(x: 18, y: 20)
 
                 Ellipse()
                     .fill(
                         LinearGradient(
                             colors: [
-                                IronTheme.sageAccent.opacity(opacity * 0.9),
-                                IronTheme.sageAccent.opacity(0.01)
+                                IronTheme.terracottaAccent.opacity(opacity * 0.55),
+                                IronTheme.terracottaAccent.opacity(0.01)
                             ],
                             startPoint: .top,
                             endPoint: .bottom
                         )
                     )
-                    .frame(width: 80, height: 148)
+                    .frame(width: 78, height: 140)
                     .rotationEffect(.degrees(18))
-                    .offset(x: -28, y: 28)
+                    .offset(x: -26, y: 26)
             }
-            .blur(radius: 6)
+            .blur(radius: 10)
             .scaleEffect(scale)
             .rotationEffect(.degrees(rotation))
-            .frame(
-                width: geometry.size.width,
-                height: geometry.size.height,
-                alignment: alignment
-            )
+            .frame(width: geometry.size.width, height: geometry.size.height, alignment: alignment)
         }
         .allowsHitTesting(false)
     }
@@ -332,5 +317,21 @@ private struct LiquidDropShape: Shape {
             control2: CGPoint(x: rect.midX * 1.08, y: rect.minY + rect.height * 0.16)
         )
         return path
+    }
+}
+
+struct AuthPrimaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.headline.weight(.semibold))
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .background(Color(red: 0.15, green: 0.15, blue: 0.16))
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .opacity(configuration.isPressed ? 0.85 : 1.0)
+            .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+            .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
     }
 }

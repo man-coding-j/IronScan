@@ -1,6 +1,8 @@
 import AVFoundation
+import CoreImage
 import CoreMedia
 import Foundation
+import UIKit
 
 actor SimulatorCameraActor: CameraSessionControlling {
     nonisolated let previewSource = CameraPreviewSource.simulated
@@ -61,7 +63,8 @@ actor SimulatorCameraActor: CameraSessionControlling {
                     height: CVPixelBufferGetHeight(pixelBuffer),
                     orientation: captureOrientation
                 ),
-                quality: analyzer.analyzeCapture(pixelBuffer)
+                quality: analyzer.analyzeCapture(pixelBuffer),
+                capturedImage: Self.makeImage(from: pixelBuffer)
             )
             transition(.captureCompleted)
             eventContinuation?.yield(.captured(frame))
@@ -104,6 +107,14 @@ actor SimulatorCameraActor: CameraSessionControlling {
     }
 
     func handleInterruptionEnded() async {}
+
+    private static func makeImage(from pixelBuffer: CVPixelBuffer) -> UIImage? {
+        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
+        guard let cgImage = CIContext().createCGImage(ciImage, from: ciImage.extent) else {
+            return nil
+        }
+        return UIImage(cgImage: cgImage)
+    }
 
     private func runPreviewLoop() async {
         let clock = ContinuousClock()

@@ -5,7 +5,9 @@ import Foundation
 
 final class CameraInferenceBridge: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, @unchecked Sendable {
     var onPreviewFrame: (@Sendable (AnalyzableFrame) -> Void)?
+    var onDisplayFrame: (@Sendable (AnalyzableFrame) -> Void)?
     var onInferenceFrame: (@Sendable (AnalyzableFrame) -> Void)?
+    private var displayThrottle = FrameStrideThrottle(maximumRate: 15)
     private var inferenceThrottle = FrameStrideThrottle(maximumRate: 4)
 
     func configureMaximumInferenceRate(_ maximumRate: Double) {
@@ -27,6 +29,9 @@ final class CameraInferenceBridge: NSObject, AVCaptureVideoDataOutputSampleBuffe
                 timestamp: CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
             )
             onPreviewFrame?(frame)
+            if displayThrottle.shouldProcessNextFrame(timestamp: frame.timestamp) {
+                onDisplayFrame?(frame)
+            }
             if inferenceThrottle.shouldProcessNextFrame(timestamp: frame.timestamp) {
                 onInferenceFrame?(frame)
             }

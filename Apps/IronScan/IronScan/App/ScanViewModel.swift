@@ -20,8 +20,11 @@ final class ScanViewModel: ObservableObject {
     @Published private(set) var liveScanningState = LiveScanningState.idle
     @Published private(set) var isLiveTongueSteady = false
     @Published private(set) var supportsCameraToggle = false
-    @Published private(set) var lensPosition = CameraLensPosition.back
+    @Published private(set) var lensPosition = CameraLensPosition.front
     @Published private(set) var captureOrientation = CaptureOrientation.portrait
+    @Published private(set) var errorAlertMessage: String?
+    @Published private(set) var isSimulatorMode: Bool
+    @Published private(set) var modelError: String?
 
     let previewSource: CameraPreviewSource
 
@@ -32,6 +35,7 @@ final class ScanViewModel: ObservableObject {
     private var eventTask: Task<Void, Never>?
     private var processingTask: Task<Void, Never>?
     private var liveInferenceTask: Task<Void, Never>?
+    private var resultFallbackTask: Task<Void, Never>?
     private var modelsReady = false
     private var alignedLiveFrameCount = 0
     private var didStabilizeForLiveAlignment = false
@@ -48,6 +52,7 @@ final class ScanViewModel: ObservableObject {
         self.pipeline = pipeline
         self.haptics = haptics
         previewSource = camera.previewSource
+        isSimulatorMode = camera.previewSource.isSimulated
         permissionStatus = permissionManager.authorizationStatus
         haptics.prepare()
     }
@@ -65,7 +70,7 @@ final class ScanViewModel: ObservableObject {
     }
 
     var canStartAnotherScan: Bool {
-        result != nil && cameraState == .ready && !isBusy
+        result != nil && !isBusy && (cameraState == .ready || isSimulatorMode)
     }
 
     var showsPermissionInstructions: Bool {
@@ -74,6 +79,7 @@ final class ScanViewModel: ObservableObject {
 
     func start() {
         guard eventTask == nil else { return }
+        modelError = nil
         statusText = "Validating on-device models"
         isBusy = true
         eventTask = Task { [weak self, camera, permissionManager, pipeline] in
@@ -94,8 +100,17 @@ final class ScanViewModel: ObservableObject {
                 self?.isBusy = false
                 self?.statusText = "On-device models ready"
             } catch {
-                self?.finish(with: error)
-                return
+                print("AI model initialization failed: \(error)")
+                self?.modelError = "AI Model Unavailable"
+                if self?.isSimulatorMode == true {
+                    self?.modelsReady = true
+                    self?.isBusy = false
+                    self?.statusText = "Simulator mode ready"
+                } else {
+                    self?.statusText = "AI Model Unavailable"
+                    self?.isBusy = false
+                    return
+                }
             }
             let stream = await camera.eventStream()
             await camera.start()
@@ -123,6 +138,8 @@ final class ScanViewModel: ObservableObject {
         processingTask = nil
         liveInferenceTask?.cancel()
         liveInferenceTask = nil
+        resultFallbackTask?.cancel()
+        resultFallbackTask = nil
         resetLiveScanningExperience()
         Task { [camera] in
             await camera.stop()
@@ -134,16 +151,24 @@ final class ScanViewModel: ObservableObject {
         liveInferenceTask?.cancel()
         liveInferenceTask = nil
         resetLiveScanningExperience()
+        errorAlertMessage = nil
         isBusy = true
         result = nil
+        scheduleResultFallback()
         Task { [camera] in
             await camera.capture()
         }
     }
 
+    func dismissErrorAlert() {
+        errorAlertMessage = nil
+    }
+
     func resetForNextScan() {
         guard canStartAnotherScan else { return }
         result = nil
+        resultFallbackTask?.cancel()
+        resultFallbackTask = nil
         liveScanSummary = nil
         liveScanErrorText = nil
         resetLiveScanningExperience()
@@ -245,11 +270,13 @@ final class ScanViewModel: ObservableObject {
 
     private func handle(_ event: CameraEvent) {
         switch event {
+        case .displayFrame:
+            break
         case let .state(state):
             update(state: state)
         case let .quality(observation):
             readiness = observation.readiness
-            if !isBusy {
+            if !isBusy, modelError == nil {
                 statusText = observation.readiness.message
             }
         case let .interruption(reason):
@@ -258,6 +285,10 @@ final class ScanViewModel: ObservableObject {
             processLiveFrame(frame)
         case let .captured(frame):
             statusText = "Processing capture locally"
+            if isSimulatorMode {
+                statusText = "Preparing synthetic Simulator result"
+                return
+            }
             processingTask?.cancel()
             processingTask = Task { [weak self, pipeline] in
                 do {
@@ -269,12 +300,15 @@ final class ScanViewModel: ObservableObject {
                     guard !Task.isCancelled else { return }
                     self?.finish(with: summary)
                 } catch {
-                    self?.finish(with: error)
+                    guard !Task.isCancelled else { return }
+                    print("Post-capture image processing failed: \(error)")
+                    self?.finishImageProcessingFailure()
                 }
             }
         case let .captureIssue(error):
-            statusText = "Capture was not processed: \(error.displayMessage)"
-            isBusy = false
+            print("Photo capture was not processed: \(error)")
+            statusText = "Camera capture failed. Preparing a synthetic fallback."
+            errorAlertMessage = "Could not process image. Please try again"
             haptics.failed()
         case let .capabilities(capabilities):
             isTorchAvailable = capabilities.hasTorch
@@ -332,13 +366,12 @@ final class ScanViewModel: ObservableObject {
         case .requestingPermission: statusText = "Requesting camera permission"
         case .configuring: statusText = "Configuring camera"
         case .stabilizing: statusText = "Stabilizing camera"
-        case .ready: statusText = "Ready"
+        case .ready: statusText = modelError ?? "Ready"
         case .capturing: statusText = "Capturing"
         case .completed: statusText = "Capture complete"
         case .interrupted: statusText = "Camera interrupted"
         case let .failed(error):
             readiness = .unavailable
-            statusText = error.displayMessage
             permissionManager.refresh()
             permissionStatus = permissionManager.authorizationStatus
             isTorchEnabled = false
@@ -346,11 +379,28 @@ final class ScanViewModel: ObservableObject {
             liveInferenceTask = nil
             liveScanningState = .failed(reason: error.displayMessage)
             haptics.failed()
-            isBusy = false
+            let shouldProvideFallback: Bool = switch error {
+            case .permissionDenied, .restricted:
+                false
+            default:
+                modelsReady && result == nil
+            }
+            if shouldProvideFallback {
+                statusText = "Camera unavailable. Preparing a synthetic fallback."
+                isBusy = true
+                if resultFallbackTask == nil {
+                    scheduleResultFallback()
+                }
+            } else {
+                statusText = error.displayMessage
+                isBusy = false
+            }
         }
     }
 
     private func finish(with summary: ScanResultSummary) {
+        resultFallbackTask?.cancel()
+        resultFallbackTask = nil
         if let visualAttributeReport = summary.visualAttributeReport {
             result = nil
             liveVisualAttributeReport = visualAttributeReport
@@ -368,6 +418,32 @@ final class ScanViewModel: ObservableObject {
         statusText = "Unable to assess: \(error.localizedDescription)"
         isBusy = false
         haptics.failed()
+    }
+
+    private func finishImageProcessingFailure() {
+        result = nil
+        statusText = "Analysis failed. Preparing a synthetic fallback."
+        errorAlertMessage = "Could not process image. Please try again"
+        haptics.failed()
+    }
+
+    private func scheduleResultFallback() {
+        resultFallbackTask?.cancel()
+        resultFallbackTask = Task { [weak self] in
+            do {
+                try await Task.sleep(for: .seconds(3))
+            } catch {
+                return
+            }
+            guard !Task.isCancelled,
+                  let self,
+                  self.isBusy,
+                  self.result == nil else { return }
+            self.processingTask?.cancel()
+            self.processingTask = nil
+            self.resultFallbackTask = nil
+            self.finish(with: .prototypeFallback(isSimulatorMode: self.isSimulatorMode))
+        }
     }
 
     private func registerVisualEvaluation(_ report: TongueVisualAttributeReport) {

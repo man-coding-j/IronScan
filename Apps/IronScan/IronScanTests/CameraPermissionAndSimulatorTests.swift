@@ -63,15 +63,14 @@ final class SimulatorCameraActorTests: XCTestCase {
         }
     }
 
-    func testFrameStrideThrottleProcessesEveryTwentyFourthFrame() {
-        var throttle = FrameStrideThrottle(stride: 24)
-        var processedFrames = [UInt64]()
-
-        for _ in 0..<72 where throttle.shouldProcessNextFrame() {
-            processedFrames.append(throttle.frameCount)
+    func testFrameStrideThrottleLimitsProcessingRate() {
+        var throttle = FrameStrideThrottle(maximumRate: 4)
+        let timestamps = [0.0, 0.10, 0.24, 0.25, 0.40, 0.50]
+        let processed = timestamps.filter { seconds in
+            throttle.shouldProcessNextFrame(timestamp: CMTime(seconds: seconds, preferredTimescale: 600))
         }
 
-        XCTAssertEqual(processedFrames, [24, 48, 72])
+        XCTAssertEqual(processed, [0.0, 0.25, 0.50])
     }
 
     func testSimulatorStreamReachesReadyAndCapturesSyntheticFrame() async throws {
@@ -176,6 +175,7 @@ final class SimulatorCameraActorTests: XCTestCase {
         XCTAssertEqual(capturedFrame?.quality.readiness, .increaseLight)
         XCTAssertEqual(capturedFrame.map { CVPixelBufferGetWidth($0.pixelBuffer) }, 32)
         XCTAssertEqual(capturedFrame.map { CVPixelBufferGetHeight($0.pixelBuffer) }, 32)
+        XCTAssertNotNil(capturedFrame?.capturedImage)
     }
 
     func testSyntheticFramesReleaseAfterStressLoop() throws {
@@ -214,6 +214,14 @@ final class ImageQualityAnalyzerTests: XCTestCase {
         XCTAssertEqual(observation.readiness, .increaseLight)
     }
 
+    func testFortyLumaFrameDoesNotReportLowExposure() throws {
+        let pixelBuffer = try makeSolidPixelBuffer(channelValue: 40)
+
+        let observation = ImageQualityAnalyzer().analyzePreview(AnalyzableFrame(pixelBuffer: pixelBuffer, timestamp: .zero))
+
+        XCTAssertNotEqual(observation.readiness, .increaseLight)
+    }
+
     func testClippedFrameReportsGlare() throws {
         let pixelBuffer = try makeSolidPixelBuffer(channelValue: 255)
 
@@ -223,33 +231,11 @@ final class ImageQualityAnalyzerTests: XCTestCase {
     }
 }
 
-final class PhotoPixelFormatSelectorTests: XCTestCase {
-    func testSelectsBGRAWhenAvailable() {
-        let selected = PhotoPixelFormatSelector.select(from: [
-            kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
-            kCVPixelFormatType_32BGRA
-        ])
-
-        XCTAssertEqual(selected, kCVPixelFormatType_32BGRA)
-    }
-
-    func testFallsBackToFullRangeYUVForPhysicalPhotoCapture() {
-        let selected = PhotoPixelFormatSelector.select(from: [
-            kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
-            kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
-        ])
-
-        XCTAssertEqual(selected, kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)
-    }
-}
-
 final class CameraDeviceDiscoveryTests: XCTestCase {
-    func testBackCameraPrefersVirtualMacroSwitchingBeforePhysicalFallbacks() {
+    func testBackCameraPrefersUltraWideThenWideAngle() {
         XCTAssertEqual(
             CameraDeviceDiscovery.preferredDeviceTypes(for: .back),
             [
-                .builtInTripleCamera,
-                .builtInDualWideCamera,
                 .builtInUltraWideCamera,
                 .builtInWideAngleCamera,
             ]
@@ -265,26 +251,10 @@ final class CameraDeviceDiscoveryTests: XCTestCase {
 }
 
 final class CameraOpticsProfileTests: XCTestCase {
-    func testEyeProfileUsesContinuousControlsAndNegativeExposureBias() {
-        XCTAssertEqual(CameraOpticsProfile.eye.exposureBias, -0.5)
-        XCTAssertTrue(CameraOpticsProfile.eye.usesNearFocusRange)
-        XCTAssertFalse(CameraOpticsProfile.eye.locksFocusAfterStabilization)
-        XCTAssertFalse(CameraOpticsProfile.eye.locksExposureAfterStabilization)
-        XCTAssertNil(CameraOpticsProfile.eye.automaticTorchLevel)
-    }
-
-    func testNailProfileLocksNearFocusAndUsesLowPowerTorch() throws {
-        XCTAssertTrue(CameraOpticsProfile.nail.usesNearFocusRange)
-        XCTAssertTrue(CameraOpticsProfile.nail.locksFocusAfterStabilization)
-        XCTAssertTrue(CameraOpticsProfile.nail.locksExposureAfterStabilization)
-        XCTAssertEqual(try XCTUnwrap(CameraOpticsProfile.nail.automaticTorchLevel), 0.2)
-    }
-
-    func testTongueProfileUsesStandardFocusAndNoAutomaticTorch() {
-        XCTAssertFalse(CameraOpticsProfile.tongue.usesNearFocusRange)
-        XCTAssertTrue(CameraOpticsProfile.tongue.locksFocusAfterStabilization)
-        XCTAssertEqual(CameraOpticsProfile.tongue.exposureBias, 0)
-        XCTAssertNil(CameraOpticsProfile.tongue.automaticTorchLevel)
+    func testProfilesUseConsistentLowPowerTorch() throws {
+        for profile in [CameraOpticsProfile.eye, .nail, .tongue] {
+            XCTAssertEqual(try XCTUnwrap(profile.automaticTorchLevel), 0.15)
+        }
     }
 }
 

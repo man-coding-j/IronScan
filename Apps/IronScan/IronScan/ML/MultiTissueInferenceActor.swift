@@ -60,6 +60,7 @@ struct ConjunctivaRegionCalculator: Sendable {
 struct VisionConjunctivaCropper: ConjunctivaCropping {
     func cropConjunctiva(from pixelBuffer: CVPixelBuffer) throws -> ConjunctivaCropResult {
         let request = VNDetectFaceLandmarksRequest()
+        try VisionComputeSafety.requireCPU(for: request)
         try VNImageRequestHandler(
             cvPixelBuffer: pixelBuffer,
             orientation: .up,
@@ -157,7 +158,7 @@ actor MultiTissueInferenceActor {
 
     init(
         resources: MultiTissueModelResources = .mainBundle(),
-        computeUnits: InferenceComputeUnits = .all,
+        computeUnits: InferenceComputeUnits = .cpuOnly,
         validator: ModelContractValidator = ModelContractValidator(),
         conjunctivaCropper: any ConjunctivaCropping = VisionConjunctivaCropper()
     ) {
@@ -313,29 +314,37 @@ actor MultiTissueInferenceActor {
 
     private func model(for tissue: TissueSite) throws -> TissueModelHandle {
         if let handle = handles[tissue] { return handle }
-        guard let resource = resources.resources[tissue],
-              let packageURL = resource.packageURL,
-              let manifestURL = resource.manifestURL else {
-            throw InferenceError.modelLoadingFailed("\(tissue.displayName) model package or manifest is missing")
+        do {
+            guard let resource = resources.resources[tissue],
+                  let packageURL = resource.packageURL,
+                  let manifestURL = resource.manifestURL else {
+                throw InferenceError.modelLoadingFailed("\(tissue.displayName) model package or manifest is missing")
+            }
+            let manifest = try validator.decodeManifest(at: manifestURL)
+            let compiledURL = try MLModel.compileModel(at: packageURL)
+            let configuration = MLModelConfiguration()
+            configuration.computeUnits = computeUnits.coreMLValue
+            let coreMLModel = try MLModel(contentsOf: compiledURL, configuration: configuration)
+            try validator.validate(
+                manifest: manifest,
+                kind: tissue.modelKind,
+                packageURL: packageURL,
+                model: coreMLModel
+            )
+            let handle = TissueModelHandle(
+                model: IronScanTissueClassifier(model: coreMLModel),
+                manifest: manifest
+            )
+            handles[tissue] = handle
+            loadCounts[tissue, default: 0] += 1
+            return handle
+        } catch {
+            print("\(tissue.displayName) model initialization failed: \(error)")
+            if let inferenceError = error as? InferenceError {
+                throw inferenceError
+            }
+            throw InferenceError.modelLoadingFailed(error.localizedDescription)
         }
-        let manifest = try validator.decodeManifest(at: manifestURL)
-        let compiledURL = try MLModel.compileModel(at: packageURL)
-        let configuration = MLModelConfiguration()
-        configuration.computeUnits = computeUnits.coreMLValue
-        let coreMLModel = try MLModel(contentsOf: compiledURL, configuration: configuration)
-        try validator.validate(
-            manifest: manifest,
-            kind: tissue.modelKind,
-            packageURL: packageURL,
-            model: coreMLModel
-        )
-        let handle = TissueModelHandle(
-            model: IronScanTissueClassifier(model: coreMLModel),
-            manifest: manifest
-        )
-        handles[tissue] = handle
-        loadCounts[tissue, default: 0] += 1
-        return handle
     }
 
     private func scalar(from output: any MLFeatureProvider, feature: String) throws -> Double {

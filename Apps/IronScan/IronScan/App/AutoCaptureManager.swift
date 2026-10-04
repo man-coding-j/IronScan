@@ -1,6 +1,30 @@
 @preconcurrency import Vision
+@preconcurrency import CoreML
 import CoreVideo
 import Foundation
+
+enum VisionComputeSafety {
+    static func requireCPU(for request: VNRequest) throws {
+        let devicesByStage = try request.supportedComputeStageDevices
+        for (stage, devices) in devicesByStage {
+            guard let cpu = devices.first(where: { device in
+                if case .cpu = device { return true }
+                return false
+            }) else {
+                throw VisionComputeSafetyError.cpuUnavailable
+            }
+            request.setComputeDevice(cpu, for: stage)
+        }
+    }
+}
+
+private enum VisionComputeSafetyError: LocalizedError {
+    case cpuUnavailable
+
+    var errorDescription: String? {
+        "Vision CPU processing is unavailable on this device"
+    }
+}
 
 struct AutoCaptureConfiguration: Equatable, Sendable {
     let alignmentHoldSeconds: TimeInterval
@@ -162,6 +186,7 @@ struct VisionTissueAlignmentDetector: TissueAlignmentDetecting {
         tissue: TissueSite
     ) throws -> TissueAlignmentObservation? {
         let request = VNDetectFaceLandmarksRequest()
+        try VisionComputeSafety.requireCPU(for: request)
         try VNImageRequestHandler(
             cvPixelBuffer: pixelBuffer,
             orientation: .up,
@@ -204,6 +229,7 @@ struct VisionTissueAlignmentDetector: TissueAlignmentDetecting {
 
     private func nailObservation(in pixelBuffer: CVPixelBuffer) throws -> TissueAlignmentObservation? {
         let request = VNDetectRectanglesRequest()
+        try VisionComputeSafety.requireCPU(for: request)
         request.maximumObservations = 4
         request.minimumSize = 0.08
         request.minimumAspectRatio = 0.25

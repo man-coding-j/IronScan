@@ -150,7 +150,9 @@ struct ModelRegistryReadiness: Codable, Equatable, Sendable {
 actor ModelRegistryActor {
     static let shared = ModelRegistryActor(
         resources: .runtimeBundle(),
-        computeUnits: .all,
+        // Avoid device-specific MPSGraph/Metal backend validation failures.
+        // CPU inference is slower but is the safest baseline for this prototype.
+        computeUnits: .cpuOnly,
         metrics: InferenceMetricsRecorder()
     )
 
@@ -232,6 +234,7 @@ actor ModelRegistryActor {
         } catch let error as InferenceError {
             throw error
         } catch {
+            print("Segmentation model initialization failed: \(error)")
             throw InferenceError.modelLoadingFailed(error.localizedDescription)
         }
     }
@@ -267,6 +270,7 @@ actor ModelRegistryActor {
         } catch let error as InferenceError {
             throw error
         } catch {
+            print("Risk model initialization failed: \(error)")
             throw InferenceError.modelLoadingFailed(error.localizedDescription)
         }
     }
@@ -302,6 +306,7 @@ actor ModelRegistryActor {
         } catch let error as InferenceError {
             throw error
         } catch {
+            print("Pallor model initialization failed: \(error)")
             throw InferenceError.modelLoadingFailed(error.localizedDescription)
         }
     }
@@ -342,6 +347,7 @@ actor ModelRegistryActor {
         } catch let error as InferenceError {
             throw error
         } catch {
+            print("Multi-screen model initialization failed: \(error)")
             throw InferenceError.modelLoadingFailed(error.localizedDescription)
         }
     }

@@ -3,156 +3,273 @@ import SwiftUI
 struct OnboardingProfileView: View {
     let onComplete: () -> Void
 
-    @AppStorage(DemographicStorageKeys.userAge) private var storedAge = 18
-    @AppStorage(DemographicStorageKeys.userBiologicalSex) private var biologicalSexRaw = UserBiologicalSex.other.rawValue
-    @AppStorage(DemographicStorageKeys.isPregnant) private var storedPregnancyStatus = false
+    @EnvironmentObject private var authManager: AuthManager
 
-    @State private var ageText = ""
-    @State private var disclaimerAccepted = false
+    @AppStorage("userFirstName") private var userFirstName = ""
+    @AppStorage("userLastName") private var userLastName = ""
+    @AppStorage("userAge") private var userAge = 0
+    @AppStorage("userGender") var userGender: String = ""
+    @AppStorage("userBiologicalSex") private var userBiologicalSex = UserBiologicalSex.other.rawValue
+    @AppStorage("userWeight") private var userWeight = ""
+    @AppStorage("userWeightUnit") private var userWeightUnit = "lbs"
 
-    private var selectedBiologicalSex: UserBiologicalSex {
-        UserBiologicalSex(rawValue: biologicalSexRaw) ?? .other
-    }
+    @State private var firstName = ""
+    @State private var lastName = ""
+    @State private var age = ""
+    @State private var gender = ""
+    @State private var weight = ""
+    @State private var isSubmitting = false
+    @State private var submissionError: String?
+    @State private var showReminderPrompt = false
 
     private var parsedAge: Int? {
-        guard let age = Int(ageText), age > 0, age < 121 else { return nil }
-        return age
+        let trimmedAge = age.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let parsedAge = Int(trimmedAge), parsedAge > 0, parsedAge < 121 else { return nil }
+        return parsedAge
     }
 
     private var canContinue: Bool {
-        disclaimerAccepted && parsedAge != nil
+        !firstName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+        !lastName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+        !age.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+        !gender.isEmpty &&
+        !weight.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     var body: some View {
         NavigationStack {
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 22) {
+            ZStack {
+                IronScreenBackground()
+
+                VStack(alignment: .leading, spacing: 24) {
                     header
-                    formSection
-                    disclaimerSection
-                    actionSection
+
+                    Form {
+                        Section("Profile Information") {
+                            TextField("First Name", text: $firstName)
+                            TextField("Last Name", text: $lastName)
+                            TextField("Age", text: $age)
+                                .keyboardType(.numberPad)
+                            Picker("Gender", selection: $gender) {
+                                Text("Select").tag("")
+                                Text("Male").tag("Male")
+                                Text("Female").tag("Female")
+                                Text("Other").tag("Other")
+                            }
+                            TextField("Weight", text: $weight)
+                                .keyboardType(.decimalPad)
+                        }
+                    }
+                    .scrollContentBackground(.hidden)
+                    .frame(maxWidth: 560)
+                    .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+
+                    if let submissionError {
+                        Text(submissionError)
+                            .font(IronTheme.roundedFont(.footnote, weight: .semibold))
+                            .foregroundStyle(IronTheme.warning)
+                            .frame(maxWidth: 560, alignment: .leading)
+                    }
+
+                    Button {
+                        Task {
+                            await saveAndContinue()
+                        }
+                    } label: {
+                        HStack {
+                            if isSubmitting {
+                                ProgressView()
+                                    .tint(.white)
+                            }
+                            Text(isSubmitting ? "Saving..." : "Submit")
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .buttonStyle(OrganicPrimaryButtonStyle())
+                    .disabled(!canContinue || isSubmitting)
+                    .opacity(canContinue && !isSubmitting ? 1 : 0.58)
+                    .frame(maxWidth: 560)
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 20)
-                .padding(.bottom, 32)
+                .padding(.vertical, 24)
             }
-            .background(IronScreenBackground())
             .toolbar(.hidden, for: .navigationBar)
             .onAppear {
-                if ageText.isEmpty {
-                    ageText = storedAge > 0 ? "\(storedAge)" : ""
-                }
+                firstName = userFirstName
+                lastName = userLastName
+                age = userAge > 0 ? "\(userAge)" : ""
+                gender = userGender
+                weight = userWeight
+            }
+            .sheet(isPresented: $showReminderPrompt) {
+                DailyReminderPromptSheet(
+                    enableReminders: {
+                        Task {
+                            let granted = await NotificationManager.shared.requestNotificationPermission()
+                            if granted {
+                                NotificationManager.shared.scheduleDailyScanReminder()
+                            }
+                            completeOnboarding()
+                        }
+                    },
+                    maybeLater: {
+                        completeOnboarding()
+                    }
+                )
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
             }
         }
     }
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Create Your Screening Profile")
+            Image("ironscan_icon_only_transparent")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 120, height: 120)
+                .padding(.bottom, 6)
+
+            Text("Complete Your Profile")
                 .font(IronTheme.roundedFont(.largeTitle, weight: .bold))
-                .foregroundStyle(IronTheme.textSlate)
+                .foregroundStyle(IronTheme.textPrimary)
 
-            Text("These demographics are stored locally and used only to calibrate IronScan's educational screening baseline.")
-                .font(IronTheme.roundedFont(.body, weight: .medium))
-                .foregroundStyle(IronTheme.textMuted)
+            Text("We use this information to calibrate our AI models and provide accurate hemoglobin estimates tailored to your biology.")
+                .font(IronTheme.roundedFont(.body))
+                .foregroundStyle(IronTheme.textSecondary)
+        }
+        .frame(maxWidth: 560, alignment: .leading)
+    }
+
+    private func saveAndContinue() async {
+        guard let session = SupabaseManager.client.auth.currentSession else {
+            submissionError = "Please sign in again before submitting your questionnaire."
+            return
+        }
+
+        let trimmedFirstName = firstName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedLastName = lastName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedWeight = weight.trimmingCharacters(in: .whitespacesAndNewlines)
+        let biologicalSex = gender.isEmpty ? UserBiologicalSex.other.rawValue : gender
+        let weightUnit = userWeightUnit.isEmpty ? "lbs" : userWeightUnit
+
+        guard let parsedAge else {
+            submissionError = "Enter a valid age."
+            return
+        }
+
+        guard let parsedWeight = Double(trimmedWeight), parsedWeight > 0 else {
+            submissionError = "Enter a valid weight."
+            return
+        }
+
+        isSubmitting = true
+        submissionError = nil
+
+        do {
+            let payload = OnboardingProfilePayload(
+                id: String(describing: session.user.id),
+                firstName: trimmedFirstName,
+                lastName: trimmedLastName,
+                age: parsedAge,
+                gender: gender,
+                weight: parsedWeight,
+                weightUnit: weightUnit,
+                createdAt: Date()
+            )
+
+            try await SupabaseManager.client
+                .from("profiles")
+                .upsert(payload, onConflict: "id")
+                .execute()
+
+            userFirstName = trimmedFirstName
+            userLastName = trimmedLastName
+            userAge = parsedAge
+            userGender = gender
+            userBiologicalSex = biologicalSex
+            userWeight = trimmedWeight
+            userWeightUnit = weightUnit
+            isSubmitting = false
+            showReminderPrompt = true
+        } catch {
+            print("Supabase Insert Error: \(error)")
+            submissionError = "We could not save your questionnaire. Please try again."
+            isSubmitting = false
         }
     }
 
-    @ViewBuilder
-    private var formSection: some View {
-        if #available(iOS 26.0, *) {
-            GlassEffectContainer(spacing: 16) {
-                profileFields
-            }
-            .padding(20)
-            .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 28, style: .continuous))
-        } else {
-            profileFields
-                .padding(20)
-                .liquidGlassCard(cornerRadius: 28, interactive: true)
+    private func completeOnboarding() {
+        showReminderPrompt = false
+        withAnimation(.easeInOut) {
+            authManager.markOnboardingCompleted()
+            onComplete()
         }
     }
+}
 
-    private var profileFields: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Age")
-                    .font(IronTheme.roundedFont(.headline, weight: .bold))
-                    .foregroundStyle(IronTheme.textSlate)
+private struct DailyReminderPromptSheet: View {
+    let enableReminders: () -> Void
+    let maybeLater: () -> Void
 
-                TextField("Enter your age", text: $ageText)
-                    .keyboardType(.numberPad)
-                    .textInputAutocapitalization(.never)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 12)
-                    .background(Color.white.opacity(0.72), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            }
+    var body: some View {
+        ZStack {
+            IronScreenBackground()
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Biological Sex")
-                    .font(IronTheme.roundedFont(.headline, weight: .bold))
-                    .foregroundStyle(IronTheme.textSlate)
+            VStack(alignment: .leading, spacing: 22) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Stay on Track")
+                        .font(IronTheme.roundedFont(.title2, weight: .bold))
+                        .foregroundStyle(IronTheme.textPrimary)
 
-                Picker("Biological Sex", selection: $biologicalSexRaw) {
-                    ForEach(UserBiologicalSex.allCases) { sex in
-                        Text(sex.rawValue).tag(sex.rawValue)
+                    Text("Daily reminders help maintain consistent hemoglobin calibration by keeping your scans on a reliable rhythm.")
+                        .font(IronTheme.roundedFont(.body))
+                        .foregroundStyle(IronTheme.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                VStack(spacing: 12) {
+                    Button(action: enableReminders) {
+                        Text("Enable Reminders")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(OrganicPrimaryButtonStyle())
+
+                    Button(action: maybeLater) {
+                        Text("Maybe Later")
+                            .font(IronTheme.roundedFont(.headline, weight: .semibold))
+                            .foregroundStyle(IronTheme.textSecondary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
                     }
                 }
-                .pickerStyle(.segmented)
             }
-
-            if selectedBiologicalSex == .female {
-                Toggle("Currently Pregnant", isOn: $storedPregnancyStatus)
-                    .font(IronTheme.roundedFont(.body, weight: .medium))
-                    .tint(IronTheme.terracottaPrimary)
-            }
+            .padding(24)
+            .frame(maxWidth: 440, alignment: .leading)
+            .liquidGlassCard(cornerRadius: 24)
+            .padding(24)
         }
     }
+}
 
-    private var disclaimerSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("IronScan is an educational screening tool and does not provide medical diagnoses. Always consult a licensed physician.")
-                .font(IronTheme.roundedFont(.body, weight: .bold))
-                .foregroundStyle(IronTheme.warning)
+private struct OnboardingProfilePayload: Encodable {
+    let id: String
+    let firstName: String
+    let lastName: String
+    let age: Int
+    let gender: String
+    let weight: Double
+    let weightUnit: String
+    let createdAt: Date
 
-            Toggle("I understand and agree to the Terms & Medical Disclaimer", isOn: $disclaimerAccepted)
-                .font(IronTheme.roundedFont(.body, weight: .medium))
-                .tint(IronTheme.terracottaPrimary)
-        }
-        .padding(20)
-        .liquidGlassCard(cornerRadius: 24, tint: IronTheme.criticalGlassTint, interactive: true)
-    }
-
-    @ViewBuilder
-    private var actionSection: some View {
-        if #available(iOS 26.0, *) {
-            GlassEffectContainer(spacing: 12) {
-                actionButton
-            }
-            .padding(16)
-            .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 26, style: .continuous))
-        } else {
-            actionButton
-                .padding(16)
-                .liquidGlassCard(cornerRadius: 26, interactive: true)
-        }
-    }
-
-    private var actionButton: some View {
-        Button(action: saveAndContinue) {
-            IronCTAButtonLabel(title: "Save Profile & Continue")
-        }
-        .buttonStyle(OrganicPrimaryButtonStyle())
-        .disabled(!canContinue)
-        .opacity(canContinue ? 1 : 0.6)
-    }
-
-    private func saveAndContinue() {
-        guard let parsedAge else { return }
-        storedAge = parsedAge
-        if selectedBiologicalSex != .female {
-            storedPregnancyStatus = false
-        }
-        onComplete()
+    enum CodingKeys: String, CodingKey {
+        case id
+        case firstName = "first_name"
+        case lastName = "last_name"
+        case age
+        case gender
+        case weight
+        case weightUnit = "weight_unit"
+        case createdAt = "created_at"
     }
 }

@@ -8,6 +8,9 @@ struct CameraPreviewView: View {
     let onOrientationChange: (CaptureOrientation) -> Void
 
     var body: some View {
+        #if targetEnvironment(simulator)
+        SimulatedTonguePreview()
+        #else
         if let session = source.session {
             CaptureSessionPreview(
                 session: session,
@@ -17,9 +20,11 @@ struct CameraPreviewView: View {
         } else {
             SimulatedTonguePreview()
         }
+        #endif
     }
 }
 
+#if !targetEnvironment(simulator)
 private struct CaptureSessionPreview: UIViewRepresentable {
     let session: AVCaptureSession
     let lensPosition: CameraLensPosition
@@ -27,16 +32,25 @@ private struct CaptureSessionPreview: UIViewRepresentable {
 
     func makeUIView(context: Context) -> PreviewView {
         let view = PreviewView()
-        view.previewLayer.session = session
-        view.previewLayer.videoGravity = .resizeAspectFill
+        if let previewLayer = view.previewLayer {
+            previewLayer.session = session
+            if let connection = previewLayer.connection {
+                if #available(iOS 17.0, *) {
+                    connection.videoRotationAngle = 90
+                } else {
+                    connection.videoOrientation = .portrait
+                }
+            }
+            previewLayer.videoGravity = .resizeAspectFill
+        }
         view.onOrientationChange = onOrientationChange
         view.lensPosition = lensPosition
         return view
     }
 
     func updateUIView(_ view: PreviewView, context: Context) {
-        if view.previewLayer.session !== session {
-            view.previewLayer.session = session
+        if view.previewLayer?.session !== session {
+            view.previewLayer?.session = session
         }
         view.onOrientationChange = onOrientationChange
         view.lensPosition = lensPosition
@@ -44,9 +58,10 @@ private struct CaptureSessionPreview: UIViewRepresentable {
     }
 
     static func dismantleUIView(_ view: PreviewView, coordinator: Void) {
-        view.previewLayer.session = nil
+        view.previewLayer?.session = nil
     }
 }
+#endif
 
 private struct SimulatedTonguePreview: View {
     var body: some View {
@@ -94,20 +109,18 @@ private struct SimulatedTonguePreview: View {
     }
 }
 
+#if !targetEnvironment(simulator)
 private final class PreviewView: UIView {
     var onOrientationChange: ((CaptureOrientation) -> Void)?
-    var lensPosition = CameraLensPosition.back
+    var lensPosition = CameraLensPosition.front
     private var captureOrientation = CaptureOrientation.portrait
 
     override class var layerClass: AnyClass {
         AVCaptureVideoPreviewLayer.self
     }
 
-    var previewLayer: AVCaptureVideoPreviewLayer {
-        guard let previewLayer = layer as? AVCaptureVideoPreviewLayer else {
-            preconditionFailure("PreviewView requires AVCaptureVideoPreviewLayer")
-        }
-        return previewLayer
+    var previewLayer: AVCaptureVideoPreviewLayer? {
+        layer as? AVCaptureVideoPreviewLayer
     }
 
     override func didMoveToWindow() {
@@ -121,16 +134,14 @@ private final class PreviewView: UIView {
     }
 
     func updateConnection() {
-        guard let connection = previewLayer.connection else { return }
+        guard let connection = previewLayer?.connection else { return }
         connection.isEnabled = true
         if #available(iOS 17.0, *) {
-            let angle = captureOrientation.videoRotationAngle
-            if connection.isVideoRotationAngleSupported(angle) {
-                connection.videoRotationAngle = angle
-            }
-        } else if connection.isVideoOrientationSupported {
-            connection.videoOrientation = captureOrientation.legacyVideoOrientation
+            connection.videoRotationAngle = 90
+        } else {
+            connection.videoOrientation = .portrait
         }
+        previewLayer?.videoGravity = .resizeAspectFill
         if connection.isVideoMirroringSupported {
             connection.automaticallyAdjustsVideoMirroring = false
             connection.isVideoMirrored = lensPosition == .front
@@ -149,6 +160,14 @@ private final class PreviewView: UIView {
         }
         captureOrientation = updatedOrientation
         updateConnection()
-        onOrientationChange?(updatedOrientation)
+        guard let onOrientationChange else { return }
+        // layoutSubviews can run inside SwiftUI's UIViewRepresentable update
+        // pass. Publishing synchronously from here triggers "Publishing changes
+        // from within view updates". Defer the UI callback until that render
+        // transaction has completed and make the actor hop explicit.
+        DispatchQueue.main.async {
+            onOrientationChange(updatedOrientation)
+        }
     }
 }
+#endif

@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 struct PDFLatestDiagnosticResult: Sendable {
     let tissueSummary: String
@@ -13,124 +12,6 @@ struct PDFReportPayload: Sendable {
     let calibrationCategory: DemographicCalibrationCategory
     let latestDiagnosticResult: PDFLatestDiagnosticResult
     let history: [ScanHistoryRecord]
-}
-
-@MainActor
-final class PDFReportGenerator {
-    static let shared = PDFReportGenerator()
-
-    private init() {}
-
-    func generateDoctorReport(
-        result: TriangulationResult,
-        outputs: [TissueSite: TissueScreeningOutput],
-        history: [ScanHistoryRecord],
-        defaults: UserDefaults = .standard
-    ) throws -> URL {
-        let payload = PDFReportPayload(
-            generatedAt: Date(),
-            profile: DemographicProfileStore.load(defaults: defaults),
-            calibrationCategory: result.calibrationCategory,
-            latestDiagnosticResult: PDFLatestDiagnosticResult(
-                tissueSummary: tissueSummary(from: result, outputs: outputs),
-                riskScore: result.opticalPallorIndex,
-                qualitativeFindings: qualitativeFindings(for: result)
-            ),
-            history: history
-        )
-        return try generateDoctorReport(payload: payload)
-    }
-
-    func generateDoctorReport(
-        latestRecord: ScanHistoryRecord?,
-        history: [ScanHistoryRecord],
-        defaults: UserDefaults = .standard
-    ) throws -> URL {
-        let profile = DemographicProfileStore.load(defaults: defaults)
-        let calibrationCategory = latestRecord?.calibrationCategory ?? profile.calibration.category
-        let payload = PDFReportPayload(
-            generatedAt: Date(),
-            profile: profile,
-            calibrationCategory: calibrationCategory,
-            latestDiagnosticResult: PDFLatestDiagnosticResult(
-                tissueSummary: latestRecord?.tissues.isEmpty == false
-                    ? latestRecord?.tissues.joined(separator: ", ") ?? "Multi-tissue screening"
-                    : "Multi-tissue screening",
-                riskScore: latestRecord?.opticalPatternIndex,
-                qualitativeFindings: latestRecord.map { qualitativeFindings(for: $0) } ?? "No completed scan has been saved yet."
-            ),
-            history: history
-        )
-        return try generateDoctorReport(payload: payload)
-    }
-
-    func generateDoctorReport(payload: PDFReportPayload) throws -> URL {
-        let pageSize = CGSize(width: 595.2, height: 841.8)
-        let fileName = "IronScan-Doctor-Report-\(timestampSlug(for: payload.generatedAt)).pdf"
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-
-        let page = PDFReportPage(payload: payload)
-            .frame(width: pageSize.width, height: pageSize.height, alignment: .topLeading)
-            .background(Color.white)
-
-        let renderer = ImageRenderer(content: page)
-        renderer.proposedSize = ProposedViewSize(pageSize)
-        renderer.scale = 1
-
-        let pdfRenderer = UIGraphicsPDFRenderer(bounds: CGRect(origin: .zero, size: pageSize))
-        try pdfRenderer.writePDF(to: url) { context in
-            context.beginPage()
-            renderer.render { _, renderInContext in
-                renderInContext(context.cgContext)
-            }
-        }
-
-        return url
-    }
-
-    private func timestampSlug(for date: Date) -> String {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime]
-        return formatter.string(from: date).replacingOccurrences(of: ":", with: "-")
-    }
-
-    private func tissueSummary(
-        from result: TriangulationResult,
-        outputs: [TissueSite: TissueScreeningOutput]
-    ) -> String {
-        let included = result.contributions
-            .filter { $0.status == .included }
-            .map { $0.tissue.glassTitle }
-        if !included.isEmpty {
-            return included.joined(separator: ", ")
-        }
-        let available = TissueSite.allCases.compactMap { tissue in
-            outputs[tissue] != nil ? tissue.glassTitle : nil
-        }
-        return available.isEmpty ? "Multi-tissue screening" : available.joined(separator: ", ")
-    }
-
-    private func qualitativeFindings(for result: TriangulationResult) -> String {
-        switch result.summary {
-        case .lowerObservedRisk:
-            return "Lower observed visual pallor signal across the completed scan."
-        case .possibleAnemiaRisk:
-            return "Possible visual pallor signal detected. Laboratory confirmation is recommended."
-        case .unableToAssess:
-            return result.rejectionReasons.first ?? "The scan could not be assessed confidently."
-        }
-    }
-
-    private func qualitativeFindings(for record: ScanHistoryRecord) -> String {
-        switch record.summary {
-        case .lowerObservedRisk:
-            return "Lower observed visual pallor signal across the saved scan."
-        case .possibleAnemiaRisk:
-            return "Possible visual pallor signal detected in the saved scan."
-        case .unableToAssess:
-            return "This saved scan was marked unable to assess."
-        }
-    }
 }
 
 private struct PDFReportPage: View {
@@ -299,31 +180,16 @@ private struct PDFReportPage: View {
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func summaryTitle(for summary: OpticalRiskSummary) -> String {
+    private func summaryTitle(for summary: String) -> String {
         switch summary {
-        case .lowerObservedRisk:
+        case OpticalRiskSummary.lowerObservedRisk.rawValue:
             return "Lower Risk"
-        case .possibleAnemiaRisk:
+        case OpticalRiskSummary.possibleAnemiaRisk.rawValue:
             return "Possible Risk"
-        case .unableToAssess:
+        default:
             return "Unable to Assess"
         }
     }
-}
-
-struct ActivityShareSheet: UIViewControllerRepresentable {
-    let activityItems: [Any]
-
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
-    }
-
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
-}
-
-struct ShareablePDFDocument: Identifiable {
-    let id = UUID()
-    let url: URL
 }
 
 private extension Bundle {
