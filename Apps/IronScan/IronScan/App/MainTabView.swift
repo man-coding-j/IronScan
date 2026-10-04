@@ -1,13 +1,7 @@
 import Charts
+import PhotosUI
 import SwiftUI
-
-enum UserBiologicalSex: String, Codable, CaseIterable, Identifiable {
-    case male = "Male"
-    case female = "Female"
-    case other = "Other"
-
-    var id: String { rawValue }
-}
+import UIKit
 
 enum MainTab: String, CaseIterable, Identifiable {
     case home
@@ -41,20 +35,24 @@ enum MainTab: String, CaseIterable, Identifiable {
 
 struct MainTabView: View {
     @EnvironmentObject private var dependencies: IronScanAppDependencies
+    @EnvironmentObject private var historyManager: ScanHistoryManager
     @State private var selection = MainTab.home
 
     var body: some View {
         Group {
             if let history = dependencies.history,
-               let inference = dependencies.multiTissueInference {
+               let inference = dependencies.multiTissueInference,
+               let healthKit = dependencies.healthKit {
                 TabView(selection: $selection) {
-                    HomeDashboardView(history: history) {
+                    HomeDashboardView(history: history, healthKit: healthKit) {
                         selection = .scan
                     }
                     .tag(MainTab.home)
                     .tabItem { Label(MainTab.home.title, systemImage: MainTab.home.symbol) }
 
-                    HistoryView(history: history)
+                    HistoryView(history: history) {
+                        selection = .scan
+                    }
                         .tag(MainTab.history)
                         .tabItem { Label(MainTab.history.title, systemImage: MainTab.history.symbol) }
 
@@ -82,6 +80,7 @@ struct MainTabView: View {
         .organicTypography()
         .animation(.spring(response: 0.4, dampingFraction: 0.8), value: selection)
         .task {
+            await historyManager.loadData()
             await dependencies.history?.fetchHistory()
         }
     }
@@ -135,23 +134,14 @@ private struct HeroDashboardView: View {
 }
 
 struct HistoryView: View {
+    @EnvironmentObject var historyManager: ScanHistoryManager
     @ObservedObject var history: ScanHistoryStore
+    let startScan: () -> Void
     @State private var shareDocument: ShareablePDFDocument?
     @State private var exportError: String?
 
-    private var points: [HistoryPoint] {
-        let formatter = DateFormatter()
-        formatter.setLocalizedDateFormatFromTemplate("MMM d")
-        return history.records
-            .prefix(5)
-            .reversed()
-            .map {
-                HistoryPoint(
-                    label: formatter.string(from: $0.capturedAt),
-                    score: $0.opticalPatternIndex ?? 0,
-                    color: color(for: tier(for: $0.opticalPatternIndex ?? 0))
-                )
-            }
+    private var recentHistoryRecords: [ScanHistoryRecord] {
+        DashboardHistoryRecords.from(historyManager.records)
     }
 
     var body: some View {
@@ -169,75 +159,26 @@ struct HistoryView: View {
                 }
                 .padding(.top, 16)
 
-                Group {
-                    if points.isEmpty {
-                        VStack(spacing: 14) {
-                            Image(systemName: "chart.line.uptrend.xyaxis")
-                                .font(.system(size: 30, weight: .semibold))
-                                .foregroundStyle(IronTheme.textMuted)
-                            Text("No scans yet")
-                                .font(IronTheme.roundedFont(.headline, weight: .bold))
-                                .foregroundStyle(IronTheme.textSlate)
-                            Text("Take your first scan to see your trends!")
-                                .font(IronTheme.roundedFont(.subheadline))
-                                .foregroundStyle(IronTheme.textMuted)
-                                .multilineTextAlignment(.center)
-                        }
-                        .frame(maxWidth: .infinity, minHeight: 180)
-                    } else {
-                        VStack(alignment: .leading, spacing: 16) {
-                            Chart(Array(points.enumerated()), id: \.offset) { _, point in
-                                LineMark(
-                                    x: .value("Date", point.label),
-                                    y: .value("Score", point.score)
-                                )
-                                .foregroundStyle(IronTheme.sageAccent)
-                                .interpolationMethod(.catmullRom)
+                syncStatusBanner
 
-                                PointMark(
-                                    x: .value("Date", point.label),
-                                    y: .value("Score", point.score)
-                                )
-                                .foregroundStyle(point.color)
-                                .symbolSize(90)
-                            }
-                            .chartYScale(domain: 0 ... 1)
-                            .chartYAxis(.hidden)
-                            .frame(height: 180)
+                VStack(alignment: .leading, spacing: 14) {
+                    Text("Hemoglobin Trend")
+                        .font(IronTheme.roundedFont(.title3, weight: .bold))
+                        .foregroundStyle(IronTheme.textPrimary)
 
-                            VStack(spacing: 0) {
-                                ForEach(Array(points.enumerated()), id: \.offset) { index, point in
-                                    HStack {
-                                        Text(point.label)
-                                            .foregroundStyle(IronTheme.textMuted)
-                                        Spacer()
-                                        Text(point.score.formatted(.number.precision(.fractionLength(2))))
-                                            .fontWeight(.bold)
-                                        Text(tier(for: point.score).title)
-                                            .font(.caption.weight(.bold))
-                                            .foregroundStyle(color(for: tier(for: point.score)))
-                                        Circle()
-                                            .fill(color(for: tier(for: point.score)))
-                                            .frame(width: 8, height: 8)
-                                    }
-                                    .font(IronTheme.roundedFont(.subheadline))
-                                    .padding(.vertical, 14)
-
-                                    if index < points.count - 1 {
-                                        Divider()
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    HistoricalHemoglobinTrendCard(
+                        records: recentHistoryRecords,
+                        height: 260,
+                        emptyMessage: "Complete at least two scans to reveal your longitudinal recovery curve."
+                    )
                 }
-                .padding(20)
-                .liquidGlassCard()
 
                 Button(action: exportPDF) {
                     IronCTAButtonLabel(title: "Export PDF for Doctor")
                 }
                 .buttonStyle(OrganicPrimaryButtonStyle())
+
+                recentHistorySection
             }
             .padding(.bottom, 128)
         }
@@ -249,21 +190,130 @@ struct HistoryView: View {
         } message: {
             Text(exportError ?? "The PDF could not be created.")
         }
+        .background(IronTheme.beigeBackground.ignoresSafeArea())
     }
 
-    private func tier(for score: Double) -> RiskBand {
-        switch score {
-        case ..<0.30:
-            RiskBand(title: "Low Risk", color: .green)
-        case ..<0.70:
-            RiskBand(title: "Moderate", color: .yellow)
-        default:
-            RiskBand(title: "High Risk", color: IronTheme.terracottaPrimary)
+    private var syncStatusBanner: some View {
+        HStack(spacing: 10) {
+            Circle()
+                .fill(history.pendingSyncCount == 0 ? IronTheme.sageAccent : IronTheme.warning)
+                .frame(width: 8, height: 8)
+
+            Text(history.syncStatusText)
+                .font(IronTheme.roundedFont(.caption, weight: .semibold))
+                .foregroundStyle(IronTheme.textSecondary)
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .liquidGlassCard(cornerRadius: 20)
+    }
+
+    private var recentHistorySection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Text("Recent History")
+                    .font(IronTheme.roundedFont(.title3, weight: .bold))
+                    .foregroundStyle(IronTheme.textPrimary)
+                Spacer()
+                Button("Start Scan", action: startScan)
+                    .font(IronTheme.roundedFont(.subheadline, weight: .semibold))
+                    .foregroundStyle(IronTheme.terracottaPrimary)
+            }
+
+            if recentHistoryRecords.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "waveform.path.ecg")
+                        .font(.system(size: 28, weight: .semibold))
+                        .foregroundStyle(IronTheme.textSecondary)
+
+                    Text("No scans yet")
+                        .font(IronTheme.roundedFont(.headline, weight: .bold))
+                        .foregroundStyle(IronTheme.textPrimary)
+
+                    Text("Take your first scan to see your trends!")
+                        .font(IronTheme.roundedFont(.subheadline))
+                        .foregroundStyle(IronTheme.textSecondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 28)
+                .liquidGlassCard(cornerRadius: 26)
+            } else {
+                VStack(spacing: 12) {
+                    ForEach(recentHistoryRecords.prefix(6)) { record in
+                        historyRow(record)
+                    }
+                }
+            }
         }
     }
 
-    private func color(for band: RiskBand) -> Color {
-        band.color
+    private func historyRow(_ record: ScanHistoryRecord) -> some View {
+        HStack(spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(color(for: record.summary).opacity(0.14))
+                    .frame(width: 44, height: 44)
+
+                Image(systemName: symbol(for: record.summary))
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(color(for: record.summary))
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title(for: record.summary))
+                    .font(IronTheme.roundedFont(.headline, weight: .semibold))
+                    .foregroundStyle(IronTheme.textPrimary)
+
+                Text(record.capturedAt.formatted(date: .abbreviated, time: .shortened))
+                    .font(IronTheme.roundedFont(.caption))
+                    .foregroundStyle(IronTheme.textSecondary)
+            }
+
+            Spacer(minLength: 8)
+
+            Text(record.opticalPatternIndex?.formatted(.number.precision(.fractionLength(2))) ?? "--")
+                .font(IronTheme.roundedFont(.headline, weight: .bold))
+                .foregroundStyle(IronTheme.textPrimary)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .liquidGlassCard(cornerRadius: 22)
+    }
+
+    private func title(for summary: String) -> String {
+        switch summary {
+        case OpticalRiskSummary.lowerObservedRisk.rawValue:
+            return "Lower observed risk"
+        case OpticalRiskSummary.possibleAnemiaRisk.rawValue:
+            return "Possible anemia risk"
+        default:
+            return summary
+        }
+    }
+
+    private func symbol(for summary: String) -> String {
+        switch summary {
+        case OpticalRiskSummary.lowerObservedRisk.rawValue:
+            return "checkmark.circle.fill"
+        case OpticalRiskSummary.possibleAnemiaRisk.rawValue:
+            return "exclamationmark.triangle.fill"
+        default:
+            return "questionmark.circle.fill"
+        }
+    }
+
+    private func color(for summary: String) -> Color {
+        switch summary {
+        case OpticalRiskSummary.lowerObservedRisk.rawValue:
+            return IronTheme.sageAccent
+        case OpticalRiskSummary.possibleAnemiaRisk.rawValue:
+            return IronTheme.warning
+        default:
+            return IronTheme.textSecondary
+        }
     }
 
     private var exportAlertBinding: Binding<Bool> {
@@ -274,7 +324,7 @@ struct HistoryView: View {
     }
 
     private func exportPDF() {
-        if let url = PDFReportGenerator.generateReport(for: history.records.first, history: history.records) {
+        if let url = PDFReportGenerator.generateReport(for: recentHistoryRecords.first, history: recentHistoryRecords) {
             shareDocument = ShareablePDFDocument(url: url)
         } else {
             exportError = "The PDF could not be created."
@@ -284,74 +334,10 @@ struct HistoryView: View {
 
 struct LearnView: View {
     @ObservedObject var history: ScanHistoryStore
-
-    private let allArticles: [LearnArticle] = [
-        LearnArticle(
-            icon: "fork.knife",
-            tint: IronTheme.terracottaPrimary,
-            title: "Iron-Rich Diet Essentials",
-            subtitle: "Foods and meal pairings that can support healthy iron intake.",
-            tags: [.highRisk, .diet]
-        ),
-        LearnArticle(
-            icon: "cross.case.fill",
-            tint: IronTheme.terracottaPrimary,
-            title: "When to Consult a Physician",
-            subtitle: "Signs that lab work and a clinician conversation are worth prioritizing.",
-            tags: [.highRisk, .physician]
-        ),
-        LearnArticle(
-            icon: "drop.fill",
-            tint: IronTheme.sageAccent,
-            title: "Ferritin and Iron Stores",
-            subtitle: "Understand how ferritin relates to iron deficiency and follow-up testing.",
-            tags: [.femaleFocus, .ferritin]
-        ),
-        LearnArticle(
-            icon: "person.2.fill",
-            tint: IronTheme.sageAccent,
-            title: "Women’s Iron Health",
-            subtitle: "Why menstruation, pregnancy, and recovery needs can affect iron balance.",
-            tags: [.femaleFocus]
-        ),
-        LearnArticle(
-            icon: "book.closed.fill",
-            tint: IronTheme.sageAccent,
-            title: "What Is Anemia?",
-            subtitle: "A practical primer on symptoms, causes, and common next steps.",
-            tags: [.general]
-        )
-    ]
+    @AppStorage("userGender") private var userGender: String = ""
 
     private var latestScan: ScanHistoryRecord? {
         history.records.first
-    }
-
-    private var personalizedArticles: [LearnArticle] {
-        let isHighRisk = latestScan?.summary == OpticalRiskSummary.possibleAnemiaRisk.rawValue
-        let isFemale = history.userProfile?.gender?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).lowercased() == "female"
-
-        return allArticles
-            .map { article in
-                var priority = 0
-                if isHighRisk, article.tags.contains(.highRisk) || article.tags.contains(.diet) || article.tags.contains(.physician) {
-                    priority += 3
-                }
-                if isFemale, article.tags.contains(.femaleFocus) || article.tags.contains(.ferritin) {
-                    priority += 2
-                }
-                if article.tags.contains(.general) {
-                    priority += 1
-                }
-                return (article, priority)
-            }
-            .sorted { lhs, rhs in
-                if lhs.1 == rhs.1 {
-                    return lhs.0.title < rhs.0.title
-                }
-                return lhs.1 > rhs.1
-            }
-            .map(\.0)
     }
 
     var body: some View {
@@ -364,13 +350,44 @@ struct LearnView: View {
                 featuredRecommendationCard
 
                 VStack(spacing: 14) {
-                    ForEach(personalizedArticles) { article in
-                        LearnCard(article: article)
+                    LearnDisclosureCard(
+                        title: "What is Anemia?",
+                        summary: "A quick overview of what anemia is and why hemoglobin matters.",
+                        source: "Source: World Health Organization, Anaemia fact sheet.",
+                        url: Self.safeURL("https://www.who.int/news-room/fact-sheets/detail/anaemia"),
+                        content: "Anemia happens when the body does not have enough healthy red blood cells or hemoglobin to carry oxygen efficiently. That can leave people feeling tired, weak, short of breath, or lightheaded."
+                    )
+
+                    LearnDisclosureCard(
+                        title: "Symptoms of Iron Deficiency",
+                        summary: "Common signs that can be associated with low iron or iron-deficiency anemia.",
+                        source: "Source: Mayo Clinic, Iron deficiency anemia overview.",
+                        url: Self.safeURL("https://www.mayoclinic.org/diseases-conditions/iron-deficiency-anemia/symptoms-causes/syc-20355034"),
+                        content: "Symptoms can include fatigue, weakness, pale skin, headaches, dizziness, brittle nails, or reduced exercise tolerance. These symptoms are not specific to iron deficiency, but they can be useful prompts for follow-up."
+                    )
+
+                    LearnDisclosureCard(
+                        title: "Iron-Rich Foods",
+                        summary: "Food choices that can help support healthy iron intake.",
+                        source: "Source: World Health Organization, Healthy diet guidance.",
+                        url: Self.safeURL("https://www.who.int/news-room/fact-sheets/detail/healthy-diet"),
+                        content: "Iron-rich options include lean meats, beans, lentils, tofu, spinach, fortified cereals, and pumpkin seeds. Pairing plant-based iron sources with vitamin C-rich foods can improve absorption."
+                    )
+
+                    if userGender == "Female" {
+                        LearnDisclosureCard(
+                            title: "Menstruation and Iron Loss",
+                            summary: "Why menstrual bleeding can affect iron balance over time.",
+                            source: "Source: Office on Women’s Health, Iron-deficiency anemia.",
+                            url: Self.safeURL("https://womenshealth.gov/a-z-topics/iron-deficiency-anemia"),
+                            content: "Menstrual blood loss is a common reason iron stores can drop, especially when periods are heavy or prolonged. Recurrent monthly loss can make it harder to keep up with iron needs through diet alone."
+                        )
                     }
                 }
             }
             .padding(.bottom, 128)
         }
+        .background(IronTheme.beigeBackground.ignoresSafeArea())
     }
 
     private var featuredRecommendationCard: some View {
@@ -387,100 +404,283 @@ struct LearnView: View {
         .liquidGlassCard(cornerRadius: 26, interactive: true)
     }
 
+    private static func safeURL(_ value: String) -> URL {
+        URL(string: value) ?? URL(fileURLWithPath: "/unavailable-resource")
+    }
+
     private var featuredRecommendationDetail: String {
         if latestScan?.summary == OpticalRiskSummary.possibleAnemiaRisk.rawValue {
-            return "Your recent result suggests prioritizing nutrition guidance and follow-up care articles first."
+            return "Your recent result suggests reviewing symptom guidance, iron-rich foods, and follow-up education first."
         }
-        if history.userProfile?.gender?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).lowercased() == "female" {
-            return "Your feed highlights ferritin and women’s health topics alongside the core anemia basics."
+        if userGender == "Female" {
+            return "Your feed includes core anemia basics plus additional education about menstruation-related iron loss."
         }
         return "Your feed starts with the most useful anemia education and next-step guidance for new scan data."
     }
 }
 
+@MainActor
 struct ProfileView: View {
     @ObservedObject var history: ScanHistoryStore
-    @AppStorage("userAge") private var userAge = 18
-    @AppStorage("userBiologicalSex") private var userBiologicalSex = "Other"
+    @AppStorage("userAge") private var userAge = 0
+    @AppStorage("userBiologicalSex") private var userBiologicalSex = ""
+    @AppStorage("fitzpatrickSkinPhototype") private var fitzpatrickSkinPhototype = FitzpatrickSkinPhototype.notProvided.rawValue
+    @AppStorage("lightingEnvironment") private var lightingEnvironment = LightingEnvironment.notProvided.rawValue
     @AppStorage("isPregnant") private var isPregnant = false
-    @State private var remindersEnabled = true
+    @AppStorage("recentLabHemoglobin") private var recentLabHemoglobin = 0.0
+    @AppStorage("profileImageData") private var profileImageData = Data()
+    @State private var selectedPhotoItem: PhotosPickerItem?
+    @State private var profileImage: Image?
+    @State private var recentLabHemoglobinInput = ""
+    @State private var exportedResearchBundle: ShareablePDFDocument?
+    @State private var researchExportError: String?
+    @State private var showSettings = false
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
+        let displayedProfileImage = profileImage
+        return ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: 20) {
                 HStack {
                     Text("Profile")
                         .font(IronTheme.roundedFont(.largeTitle, weight: .bold))
                     Spacer()
-                    Image(systemName: "gearshape")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(IronTheme.textSlate)
-                        .frame(width: 40, height: 40)
-                        .background(Color.white.opacity(0.68), in: Circle())
+                    Button {
+                        showSettings = true
+                    } label: {
+                        Image(systemName: "gearshape")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(IronTheme.textSlate)
+                            .frame(width: 40, height: 40)
+                            .background(Color.white.opacity(0.68), in: Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Open settings")
                 }
                 .padding(.top, 16)
 
                 VStack(spacing: 18) {
-                    ZStack(alignment: .bottomTrailing) {
-                        Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [Color.white.opacity(0.92), Color.white.opacity(0.42)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
+                    PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                        ZStack(alignment: .bottomTrailing) {
+                            Group {
+                                if let displayedProfileImage {
+                                    displayedProfileImage
+                                        .resizable()
+                                        .scaledToFill()
+                                } else {
+                                    LinearGradient(
+                                        colors: [Color.white.opacity(0.92), Color.white.opacity(0.42)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                    .overlay {
+                                        Image(systemName: "person.crop.circle.fill")
+                                            .font(.system(size: 78))
+                                            .foregroundStyle(IronTheme.sageAccent)
+                                    }
+                                }
+                            }
                             .frame(width: 118, height: 118)
-                            .overlay {
-                                Image(systemName: "person.crop.circle.fill")
-                                    .font(.system(size: 78))
-                                    .foregroundStyle(IronTheme.sageAccent)
-                            }
+                            .clipShape(Circle())
 
-                        Circle()
-                            .fill(Color.white.opacity(0.88))
-                            .frame(width: 34, height: 34)
-                            .overlay {
-                                Image(systemName: "pencil")
-                                    .font(.system(size: 14, weight: .bold))
-                                    .foregroundStyle(IronTheme.textSlate)
-                            }
+                            Circle()
+                                .fill(Color.white.opacity(0.88))
+                                .frame(width: 34, height: 34)
+                                .overlay {
+                                    Image(systemName: "pencil")
+                                        .font(.system(size: 14, weight: .bold))
+                                        .foregroundStyle(IronTheme.textSlate)
+                                }
+                        }
                     }
+                    .buttonStyle(.plain)
 
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Personal Info")
                             .font(IronTheme.roundedFont(.headline, weight: .bold))
-                        profileRow("Age", "\(userAge)")
+                        profileRow("Age", userAge > 0 ? "\(userAge)" : "Not provided")
                         Divider()
-                        profileRow("Biological Sex", userBiologicalSex)
+                        profileRow("Biological Sex", userBiologicalSex.isEmpty ? "Not provided" : userBiologicalSex)
                         if userBiologicalSex == UserBiologicalSex.female.rawValue {
                             Divider()
                             profileRow("Pregnancy Status", isPregnant ? "Currently Pregnant" : "Not Pregnant")
                         }
                         Divider()
+                        profileRow("Skin Phototype", fitzpatrickSkinPhototype)
+                        Divider()
+                        profileRow("Lighting Context", lightingEnvironment)
+                        Divider()
+                        profileRow(
+                            "Recent Lab Hemoglobin",
+                            recentLabHemoglobin > 0
+                                ? "\(recentLabHemoglobin.formatted(.number.precision(.fractionLength(1)))) g/dL"
+                                : "Not provided"
+                        )
+                        Divider()
                         profileRow("Saved Scans", "\(history.records.count)")
                     }
                 }
-                .padding(20)
+                .padding(16)
+                .frame(maxWidth: .infinity)
                 .liquidGlassCard()
 
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Reminders")
+                    Text("Demographic Calibration")
                         .font(IronTheme.roundedFont(.headline, weight: .bold))
 
-                    Toggle(isOn: $remindersEnabled) {
-                        Text("Scan Reminder")
-                            .font(IronTheme.roundedFont(.body, weight: .medium))
+                    Text("Optional fairness context helps the research prototype normalize optical colorimetry across skin phototypes and everyday lighting conditions.")
+                        .font(IronTheme.roundedFont(.subheadline))
+                        .foregroundStyle(IronTheme.textMuted)
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Fitzpatrick Skin Phototype")
+                            .font(IronTheme.roundedFont(.subheadline, weight: .semibold))
+                            .foregroundStyle(IronTheme.textSecondary)
+
+                        Picker("Fitzpatrick Skin Phototype", selection: $fitzpatrickSkinPhototype) {
+                            ForEach(FitzpatrickSkinPhototype.allCases) { phototype in
+                                Text(phototype.rawValue).tag(phototype.rawValue)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 14)
+                        .background(Color.white.opacity(0.42), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                     }
-                    .tint(IronTheme.terracottaPrimary)
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Lighting Environment")
+                            .font(IronTheme.roundedFont(.subheadline, weight: .semibold))
+                            .foregroundStyle(IronTheme.textSecondary)
+
+                        Picker("Lighting Environment", selection: $lightingEnvironment) {
+                            ForEach(LightingEnvironment.allCases) { lighting in
+                                Text(lighting.rawValue).tag(lighting.rawValue)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                    }
+
+                    Text("These values stay local unless you explicitly share a research report.")
+                        .font(IronTheme.roundedFont(.caption))
+                        .foregroundStyle(IronTheme.textMuted)
                 }
-                .padding(20)
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .liquidGlassCard()
+
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Lab Calibration")
+                        .font(IronTheme.roundedFont(.headline, weight: .bold))
+
+                    Text("Add a recent hemoglobin lab value to anchor the prototype estimate more closely to your own baseline.")
+                        .font(IronTheme.roundedFont(.subheadline))
+                        .foregroundStyle(IronTheme.textMuted)
+
+                    HStack(spacing: 12) {
+                        TextField("e.g. 13.4", text: $recentLabHemoglobinInput)
+                            .keyboardType(.decimalPad)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                            .font(IronTheme.roundedFont(.body, weight: .medium))
+                            .foregroundStyle(IronTheme.textSlate)
+
+                        Text("g/dL")
+                            .font(IronTheme.roundedFont(.subheadline, weight: .bold))
+                            .foregroundStyle(IronTheme.textMuted)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 14)
+                    .background(Color.white.opacity(0.42), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+
+                    Text("Leave blank to use the prototype’s generic adult baseline.")
+                        .font(IronTheme.roundedFont(.caption))
+                        .foregroundStyle(IronTheme.textMuted)
+                }
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .liquidGlassCard()
+
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Research & Open Science")
+                        .font(IronTheme.roundedFont(.headline, weight: .bold))
+
+                    Text("Export a sanitized JSON record without names, email addresses, or direct identifiers for research donation or personal backup.")
+                        .font(IronTheme.roundedFont(.subheadline))
+                        .foregroundStyle(IronTheme.textMuted)
+
+                    Button("Export Anonymized Research Record (JSON)") {
+                        exportResearchBundle()
+                    }
+                    .buttonStyle(OrganicPrimaryButtonStyle())
+                }
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .liquidGlassCard()
             }
-            .padding(.horizontal, 20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 16)
             .padding(.bottom, 128)
         }
-        .background(IronScreenBackground())
+        .background(IronTheme.beigeBackground.ignoresSafeArea())
+        .sheet(item: $exportedResearchBundle) { document in
+            ActivityShareSheet(activityItems: [document.url])
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
+        }
+        .alert("Research Export Unavailable", isPresented: researchExportAlertBinding) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(researchExportError ?? "The anonymized research bundle could not be created.")
+        }
+        .onAppear {
+            recentLabHemoglobinInput = recentLabHemoglobin > 0
+                ? recentLabHemoglobin.formatted(.number.precision(.fractionLength(1)))
+                : ""
+            Task { @MainActor in
+                updateProfileImage()
+            }
+        }
+        .onChange(of: profileImageData) { _, _ in
+            Task { @MainActor in
+                updateProfileImage()
+            }
+        }
+        .onChange(of: selectedPhotoItem) { _, newItem in
+            guard let newItem else { return }
+            Task {
+                if let data = try? await newItem.loadTransferable(type: Data.self) {
+                    await MainActor.run {
+                        profileImageData = data
+                        updateProfileImage()
+                    }
+                }
+            }
+        }
+        .onChange(of: recentLabHemoglobinInput) { _, newValue in
+            let normalized = newValue
+                .replacingOccurrences(of: ",", with: ".")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !normalized.isEmpty else {
+                recentLabHemoglobin = 0
+                return
+            }
+
+            if let parsed = Double(normalized), parsed.isFinite, parsed > 0 {
+                recentLabHemoglobin = parsed
+            }
+        }
+    }
+
+    @MainActor
+    private func updateProfileImage() {
+        guard !profileImageData.isEmpty,
+              let uiImage = UIImage(data: profileImageData) else {
+            profileImage = nil
+            return
+        }
+        profileImage = Image(uiImage: uiImage)
     }
 
     private func profileRow(_ title: String, _ value: String) -> some View {
@@ -493,66 +693,136 @@ struct ProfileView: View {
         }
         .font(IronTheme.roundedFont(.subheadline))
     }
-}
 
-private struct LearnArticle: Identifiable {
-    enum Tag: Hashable {
-        case highRisk
-        case diet
-        case physician
-        case femaleFocus
-        case ferritin
-        case general
+    private var researchExportAlertBinding: Binding<Bool> {
+        Binding(
+            get: { researchExportError != nil },
+            set: { if !$0 { researchExportError = nil } }
+        )
     }
 
-    var id: String { title }
-    let icon: String
-    let tint: Color
-    let title: String
-    let subtitle: String
-    let tags: Set<Tag>
+    private func exportResearchBundle() {
+        let demographics = DemographicProfileStore.load()
+        guard let outputURL = ResearchDataExporter.exportAnonymizedResearchBundle(
+            history: history.records,
+            demographics: demographics
+        ) else {
+            researchExportError = "The anonymized research bundle could not be created."
+            return
+        }
+        exportedResearchBundle = ShareablePDFDocument(url: outputURL)
+    }
 }
 
-private struct LearnCard: View {
-    let article: LearnArticle
+@MainActor
+private struct SettingsView: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var authManager: AuthManager
+    @AppStorage("userFirstName") private var userFirstName = ""
+    @AppStorage("profile.notificationsEnabled") private var notificationsEnabled = true
+    @AppStorage("profile.remindersEnabled") private var remindersEnabled = true
+
+    private var appVersion: String {
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"
+        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+        return build.map { "\(version) (\($0))" } ?? version
+    }
 
     var body: some View {
-        HStack(spacing: 14) {
-            ZStack {
-                Circle()
-                    .fill(Color.white.opacity(0.78))
-                    .frame(width: 60, height: 60)
-                Image(systemName: article.icon)
-                    .font(.system(size: 24, weight: .semibold))
-                    .foregroundStyle(article.tint)
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    settingsCard("Account Details") {
+                        LabeledContent("Name", value: userFirstName.isEmpty ? "Not provided" : userFirstName)
+                        Divider()
+                        LabeledContent("Account", value: authManager.currentUserId ?? "Signed in")
+                    }
+
+                    settingsCard("Notifications") {
+                        Toggle("Notifications", isOn: $notificationsEnabled)
+                            .tint(IronTheme.terracottaPrimary)
+                        Divider()
+                        Toggle("Scan Reminders", isOn: $remindersEnabled)
+                            .tint(IronTheme.terracottaPrimary)
+                    }
+
+                    settingsCard("About") {
+                        LabeledContent("App Version", value: appVersion)
+                        Text("IronScan is a non-clinical research prototype and does not replace laboratory testing.")
+                            .font(.caption)
+                            .foregroundStyle(IronTheme.textMuted)
+                    }
+
+                    Button("Log Out", role: .destructive) {
+                        dismiss()
+                        authManager.signOut()
+                    }
+                    .buttonStyle(OrganicPrimaryButtonStyle())
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(16)
             }
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(article.title)
-                    .font(IronTheme.roundedFont(.headline, weight: .bold))
-                Text(article.subtitle)
-                    .font(IronTheme.roundedFont(.subheadline))
-                    .foregroundStyle(IronTheme.textMuted)
+            .background(IronTheme.beigeBackground.ignoresSafeArea())
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
             }
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(IronTheme.textMuted)
         }
-        .padding(18)
+    }
+
+    private func settingsCard<Content: View>(
+        _ title: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text(title)
+                .font(IronTheme.roundedFont(.headline, weight: .bold))
+            content()
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .liquidGlassCard()
     }
 }
 
-private struct HistoryPoint {
-    let label: String
-    let score: Double
-    let color: Color
-}
-
-private struct RiskBand {
+private struct LearnDisclosureCard: View {
     let title: String
-    let color: Color
+    let summary: String
+    let source: String
+    let url: URL
+    let content: String
+
+    var body: some View {
+        DisclosureGroup {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(content)
+                    .font(IronTheme.roundedFont(.subheadline))
+                    .foregroundStyle(IronTheme.textMuted)
+
+                Text(source)
+                    .font(IronTheme.roundedFont(.caption, weight: .semibold))
+                    .foregroundStyle(IronTheme.textSecondary)
+
+                Link("Learn More", destination: url)
+                    .font(IronTheme.roundedFont(.subheadline, weight: .semibold))
+                    .foregroundStyle(IronTheme.terracottaPrimary)
+            }
+            .padding(.top, 8)
+        } label: {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(title)
+                    .font(IronTheme.roundedFont(.headline, weight: .bold))
+                    .foregroundStyle(IronTheme.textSlate)
+
+                Text(summary)
+                    .font(IronTheme.roundedFont(.subheadline))
+                    .foregroundStyle(IronTheme.textMuted)
+            }
+        }
+        .padding(18)
+        .liquidGlassCard()
+    }
 }

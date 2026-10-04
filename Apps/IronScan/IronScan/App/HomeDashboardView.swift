@@ -1,8 +1,11 @@
+import Charts
 import Foundation
 import SwiftUI
 
 struct HomeDashboardView: View {
+    @EnvironmentObject var historyManager: ScanHistoryManager
     @ObservedObject var history: ScanHistoryStore
+    @ObservedObject var healthKit: HealthKitManager
     let startScan: () -> Void
 
     private let gridColumns = [
@@ -11,7 +14,11 @@ struct HomeDashboardView: View {
     ]
 
     private var latest: ScanHistoryRecord? {
-        history.records.first
+        dashboardRecords.first
+    }
+
+    private var dashboardRecords: [ScanHistoryRecord] {
+        DashboardHistoryRecords.from(historyManager.records)
     }
 
     private var displayName: String {
@@ -26,7 +33,7 @@ struct HomeDashboardView: View {
                     header
                     heroCard
                     metricsGrid
-                    recentHistorySection
+                    vitalsCard
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
@@ -35,6 +42,23 @@ struct HomeDashboardView: View {
             .background(IronScreenBackground())
             .navigationBarHidden(true)
         }
+        .task {
+            healthKit.fetchLatestVitals()
+        }
+        .alert("Apple Health Unavailable", isPresented: healthAuthorizationAlertBinding) {
+            Button("OK", role: .cancel) {
+                healthKit.dismissError()
+            }
+        } message: {
+            Text(healthKit.authorizationError ?? "Apple Health is unavailable on this build")
+        }
+    }
+
+    private var healthAuthorizationAlertBinding: Binding<Bool> {
+        Binding(
+            get: { healthKit.authorizationError != nil },
+            set: { if !$0 { healthKit.dismissError() } }
+        )
     }
 
     private var header: some View {
@@ -47,6 +71,8 @@ struct HomeDashboardView: View {
                 Text("Your latest iron screening snapshots, organized in one place.")
                     .font(IronTheme.roundedFont(.subheadline))
                     .foregroundStyle(IronTheme.textSecondary)
+
+                syncStatusIndicator
             }
 
             Spacer(minLength: 16)
@@ -96,6 +122,18 @@ struct HomeDashboardView: View {
                     .foregroundStyle(IronTheme.textSecondary)
             }
 
+            if let estimatedHemoglobin = latest?.estimatedHemoglobin {
+                HStack(alignment: .lastTextBaseline, spacing: 8) {
+                    Text(estimatedHemoglobin.formatted(.number.precision(.fractionLength(1))))
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .foregroundStyle(IronTheme.textPrimary)
+
+                    Text("g/dL estimated hemoglobin")
+                        .font(IronTheme.roundedFont(.subheadline, weight: .medium))
+                        .foregroundStyle(IronTheme.textSecondary)
+                }
+            }
+
             Text(heroSupportText)
                 .font(IronTheme.roundedFont(.body))
                 .foregroundStyle(IronTheme.textSecondary)
@@ -107,12 +145,27 @@ struct HomeDashboardView: View {
         .liquidGlassCard(cornerRadius: 30, interactive: true)
     }
 
+    private var syncStatusIndicator: some View {
+        HStack(spacing: 8) {
+            Circle()
+                .fill(history.pendingSyncCount == 0 ? IronTheme.sageAccent : IronTheme.warning)
+                .frame(width: 8, height: 8)
+
+            Text(history.syncStatusText)
+                .font(IronTheme.roundedFont(.caption, weight: .semibold))
+                .foregroundStyle(IronTheme.textSecondary)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(Color.white.opacity(0.34), in: Capsule())
+    }
+
     private var metricsGrid: some View {
         LazyVGrid(columns: gridColumns, spacing: 14) {
             metricCard(
                 title: "Total Scans",
-                value: "\(history.records.count)",
-                detail: history.records.isEmpty ? "No data yet" : "Stored locally"
+                value: "\(dashboardRecords.count)",
+                detail: dashboardRecords.isEmpty ? "No data yet" : "Stored locally"
             )
 
             metricCard(
@@ -129,50 +182,70 @@ struct HomeDashboardView: View {
 
             metricCard(
                 title: "Trend Points",
-                value: "\(history.records.filter { $0.opticalPatternIndex != nil }.count)",
+                value: "\(dashboardRecords.filter { $0.opticalPatternIndex != nil }.count)",
                 detail: "Index-ready scans"
             )
         }
     }
 
-    private var recentHistorySection: some View {
+    private var vitalsCard: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("Recent History")
-                    .font(IronTheme.roundedFont(.title3, weight: .bold))
+                Text("Apple Health Vitals")
+                    .font(IronTheme.roundedFont(.headline, weight: .bold))
                     .foregroundStyle(IronTheme.textPrimary)
+
                 Spacer()
-                Button("Start Scan", action: startScan)
-                    .font(IronTheme.roundedFont(.subheadline, weight: .semibold))
+
+                Image(systemName: "heart.text.square.fill")
+                    .font(.system(size: 20, weight: .semibold))
                     .foregroundStyle(IronTheme.terracottaPrimary)
             }
 
-            if history.records.isEmpty {
-                VStack(spacing: 12) {
-                    Image(systemName: "waveform.path.ecg")
-                        .font(.system(size: 28, weight: .semibold))
-                        .foregroundStyle(IronTheme.textSecondary)
-
-                    Text("No scans yet")
-                        .font(IronTheme.roundedFont(.headline, weight: .bold))
-                        .foregroundStyle(IronTheme.textPrimary)
-
-                    Text("Take your first scan to see your trends!")
+            if healthKit.heartRate == nil {
+                VStack(alignment: .leading, spacing: 14) {
+                    Text("Sync your latest heart rate and oxygen saturation from Apple Health.")
                         .font(IronTheme.roundedFont(.subheadline))
                         .foregroundStyle(IronTheme.textSecondary)
-                        .multilineTextAlignment(.center)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 28)
-                .liquidGlassCard(cornerRadius: 26)
-            } else {
-                VStack(spacing: 12) {
-                    ForEach(history.records.prefix(6)) { record in
-                        historyRow(record)
+
+                    Button("Sync Apple Health") {
+                        healthKit.requestAuthorization()
+                    }
+                    .buttonStyle(OrganicPrimaryButtonStyle())
+                    .disabled(healthKit.healthSyncStatus.isWorking)
+
+                    if healthKit.healthSyncStatus.isWorking {
+                        Label("Syncing securely…", systemImage: "arrow.triangle.2.circlepath")
+                            .font(IronTheme.roundedFont(.caption, weight: .semibold))
+                            .foregroundStyle(IronTheme.textSecondary)
                     }
                 }
+            } else {
+                HStack(spacing: 14) {
+                    vitalMetric(
+                        title: "Heart Rate",
+                        value: healthKit.heartRate?.formatted(.number.precision(.fractionLength(0))) ?? "--",
+                        unit: "BPM",
+                        icon: "heart.fill",
+                        tint: IronTheme.terracottaPrimary
+                    )
+
+                    vitalMetric(
+                        title: "SpO2",
+                        value: healthKit.spO2?.formatted(.number.precision(.fractionLength(0))) ?? "--",
+                        unit: "%",
+                        icon: "lungs.fill",
+                        tint: IronTheme.sageAccent
+                    )
+                }
             }
+
+            Text("Apple Health data is read-only and shown only when recent samples are available on this device.")
+                .font(IronTheme.roundedFont(.caption))
+                .foregroundStyle(IronTheme.textSecondary)
         }
+        .padding(20)
+        .liquidGlassCard(cornerRadius: 26)
     }
 
     private func metricCard(title: String, value: String, detail: String) -> some View {
@@ -197,37 +270,25 @@ struct HomeDashboardView: View {
         .liquidGlassCard(cornerRadius: 24)
     }
 
-    private func historyRow(_ record: ScanHistoryRecord) -> some View {
-        HStack(spacing: 14) {
-            ZStack {
-                Circle()
-                    .fill(color(for: record.summary).opacity(0.14))
-                    .frame(width: 44, height: 44)
+    private func vitalMetric(title: String, value: String, unit: String, icon: String, tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(title, systemImage: icon)
+                .font(IronTheme.roundedFont(.caption, weight: .bold))
+                .foregroundStyle(IronTheme.textSecondary)
 
-                Image(systemName: symbol(for: record.summary))
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(color(for: record.summary))
-            }
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title(for: record.summary))
-                    .font(IronTheme.roundedFont(.headline, weight: .semibold))
+            HStack(alignment: .lastTextBaseline, spacing: 6) {
+                Text(value)
+                    .font(IronTheme.roundedFont(.title, weight: .bold))
                     .foregroundStyle(IronTheme.textPrimary)
 
-                Text(record.capturedAt.formatted(date: .abbreviated, time: .shortened))
-                    .font(IronTheme.roundedFont(.caption))
-                    .foregroundStyle(IronTheme.textSecondary)
+                Text(unit)
+                    .font(IronTheme.roundedFont(.caption, weight: .bold))
+                    .foregroundStyle(tint)
             }
-
-            Spacer(minLength: 8)
-
-            Text(record.opticalPatternIndex?.formatted(.number.precision(.fractionLength(2))) ?? "--")
-                .font(IronTheme.roundedFont(.headline, weight: .bold))
-                .foregroundStyle(IronTheme.textPrimary)
         }
-        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .liquidGlassCard(cornerRadius: 22)
+        .padding(16)
+        .background(Color.white.opacity(0.28), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 
     private var heroSupportText: String {
@@ -244,7 +305,7 @@ struct HomeDashboardView: View {
         case OpticalRiskSummary.possibleAnemiaRisk.rawValue:
             return "Possible Risk"
         default:
-            return "Unknown"
+            return summary
         }
     }
 
@@ -255,7 +316,7 @@ struct HomeDashboardView: View {
         case OpticalRiskSummary.possibleAnemiaRisk.rawValue:
             return "Possible anemia risk"
         default:
-            return "Unable to assess"
+            return summary
         }
     }
 
@@ -279,5 +340,249 @@ struct HomeDashboardView: View {
         default:
             return IronTheme.textSecondary
         }
+    }
+}
+
+enum DashboardHistoryRecords {
+    static func from(_ records: [ScanRecord]) -> [ScanHistoryRecord] {
+        records.map { record in
+            let severity: AnemiaSeverity = switch record.riskLevel {
+            case .normal: .normal
+            case .mild: .mild
+            case .moderate: .moderate
+            case .severe: .severe
+            }
+            return ScanHistoryRecord(
+                id: record.id,
+                capturedAt: record.timestamp,
+                summary: record.riskLevel.rawValue,
+                opticalPatternIndex: (record.conjunctivaScore + record.nailScore + record.tongueScore) / 3,
+                severity: severity,
+                estimatedHemoglobin: record.hemoglobinG_dL
+            )
+        }
+        .sorted { $0.capturedAt > $1.capturedAt }
+    }
+}
+
+struct HistoricalHemoglobinTrendCard: View {
+    let records: [ScanHistoryRecord]
+    var height: CGFloat = 260
+    var emptyMessage: String
+
+    @State private var selectedPointID: UUID?
+
+    private let healthyRange: ClosedRange<Double> = 12.0 ... 15.5
+
+    private var points: [HistoricalHemoglobinPoint] {
+        records
+            .compactMap { record in
+                guard let estimatedHemoglobin = record.estimatedHemoglobin else { return nil }
+                return HistoricalHemoglobinPoint(record: record, hemoglobin: estimatedHemoglobin)
+            }
+            .sorted { $0.date < $1.date }
+    }
+
+    private var selectedPoint: HistoricalHemoglobinPoint? {
+        if let selectedPointID,
+           let exactMatch = points.first(where: { $0.id == selectedPointID }) {
+            return exactMatch
+        }
+        return points.last
+    }
+
+    private var supportsTrendChart: Bool {
+        points.count >= 2
+    }
+
+    private var yDomain: ClosedRange<Double> {
+        let values = points.map(\.hemoglobin) + [healthyRange.lowerBound, healthyRange.upperBound]
+        let minValue = (values.min() ?? healthyRange.lowerBound) - 0.6
+        let maxValue = (values.max() ?? healthyRange.upperBound) + 0.6
+        return minValue ... maxValue
+    }
+
+    var body: some View {
+        Group {
+            if supportsTrendChart {
+                VStack(alignment: .leading, spacing: 16) {
+                    if let selectedPoint {
+                        selectedSummary(for: selectedPoint)
+                    }
+
+                    Chart {
+                        if let firstDate = points.first?.date,
+                           let lastDate = points.last?.date {
+                            RectangleMark(
+                                xStart: .value("Start", firstDate),
+                                xEnd: .value("End", lastDate),
+                                yStart: .value("Healthy Lower", healthyRange.lowerBound),
+                                yEnd: .value("Healthy Upper", healthyRange.upperBound)
+                            )
+                            .foregroundStyle(IronTheme.sageAccent.opacity(0.12))
+                        }
+
+                        ForEach(points) { point in
+                            LineMark(
+                                x: .value("Timestamp", point.date),
+                                y: .value("Hemoglobin", point.hemoglobin)
+                            )
+                            .interpolationMethod(.catmullRom)
+                            .lineStyle(.init(lineWidth: 3, lineCap: .round))
+                            .foregroundStyle(IronTheme.terracottaPrimary)
+
+                            PointMark(
+                                x: .value("Timestamp", point.date),
+                                y: .value("Hemoglobin", point.hemoglobin)
+                            )
+                            .foregroundStyle(point.severity.themeColor)
+                            .symbolSize(selectedPointID == point.id ? 110 : 70)
+                        }
+
+                        if let selectedPoint {
+                            RuleMark(x: .value("Selected Timestamp", selectedPoint.date))
+                                .foregroundStyle(IronTheme.textMuted.opacity(0.4))
+                                .lineStyle(.init(lineWidth: 1, dash: [4, 4]))
+
+                            PointMark(
+                                x: .value("Selected Timestamp", selectedPoint.date),
+                                y: .value("Selected Hemoglobin", selectedPoint.hemoglobin)
+                            )
+                            .foregroundStyle(Color.white)
+                            .symbolSize(180)
+
+                            PointMark(
+                                x: .value("Selected Timestamp", selectedPoint.date),
+                                y: .value("Selected Hemoglobin", selectedPoint.hemoglobin)
+                            )
+                            .foregroundStyle(selectedPoint.severity.themeColor)
+                            .symbolSize(95)
+                        }
+                    }
+                    .chartLegend(.hidden)
+                    .chartYScale(domain: yDomain)
+                    .chartXAxis {
+                        AxisMarks(values: .automatic(desiredCount: min(points.count, 4))) { value in
+                            AxisGridLine(stroke: .init(lineWidth: 0.6))
+                                .foregroundStyle(Color.white.opacity(0.18))
+                            AxisTick(stroke: .init(lineWidth: 0.6))
+                                .foregroundStyle(Color.white.opacity(0.32))
+                            AxisValueLabel(format: .dateTime.month(.abbreviated).day(), centered: true)
+                                .font(IronTheme.roundedFont(.caption))
+                                .foregroundStyle(IronTheme.textSecondary)
+                        }
+                    }
+                    .chartYAxis {
+                        AxisMarks(position: .leading) { value in
+                            AxisGridLine(stroke: .init(lineWidth: 0.6))
+                                .foregroundStyle(Color.white.opacity(0.18))
+                            AxisTick(stroke: .init(lineWidth: 0.6))
+                                .foregroundStyle(Color.white.opacity(0.32))
+                            AxisValueLabel {
+                                if let hb = value.as(Double.self) {
+                                    Text("\(hb.formatted(.number.precision(.fractionLength(1)))) g/dL")
+                                        .font(IronTheme.roundedFont(.caption))
+                                        .foregroundStyle(IronTheme.textSecondary)
+                                }
+                            }
+                        }
+                    }
+                    .chartOverlay { proxy in
+                        GeometryReader { geometry in
+                            Rectangle()
+                                .fill(Color.clear)
+                                .contentShape(Rectangle())
+                                .gesture(
+                                    DragGesture(minimumDistance: 0)
+                                        .onChanged { value in
+                                            guard let plotFrame = proxy.plotFrame.map({ geometry[$0] }) else { return }
+                                            let originX = value.location.x - plotFrame.origin.x
+                                            guard originX >= 0, originX <= plotFrame.size.width,
+                                                  let hoveredDate: Date = proxy.value(atX: originX) else { return }
+                                            selectedPointID = nearestPoint(to: hoveredDate)?.id
+                                        }
+                                        .onEnded { _ in
+                                            selectedPointID = points.last?.id
+                                        }
+                                )
+                        }
+                    }
+                    .frame(height: height)
+
+                    Text("The shaded band marks the prototype's healthy adult reference range.")
+                        .font(IronTheme.roundedFont(.caption))
+                        .foregroundStyle(IronTheme.textSecondary)
+                }
+            } else {
+                VStack(spacing: 12) {
+                    Image(systemName: "waveform.path.ecg.rectangle")
+                        .font(.system(size: 28, weight: .semibold))
+                        .foregroundStyle(IronTheme.textMuted)
+
+                    Text("Trend Coming Into Focus")
+                        .font(IronTheme.roundedFont(.headline, weight: .bold))
+                        .foregroundStyle(IronTheme.textPrimary)
+
+                    Text(emptyMessage)
+                        .font(IronTheme.roundedFont(.subheadline))
+                        .foregroundStyle(IronTheme.textSecondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity, minHeight: height)
+            }
+        }
+        .padding(20)
+        .liquidGlassCard(cornerRadius: 26)
+        .onAppear {
+            selectedPointID = points.last?.id
+        }
+        .onChange(of: points.map(\.id)) { _, updatedIDs in
+            selectedPointID = updatedIDs.last
+        }
+    }
+
+    private func selectedSummary(for point: HistoricalHemoglobinPoint) -> some View {
+        HStack(alignment: .center, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(point.date.formatted(date: .abbreviated, time: .shortened))
+                    .font(IronTheme.roundedFont(.subheadline, weight: .semibold))
+                    .foregroundStyle(IronTheme.textPrimary)
+
+                Text("\(point.hemoglobin.formatted(.number.precision(.fractionLength(1)))) g/dL estimated hemoglobin")
+                    .font(IronTheme.roundedFont(.caption))
+                    .foregroundStyle(IronTheme.textSecondary)
+            }
+
+            Spacer(minLength: 8)
+
+            Text(point.severity.rawValue.capitalized)
+                .font(IronTheme.roundedFont(.caption, weight: .bold))
+                .foregroundStyle(point.severity.themeColor)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(point.severity.themeColor.opacity(0.12), in: Capsule())
+        }
+        .padding(14)
+        .background(Color.white.opacity(0.22), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    private func nearestPoint(to hoveredDate: Date) -> HistoricalHemoglobinPoint? {
+        points.min { lhs, rhs in
+            abs(lhs.date.timeIntervalSince(hoveredDate)) < abs(rhs.date.timeIntervalSince(hoveredDate))
+        }
+    }
+}
+
+private struct HistoricalHemoglobinPoint: Identifiable, Equatable {
+    let id: UUID
+    let date: Date
+    let hemoglobin: Double
+    let severity: AnemiaSeverity
+
+    init(record: ScanHistoryRecord, hemoglobin: Double) {
+        id = record.id
+        date = record.capturedAt
+        self.hemoglobin = hemoglobin
+        severity = record.severity
     }
 }

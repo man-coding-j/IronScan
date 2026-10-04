@@ -1,8 +1,6 @@
 import Foundation
 
 extension DemographicCalibrationCategory {
-    var badgeTitle: String { rawValue }
-
     var normalHemoglobinReference: String {
         switch self {
         case .adultMale:

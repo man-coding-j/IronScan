@@ -13,6 +13,9 @@ struct ScanView: View {
             ScrollView {
                 VStack(spacing: 18) {
                     prototypeNotice
+                    if let modelError = viewModel.modelError {
+                        modelUnavailableCard(modelError)
+                    }
                     if viewModel.showsPermissionInstructions {
                         permissionInstructions
                     } else {
@@ -63,6 +66,21 @@ struct ScanView: View {
             }
         }
         .toolbar(.hidden, for: .tabBar)
+        .alert(
+            "Could not process image",
+            isPresented: Binding(
+                get: { viewModel.errorAlertMessage != nil },
+                set: { isPresented in
+                    if !isPresented { viewModel.dismissErrorAlert() }
+                }
+            )
+        ) {
+            Button("OK", role: .cancel) {
+                viewModel.dismissErrorAlert()
+            }
+        } message: {
+            Text("Please try again.")
+        }
     }
 
     private var prototypeNotice: some View {
@@ -72,6 +90,16 @@ struct ScanView: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)
             .background(.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 14))
+    }
+
+    private func modelUnavailableCard(_ message: String) -> some View {
+        Label(message, systemImage: "cpu.fill")
+            .font(.headline)
+            .foregroundStyle(.orange)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 16))
+            .accessibilityLabel("AI Model Unavailable")
     }
 
     private var permissionInstructions: some View {
@@ -102,43 +130,40 @@ struct ScanView: View {
     }
 
     private var cameraPanel: some View {
-        ZStack {
-            CameraPreviewView(
-                source: viewModel.previewSource,
-                lensPosition: viewModel.lensPosition,
-                onOrientationChange: viewModel.updateCaptureOrientation
-            )
+        CameraPreviewView(
+            source: viewModel.previewSource,
+            lensPosition: viewModel.lensPosition,
+            onOrientationChange: viewModel.updateCaptureOrientation
+        )
+        .aspectRatio(3 / 4, contentMode: .fit)
+        .frame(maxWidth: .infinity)
+        .background(.black)
+        .overlay {
             TongueGuideOverlay()
+        }
+        .overlay {
             ScanningOverlayView(
                 state: viewModel.liveScanningState,
                 alignmentProgress: viewModel.liveScanSummary?.alignmentProgress ?? 0
             )
-
-            if viewModel.supportsCameraToggle {
-                VStack {
-                    HStack {
-                        Button {
-                            viewModel.toggleCamera()
-                        } label: {
-                            Image(systemName: "camera.rotate.fill")
-                                .font(.title3.weight(.semibold))
-                                .foregroundStyle(.white)
-                                .frame(width: 46, height: 46)
-                                .liquidGlassPanel(in: Circle(), interactive: true)
-                        }
-                        .liquidGlassButtonStyle()
-                        .disabled(viewModel.isBusy)
-                        .accessibilityLabel(viewModel.lensPosition == .front ? "Use back camera" : "Use front camera")
-                        Spacer()
-                    }
-                    Spacer()
-                }
-                .padding(14)
-            }
-
         }
-        .aspectRatio(viewModel.captureOrientation.isPortrait ? 3 / 4 : 16 / 9, contentMode: .fit)
-        .background(.black)
+        .overlay(alignment: .topTrailing) {
+            if viewModel.supportsCameraToggle {
+                Button {
+                    viewModel.toggleCamera()
+                } label: {
+                    Image(systemName: "arrow.triangle.2.circlepath.camera")
+                        .font(.title3.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 46, height: 46)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Circle())
+                }
+                .disabled(viewModel.isBusy)
+                .accessibilityLabel(viewModel.lensPosition == .front ? "Use back camera" : "Use front camera")
+                .padding(16)
+            }
+        }
         .clipShape(RoundedRectangle(cornerRadius: 24))
         .overlay {
             RoundedRectangle(cornerRadius: 24)

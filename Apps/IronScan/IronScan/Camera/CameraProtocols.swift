@@ -8,6 +8,8 @@ protocol CameraSessionControlling: Sendable {
     func start() async
     @discardableResult
     func capture() async -> Bool
+    @discardableResult
+    func capture(from frame: AnalyzableFrame) async -> Bool
     func toggleCamera() async throws
     func updateCaptureOrientation(_ orientation: CaptureOrientation) async
     func setOpticsProfile(_ profile: CameraOpticsProfile) async throws
@@ -15,6 +17,13 @@ protocol CameraSessionControlling: Sendable {
     func stabilizeForAlignedTongue() async
     func stop() async
     func handleInterruptionEnded() async
+}
+
+extension CameraSessionControlling {
+    @discardableResult
+    func capture(from frame: AnalyzableFrame) async -> Bool {
+        await capture()
+    }
 }
 
 struct AnalyzableFrame: @unchecked Sendable {

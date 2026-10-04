@@ -33,6 +33,13 @@ enum IronTheme {
     ) -> Font {
         .system(style, design: .rounded, weight: weight)
     }
+
+    enum Hex {
+        static let creamBackground = "#F8F6F0"
+        static let terracottaPrimary = "#FF6B35"
+        static let slateText = "#2A2830"
+        static let sageAccent = "#8DAA82"
+    }
 }
 
 struct LiquidGlassCardStyle: ViewModifier {
@@ -310,5 +317,21 @@ private struct LiquidDropShape: Shape {
             control2: CGPoint(x: rect.midX * 1.08, y: rect.minY + rect.height * 0.16)
         )
         return path
+    }
+}
+
+struct AuthPrimaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.headline.weight(.semibold))
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .background(Color(red: 0.15, green: 0.15, blue: 0.16))
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .opacity(configuration.isPressed ? 0.85 : 1.0)
+            .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+            .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
     }
 }

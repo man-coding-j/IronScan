@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A03000000000000000000003 /* ScanModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03000000000000000000004 /* ScanModels.swift */; };
+		A03000000000000000000001 /* MedicalCameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03000000000000000000002 /* MedicalCameraManager.swift */; };
 		05EB40CBE58C7ADB1634477D /* ScanResultSummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C502988C6635FDC7526921 /* ScanResultSummaryTests.swift */; };
 		098B16F6AD401D3333F31E7D /* RiskInferenceActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6503BC088E89B87D11A6D450 /* RiskInferenceActor.swift */; };
 		0E292AB8E56DDCF30A3966B9 /* InferenceParityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FD400A9BA4DCEBC3DF01C83 /* InferenceParityTests.swift */; };
@@ -34,6 +36,7 @@
 		3B2A817404FD76E443F7A866 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF58ADE215E7FFB7343FB4CA /* LocationManager.swift */; };
 		3B65BEBD5357CCBD7958AA16 /* HumanResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EDB70D69E9510F54931E442 /* HumanResultsView.swift */; };
 		3FA6A450C0068E9595835876 /* MultiTissueInferenceActorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1920FA782D1D0215406498D /* MultiTissueInferenceActorTests.swift */; };
+		3FA91CEB7D8F4A0F9B8A1001 /* ClinicalReportGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA91CEB7D8F4A0F9B8A1002 /* ClinicalReportGenerator.swift */; };
 		40E86176CF8F0DA81607F9C3 /* ScanningExperienceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F163AF12DCAFFB17D6B72A82 /* ScanningExperienceTests.swift */; };
 		438C2503DCB3FCB58EDEF2E9 /* CareResourcesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742AEF3CFFEAC638088A53FC /* CareResourcesTests.swift */; };
 		44E4570B7D3B85CD99BA7C49 /* SmartColorCalibrationActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBFF115A30C4CF2E5E60859 /* SmartColorCalibrationActor.swift */; };
@@ -42,6 +45,11 @@
 		4A621D045C22E8832C80FE8A /* ScanHapticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CDE1BC212E278C815A26473 /* ScanHapticsManager.swift */; };
 		4AA1B8738F5F4A22B2D9B001 /* LiquidGlassModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA1B8738F5F4A22B2D9B002 /* LiquidGlassModifier.swift */; };
 		4AB1C2D3E4F5061728394051 /* ScanResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB1C2D3E4F5061728394052 /* ScanResultView.swift */; };
+		4AB1C2D3E4F5061728394053 /* ScanHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB1C2D3E4F5061728394054 /* ScanHistoryStore.swift */; };
+		4AB1C2D3E4F5061728394055 /* DemographicProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB1C2D3E4F5061728394056 /* DemographicProfile.swift */; };
+		4AB1C2D3E4F5061728394057 /* InformedConsentModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB1C2D3E4F5061728394058 /* InformedConsentModalView.swift */; };
+		4AB1C2D3E4F5061728394059 /* OnboardingProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB1C2D3E4F5061728394060 /* OnboardingProfileView.swift */; };
+		4AB1C2D3E4F5061728394061 /* ResearchDataExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB1C2D3E4F5061728394062 /* ResearchDataExporter.swift */; };
 		4C34761E1C43DBA725F56BB8 /* SimulatorCameraActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754B466C772DA3ADBBCE6081 /* SimulatorCameraActor.swift */; };
 		4F15CF228BC3871A23462C2D /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AD6F5EE5B90937854CB4A31 /* MainTabView.swift */; };
 		557469F45A175D5E97320054 /* IDARiskEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1876546FE0DE5933B7ABE5C6 /* IDARiskEngineTests.swift */; };
@@ -67,6 +75,9 @@
 		97059C932ADA25ECABB22B3E /* SegmentationInferenceActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0C67D37354FAD49C02F8576 /* SegmentationInferenceActor.swift */; };
 		97E86689C14C83C76E25F9A7 /* ModelRegistryActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41264B53E01E5BF8164EED1 /* ModelRegistryActor.swift */; };
 		992842EAA6B693036A5B90A2 /* InferenceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87B2F4D5E926EB6E09FB033 /* InferenceError.swift */; };
+		9A1B2C3D4E5F60718293A4B1 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1B2C3D4E5F60718293A4B2 /* HealthKitManager.swift */; };
+		9CB71EA68B5C4D0EA4F92001 /* SaliencyHeatmapGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CB71EA68B5C4D0EA4F92002 /* SaliencyHeatmapGenerator.swift */; };
+		9D1E2F3A4B5C6D7E8F901234 /* SupabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D1E2F3A4B5C6D7E8F901235 /* SupabaseManager.swift */; };
 		A11F513CC3607A886C771B79 /* OnboardingConsentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553D2620EC92C3D28FAB40D0 /* OnboardingConsentTests.swift */; };
 		A2A9B6604CF51867291EE9AF /* AutoCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81E16B037A0A9CA6FCE917A /* AutoCaptureManager.swift */; };
 		A3C57300BFF390AB1770B7AF /* CameraProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB6AA327A15381DF435F33B6 /* CameraProtocols.swift */; };
@@ -75,11 +86,22 @@
 		AA0000000000000000000001 /* Models in Resources */ = {isa = PBXBuildFile; fileRef = 0D7A23A682BDA80B83764377 /* Models */; };
 		AB93B24C5E4DF15EAB3223F6 /* HomeDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BBB970EAF7F97D55BFCFF8 /* HomeDashboardView.swift */; };
 		AD670F0E966AFF3A67DD2ABE /* GeneratedModelInterfaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B0FAA5331B7ED8A17F1476 /* GeneratedModelInterfaces.swift */; };
+		B2046439305F20EB003B2785 /* RiveRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = B2046438305F20EB003B2785 /* RiveRuntime */; };
+		B211B220306F6E5A00FB2A7F /* TonguePallor.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = B211B21F306F6E5A00FB2A7F /* TonguePallor.mlpackage */; };
+		B211B221306F6E5A00FB2A7F /* ConjunctivaPallor.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = B211B21D306F6E5A00FB2A7F /* ConjunctivaPallor.mlpackage */; };
+		B211B222306F6E5A00FB2A7F /* NailHemoglobin.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = B211B21E306F6E5A00FB2A7F /* NailHemoglobin.mlpackage */; };
+		B211B223306F6E5A00FB2A7F /* TonguePallor.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = B211B21F306F6E5A00FB2A7F /* TonguePallor.mlpackage */; };
+		B211B224306F6E5A00FB2A7F /* ConjunctivaPallor.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = B211B21D306F6E5A00FB2A7F /* ConjunctivaPallor.mlpackage */; };
+		B211B225306F6E5A00FB2A7F /* NailHemoglobin.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = B211B21E306F6E5A00FB2A7F /* NailHemoglobin.mlpackage */; };
 		B23CAF3130198BD0004DF14C /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = B23CAF3030198BD0004DF14C /* FirebaseAuth */; };
 		B23CAF3330198BDF004DF14C /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = B23CAF3230198BDF004DF14C /* FirebaseCore */; settings = {ATTRIBUTES = (Required, ); }; };
 		B23CAF3530198BE6004DF14C /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = B23CAF3430198BE6004DF14C /* FirebaseFirestore */; };
 		B23CAF3B3019C454004DF14C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B23CAF3A3019C454004DF14C /* GoogleService-Info.plist */; };
 		B24E6D8830323F83004593E8 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = B24E6D8730323F83004593E8 /* Supabase */; };
+		B24E6D92303BF87B004593E8 /* ConjunctivaModel.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = B24E6D8D303BF87B004593E8 /* ConjunctivaModel.mlpackage */; };
+		B24E6D94303C0FE2004593E8 /* HbRegressionModel.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = B24E6D8E303BF87B004593E8 /* HbRegressionModel.mlpackage */; };
+		B24E6D98303E7DDB004593E8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B24E6D97303E7DDB004593E8 /* Assets.xcassets */; };
+		B24E6DA0303F51E1004593E8 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B24E6D9F303F51E1004593E8 /* NotificationManager.swift */; };
 		B4247B4B0D0BEF810488F2DC /* AvailabilityEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF081E85AE18E47ECCDE44FF /* AvailabilityEngine.swift */; };
 		B48EBF54043AA3DE398AF662 /* CameraTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1428C9A7E7B879C5CD7864D /* CameraTypes.swift */; };
 		B524FEDF784AAC5670D77161 /* CalibrationTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 360F897047DC964664E5CBF6 /* CalibrationTypes.swift */; };
@@ -125,6 +147,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A03000000000000000000004 /* ScanModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanModels.swift; sourceTree = "<group>"; };
+		A03000000000000000000002 /* MedicalCameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicalCameraManager.swift; sourceTree = "<group>"; };
 		069717F2ADD0246668EEBFCA /* TriangulationEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriangulationEngineTests.swift; sourceTree = "<group>"; };
 		07A9289DE497D5480CB6DF2C /* CameraInferenceBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraInferenceBridge.swift; sourceTree = "<group>"; };
 		0CE0701A075B8E4C345EF153 /* OnboardingFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlowView.swift; sourceTree = "<group>"; };
@@ -149,11 +173,17 @@
 		39C687323CDFF8CBFB6C28AF /* LatestFrameProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LatestFrameProcessor.swift; sourceTree = "<group>"; };
 		3CDE1BC212E278C815A26473 /* ScanHapticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanHapticsManager.swift; sourceTree = "<group>"; };
 		3EA4498D7B44EECC80F86350 /* ResultTranslator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultTranslator.swift; sourceTree = "<group>"; };
+		3FA91CEB7D8F4A0F9B8A1002 /* ClinicalReportGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClinicalReportGenerator.swift; sourceTree = "<group>"; };
 		3FD400A9BA4DCEBC3DF01C83 /* InferenceParityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceParityTests.swift; sourceTree = "<group>"; };
 		3FF3CF2511DE06DB258F385D /* ImageQualityAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageQualityAnalyzer.swift; sourceTree = "<group>"; };
 		4457EDACDD6892570E750178 /* PersonalizedPlanEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalizedPlanEngineTests.swift; sourceTree = "<group>"; };
 		4AA1B8738F5F4A22B2D9B002 /* LiquidGlassModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassModifier.swift; sourceTree = "<group>"; };
 		4AB1C2D3E4F5061728394052 /* ScanResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanResultView.swift; sourceTree = "<group>"; };
+		4AB1C2D3E4F5061728394054 /* ScanHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanHistoryStore.swift; sourceTree = "<group>"; };
+		4AB1C2D3E4F5061728394056 /* DemographicProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemographicProfile.swift; sourceTree = "<group>"; };
+		4AB1C2D3E4F5061728394058 /* InformedConsentModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformedConsentModalView.swift; sourceTree = "<group>"; };
+		4AB1C2D3E4F5061728394060 /* OnboardingProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingProfileView.swift; sourceTree = "<group>"; };
+		4AB1C2D3E4F5061728394062 /* ResearchDataExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchDataExporter.swift; sourceTree = "<group>"; };
 		5038344D4316A4D0F9CC8653 /* CalibrationTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationTestSupport.swift; sourceTree = "<group>"; };
 		553D2620EC92C3D28FAB40D0 /* OnboardingConsentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingConsentTests.swift; sourceTree = "<group>"; };
 		5AE95ECB149F429B61206F24 /* IronScan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IronScan.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -181,8 +211,11 @@
 		8F7E6D5C4B3A291807162534 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		90BBB970EAF7F97D55BFCFF8 /* HomeDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeDashboardView.swift; sourceTree = "<group>"; };
 		98A7B6C5D4E3F20192837465 /* AnalyzingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyzingView.swift; sourceTree = "<group>"; };
+		9A1B2C3D4E5F60718293A4B2 /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
 		9B08EC28262CA4056308E001 /* CalibrationMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationMath.swift; sourceTree = "<group>"; };
 		9BBCEA4A7E94A20CAE09D8C3 /* LiveInferenceEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveInferenceEngineTests.swift; sourceTree = "<group>"; };
+		9CB71EA68B5C4D0EA4F92002 /* SaliencyHeatmapGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaliencyHeatmapGenerator.swift; sourceTree = "<group>"; };
+		9D1E2F3A4B5C6D7E8F901235 /* SupabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseManager.swift; sourceTree = "<group>"; };
 		9E5DD93499E94B80E235234B /* LiveScanningState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveScanningState.swift; sourceTree = "<group>"; };
 		9FDED32CC9C977BA8DFC0D96 /* CameraStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraStateMachineTests.swift; sourceTree = "<group>"; };
 		A16619C1546F3F0256ADF8BB /* PrototypeDemoMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeDemoMode.swift; sourceTree = "<group>"; };
@@ -192,7 +225,17 @@
 		A87B2F4D5E926EB6E09FB033 /* InferenceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceError.swift; sourceTree = "<group>"; };
 		ACE22C656DA84609D181555F /* IntegratedResearchReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegratedResearchReportView.swift; sourceTree = "<group>"; };
 		AF6AED7B749632A99F31E4CC /* InferenceMetricsRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InferenceMetricsRecorder.swift; sourceTree = "<group>"; };
+		B211B21D306F6E5A00FB2A7F /* ConjunctivaPallor.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = ConjunctivaPallor.mlpackage; sourceTree = "<group>"; };
+		B211B21E306F6E5A00FB2A7F /* NailHemoglobin.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = NailHemoglobin.mlpackage; sourceTree = "<group>"; };
+		B211B21F306F6E5A00FB2A7F /* TonguePallor.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = TonguePallor.mlpackage; sourceTree = "<group>"; };
 		B23CAF3A3019C454004DF14C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		B24E6D8A3033E3A4004593E8 /* IronScan.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = IronScan.entitlements; sourceTree = "<group>"; };
+		B24E6D8B3033E3FA004593E8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B24E6D8C3033F24C004593E8 /* Untitled.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Untitled.swift; sourceTree = "<group>"; };
+		B24E6D8D303BF87B004593E8 /* ConjunctivaModel.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = ConjunctivaModel.mlpackage; sourceTree = "<group>"; };
+		B24E6D8E303BF87B004593E8 /* HbRegressionModel.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = HbRegressionModel.mlpackage; sourceTree = "<group>"; };
+		B24E6D97303E7DDB004593E8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = ../Assets.xcassets; sourceTree = SOURCE_ROOT; };
+		B24E6D9F303F51E1004593E8 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		B27692D47BCDB9056A242261 /* MultiHealthDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiHealthDashboardView.swift; sourceTree = "<group>"; };
 		B2867BAAE7F5AFBA19E0BA1A /* CameraPermissionAndSimulatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPermissionAndSimulatorTests.swift; sourceTree = "<group>"; };
 		B331AFD4156DE3F78DBC23CA /* GoldenInputs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = GoldenInputs; path = ../../TestFixtures/GoldenInputs; sourceTree = SOURCE_ROOT; };
@@ -234,6 +277,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2046439305F20EB003B2785 /* RiveRuntime in Frameworks */,
 				B24E6D8830323F83004593E8 /* Supabase in Frameworks */,
 				B23CAF3330198BDF004DF14C /* FirebaseCore in Frameworks */,
 				B23CAF3130198BD0004DF14C /* FirebaseAuth in Frameworks */,
@@ -267,16 +311,21 @@
 			children = (
 				98A7B6C5D4E3F20192837465 /* AnalyzingView.swift */,
 				24D70D7B2D72B27579C0D9B3 /* AuthManager.swift */,
+				B24E6D97303E7DDB004593E8 /* Assets.xcassets */,
 				D81E16B037A0A9CA6FCE917A /* AutoCaptureManager.swift */,
 				BF081E85AE18E47ECCDE44FF /* AvailabilityEngine.swift */,
 				8F7E6D5C4B3A291807162534 /* CameraView.swift */,
 				7B53F5DBBA9B4B0234C650E6 /* CameraPreviewView.swift */,
 				C214FD97A093F448B6284F90 /* CareResourcesView.swift */,
+				3FA91CEB7D8F4A0F9B8A1002 /* ClinicalReportGenerator.swift */,
 				1BB9618BB0B2B7C26228A634 /* ClinicDetailSheet.swift */,
 				BBCCDDEEFF00112233445566 /* CoreMLInferenceManager.swift */,
+				4AB1C2D3E4F5061728394056 /* DemographicProfile.swift */,
+				9A1B2C3D4E5F60718293A4B2 /* HealthKitManager.swift */,
 				83032E866467B729ABF35364 /* HealthGuidanceView.swift */,
 				90BBB970EAF7F97D55BFCFF8 /* HomeDashboardView.swift */,
 				6EDB70D69E9510F54931E442 /* HumanResultsView.swift */,
+				4AB1C2D3E4F5061728394058 /* InformedConsentModalView.swift */,
 				ACE22C656DA84609D181555F /* IntegratedResearchReportView.swift */,
 				B3C5B18F24F17B8D829F225A /* IntegratedTriangulationReportView.swift */,
 				7C6B5A4938271605F4E3D2C1 /* ImageQualityGatekeeper.swift */,
@@ -284,6 +333,7 @@
 				5C2D43B1333283339DAAB1A2 /* IronScanApp.swift */,
 				B23CAF3A3019C454004DF14C /* GoogleService-Info.plist */,
 				D355473F6361D54CA97933B2 /* IronTheme.swift */,
+				B24E6D8C3033F24C004593E8 /* Untitled.swift */,
 				4AA1B8738F5F4A22B2D9B002 /* LiquidGlassModifier.swift */,
 				9E5DD93499E94B80E235234B /* LiveScanningState.swift */,
 				24D70D7B2D72B27579C0D9B5 /* LoginView.swift */,
@@ -292,11 +342,17 @@
 				B27692D47BCDB9056A242261 /* MultiHealthDashboardView.swift */,
 				0D654FBEECD0C973CF6F522A /* MultiScanHubView.swift */,
 				B8EC1DB78925749755F72C35 /* MultiScanHubViewModel.swift */,
+				B24E6D9F303F51E1004593E8 /* NotificationManager.swift */,
 				5CBBC27689B1D6992CE064AD /* OnboardingConsentView.swift */,
 				0CE0701A075B8E4C345EF153 /* OnboardingFlowView.swift */,
+				4AB1C2D3E4F5061728394060 /* OnboardingProfileView.swift */,
 				7F8F28B81C826B47FB436F0E /* PersonalizedPlanEngine.swift */,
 				A16619C1546F3F0256ADF8BB /* PrototypeDemoMode.swift */,
+				4AB1C2D3E4F5061728394062 /* ResearchDataExporter.swift */,
 				3EA4498D7B44EECC80F86350 /* ResultTranslator.swift */,
+				4AB1C2D3E4F5061728394054 /* ScanHistoryStore.swift */,
+				A03000000000000000000004 /* ScanModels.swift */,
+				9CB71EA68B5C4D0EA4F92002 /* SaliencyHeatmapGenerator.swift */,
 				4AB1C2D3E4F5061728394052 /* ScanResultView.swift */,
 				3CDE1BC212E278C815A26473 /* ScanHapticsManager.swift */,
 				29D4524BE67BE6FD8A4190A6 /* ScanningOverlayView.swift */,
@@ -305,6 +361,7 @@
 				D2A9EE179039AF10C116D439 /* ScanViewModel.swift */,
 				8759AA28CA65469EC27C5E48 /* ScreeningIntakeView.swift */,
 				24D70D7B2D72B27579C0D9B7 /* SignupView.swift */,
+				9D1E2F3A4B5C6D7E8F901235 /* SupabaseManager.swift */,
 				F483D6BE4B152413D512043D /* VisualRiskSummaryEngine.swift */,
 			);
 			path = App;
@@ -318,6 +375,7 @@
 				CEA6CB768C98398A8A7420AC /* CameraPermissionManager.swift */,
 				EB6AA327A15381DF435F33B6 /* CameraProtocols.swift */,
 				216E3263067D5F8CD5F79591 /* CameraSessionActor.swift */,
+				A03000000000000000000002 /* MedicalCameraManager.swift */,
 				E1391A04C0D992B8864317FF /* CameraStateMachine.swift */,
 				F1428C9A7E7B879C5CD7864D /* CameraTypes.swift */,
 				34969953DEEE585BC4B844CD /* FrameStrideThrottle.swift */,
@@ -347,6 +405,11 @@
 				A6533D40DE71F4150952FEA1 /* MultiInferenceEngine.swift */,
 				F88F8E6786FBC5BEFA4BFD1F /* MultiTissueInferenceActor.swift */,
 				E3F12B9F23753C31E2366C19 /* TriangulationEngine.swift */,
+				B24E6D8D303BF87B004593E8 /* ConjunctivaModel.mlpackage */,
+				B24E6D8E303BF87B004593E8 /* HbRegressionModel.mlpackage */,
+				B211B21D306F6E5A00FB2A7F /* ConjunctivaPallor.mlpackage */,
+				B211B21E306F6E5A00FB2A7F /* NailHemoglobin.mlpackage */,
+				B211B21F306F6E5A00FB2A7F /* TonguePallor.mlpackage */,
 			);
 			path = ML;
 			sourceTree = "<group>";
@@ -434,6 +497,8 @@
 		C95B9885ADEEBE1D600981D2 /* IronScan */ = {
 			isa = PBXGroup;
 			children = (
+				B24E6D8B3033E3FA004593E8 /* Info.plist */,
+				B24E6D8A3033E3A4004593E8 /* IronScan.entitlements */,
 				16428011072E0F1EBA70C100 /* App */,
 				2112B7555206086CC11345A7 /* Camera */,
 				4FF5C807F6D1C3F5BDB8BF35 /* ML */,
@@ -524,6 +589,7 @@
 				B23CAF3230198BDF004DF14C /* FirebaseCore */,
 				B23CAF3430198BE6004DF14C /* FirebaseFirestore */,
 				B24E6D8730323F83004593E8 /* Supabase */,
+				B2046438305F20EB003B2785 /* RiveRuntime */,
 			);
 			productName = IronScan;
 			productReference = 5AE95ECB149F429B61206F24 /* IronScan.app */;
@@ -555,6 +621,7 @@
 			packageReferences = (
 				B23CAF2E30198BB4004DF14C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				B24E6D8630323F83004593E8 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				B2046437305F20EB003B2785 /* XCRemoteSwiftPackageReference "rive-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D75E8C5F8D7C0E3A66A4BE3E /* Products */;
@@ -573,6 +640,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D757A71B1B455A8D86C15A79 /* Models in Resources */,
+				B24E6D98303E7DDB004593E8 /* Assets.xcassets in Resources */,
 				B23CAF3B3019C454004DF14C /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -600,6 +668,7 @@
 				B4247B4B0D0BEF810488F2DC /* AvailabilityEngine.swift in Sources */,
 				CDF5D5E76C7BDA0E83EB08AF /* CalibrationMath.swift in Sources */,
 				B524FEDF784AAC5670D77161 /* CalibrationTypes.swift in Sources */,
+				B24E6D92303BF87B004593E8 /* ConjunctivaModel.mlpackage in Sources */,
 				3A4B5C6D7E8F90123456789A /* CameraView.swift in Sources */,
 				D0A056FC848D0F76AA7EECAD /* CameraControllerFactory.swift in Sources */,
 				8AB73990E22B561BE48BCF1E /* CameraInferenceBridge.swift in Sources */,
@@ -607,13 +676,16 @@
 				96EC72C840C4437DDE683ADD /* CameraPreviewView.swift in Sources */,
 				A3C57300BFF390AB1770B7AF /* CameraProtocols.swift in Sources */,
 				C9300BCD9C9634BEAA395F27 /* CameraSessionActor.swift in Sources */,
+				A03000000000000000000001 /* MedicalCameraManager.swift in Sources */,
 				FF44315A5BCC8D10DB7BBA9B /* CameraStateMachine.swift in Sources */,
 				B48EBF54043AA3DE398AF662 /* CameraTypes.swift in Sources */,
 				BA0F718BC12581FF463CAD18 /* CareResourcesView.swift in Sources */,
 				39F2E73CD7295B4AD919A00C /* ClinicDetailSheet.swift in Sources */,
+				3FA91CEB7D8F4A0F9B8A1001 /* ClinicalReportGenerator.swift in Sources */,
 				11223344556677889900AABB /* CoreMLInferenceManager.swift in Sources */,
 				2F12AFE0B833015A1427D368 /* FrameStrideThrottle.swift in Sources */,
 				AD670F0E966AFF3A67DD2ABE /* GeneratedModelInterfaces.swift in Sources */,
+				9A1B2C3D4E5F60718293A4B1 /* HealthKitManager.swift in Sources */,
 				55E29B2B60816E0EA84D658F /* HealthGuidanceView.swift in Sources */,
 				AB93B24C5E4DF15EAB3223F6 /* HomeDashboardView.swift in Sources */,
 				3B65BEBD5357CCBD7958AA16 /* HumanResultsView.swift in Sources */,
@@ -630,11 +702,14 @@
 				B8651DE9C93B615A6A8EC0C1 /* IronTheme.swift in Sources */,
 				4AA1B8738F5F4A22B2D9B001 /* LiquidGlassModifier.swift in Sources */,
 				D19E3E2A28862730646F0F99 /* LatestFrameProcessor.swift in Sources */,
+				4AB1C2D3E4F5061728394055 /* DemographicProfile.swift in Sources */,
 				24D70D7B2D72B27579C0D9B4 /* LoginView.swift in Sources */,
 				B600BDAD4357764CB305ED55 /* LiveInferenceEngine.swift in Sources */,
 				FA60163BCCA322501C3422BD /* LiveScanningState.swift in Sources */,
 				3B2A817404FD76E443F7A866 /* LocationManager.swift in Sources */,
+				B24E6D94303C0FE2004593E8 /* HbRegressionModel.mlpackage in Sources */,
 				4F15CF228BC3871A23462C2D /* MainTabView.swift in Sources */,
+				4AB1C2D3E4F5061728394057 /* InformedConsentModalView.swift in Sources */,
 				6C9320534E8883FE80B31800 /* ModelContractValidator.swift in Sources */,
 				A5FE700388FF3C4A5F529939 /* ModelManifest.swift in Sources */,
 				97E86689C14C83C76E25F9A7 /* ModelRegistryActor.swift in Sources */,
@@ -644,13 +719,19 @@
 				D4C035BD0CD8F4E0C9D9A9C4 /* MultiScanHubView.swift in Sources */,
 				5609ACF7A8F5FB294EAC5246 /* MultiScanHubViewModel.swift in Sources */,
 				E973A0788C50747DA2499D64 /* MultiTissueInferenceActor.swift in Sources */,
+				B24E6DA0303F51E1004593E8 /* NotificationManager.swift in Sources */,
 				5A095DECA44D1A84FC86CDF2 /* OnboardingConsentView.swift in Sources */,
 				62285615C0CD64075175762B /* OnboardingFlowView.swift in Sources */,
+				4AB1C2D3E4F5061728394059 /* OnboardingProfileView.swift in Sources */,
 				2456CF7D551BB80616A47839 /* PersonalizedPlanEngine.swift in Sources */,
 				557AF563A741F494FA2E90DF /* PixelBufferFactory.swift in Sources */,
 				9330B31BCB31A9D904A9BD67 /* PrototypeDemoMode.swift in Sources */,
+				4AB1C2D3E4F5061728394061 /* ResearchDataExporter.swift in Sources */,
 				C49033EF9535E2841A3FBD00 /* ResultTranslator.swift in Sources */,
 				098B16F6AD401D3333F31E7D /* RiskInferenceActor.swift in Sources */,
+				4AB1C2D3E4F5061728394053 /* ScanHistoryStore.swift in Sources */,
+				A03000000000000000000003 /* ScanModels.swift in Sources */,
+				9CB71EA68B5C4D0EA4F92001 /* SaliencyHeatmapGenerator.swift in Sources */,
 				4AB1C2D3E4F5061728394051 /* ScanResultView.swift in Sources */,
 				4A621D045C22E8832C80FE8A /* ScanHapticsManager.swift in Sources */,
 				E377DC54A9943F538E1ABB5F /* ScanPipelineActor.swift in Sources */,
@@ -659,10 +740,14 @@
 				5FA889C9B5C46999EE82EC75 /* ScanningOverlayView.swift in Sources */,
 				5CFE93F5FB2E1057E1E8BC8D /* ScreeningIntakeView.swift in Sources */,
 				24D70D7B2D72B27579C0D9B6 /* SignupView.swift in Sources */,
+				9D1E2F3A4B5C6D7E8F901234 /* SupabaseManager.swift in Sources */,
 				97059C932ADA25ECABB22B3E /* SegmentationInferenceActor.swift in Sources */,
 				8C025E203D3247AC004049F2 /* SegmentationPostprocessor.swift in Sources */,
 				4C34761E1C43DBA725F56BB8 /* SimulatorCameraActor.swift in Sources */,
 				44E4570B7D3B85CD99BA7C49 /* SmartColorCalibrationActor.swift in Sources */,
+				B211B223306F6E5A00FB2A7F /* TonguePallor.mlpackage in Sources */,
+				B211B224306F6E5A00FB2A7F /* ConjunctivaPallor.mlpackage in Sources */,
+				B211B225306F6E5A00FB2A7F /* NailHemoglobin.mlpackage in Sources */,
 				FBDB63012B9A954618CBD87E /* SyntheticTongueFrameFactory.swift in Sources */,
 				10E7B669B40ED0C40789F864 /* TriangulationEngine.swift in Sources */,
 				24D70D7B2D72B27579C0D9B1 /* VisualRiskSummaryEngine.swift in Sources */,
@@ -674,6 +759,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA10704C4DFAE8A1C08A5DFC /* AutoCaptureManagerTests.swift in Sources */,
+				B211B220306F6E5A00FB2A7F /* TonguePallor.mlpackage in Sources */,
+				B211B221306F6E5A00FB2A7F /* ConjunctivaPallor.mlpackage in Sources */,
+				B211B222306F6E5A00FB2A7F /* NailHemoglobin.mlpackage in Sources */,
 				5D89A07915CDEF6B39617F2D /* CalibrationTestSupport.swift in Sources */,
 				382847C84AA7E1057F06471B /* CameraPermissionAndSimulatorTests.swift in Sources */,
 				8D4805C6604ED7C45A11C5EF /* CameraStateMachineTests.swift in Sources */,
@@ -732,11 +820,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = IronScan/IronScan.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = QKAJKR59FF;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCameraUsageDescription = "IronScan requires access to your camera to analyze tongue color and screen for anemia risk.";
+				INFOPLIST_FILE = IronScan/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "IronScan needs camera access to capture optical biomarker images.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "IronScan reads lab hemoglobin data to calibrate non-invasive optical estimations.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "IronScan logs estimated hemoglobin trends to Apple Health.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "IronScan uses your location only while the Care & Labs page is open to find nearby laboratories and clinics.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -754,11 +846,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = IronScan/IronScan.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = QKAJKR59FF;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCameraUsageDescription = "IronScan requires access to your camera to analyze tongue color and screen for anemia risk.";
+				INFOPLIST_FILE = IronScan/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "IronScan needs camera access to capture optical biomarker images.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "IronScan reads lab hemoglobin data to calibrate non-invasive optical estimations.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "IronScan logs estimated hemoglobin trends to Apple Health.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "IronScan uses your location only while the Care & Labs page is open to find nearby laboratories and clinics.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -951,6 +1047,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		B2046437305F20EB003B2785 /* XCRemoteSwiftPackageReference "rive-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rive-app/rive-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.27.0;
+			};
+		};
 		B23CAF2E30198BB4004DF14C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
@@ -970,6 +1074,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		B2046438305F20EB003B2785 /* RiveRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B2046437305F20EB003B2785 /* XCRemoteSwiftPackageReference "rive-ios" */;
+			productName = RiveRuntime;
+		};
 		B23CAF3030198BD0004DF14C /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B23CAF2E30198BB4004DF14C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

@@ -72,6 +72,20 @@ struct ScanResultSummary: Equatable, Sendable {
             visualAttributeReport: report
         )
     }
+
+    static func prototypeFallback(isSimulatorMode: Bool) -> ScanResultSummary {
+        ScanResultSummary(
+            title: "Demo estimate: 12.4 g/dL",
+            detail: isSimulatorMode
+                ? "Synthetic Simulator fallback only — not a participant result."
+                : "Synthetic recovery fallback only — image analysis did not complete and this is not a participant result.",
+            decision: .unableToAssess,
+            riskScore: nil,
+            segmentationAreaRatio: 0,
+            inferenceDurationMs: 3_000,
+            visualAttributeReport: nil
+        )
+    }
 }
 
 extension RiskDecision {

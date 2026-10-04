@@ -5,13 +5,14 @@ import CoreVideo
 import Foundation
 import UIKit
 
+#if !targetEnvironment(simulator)
 actor CameraSessionActor: CameraSessionControlling {
     nonisolated let previewSource: CameraPreviewSource
 
     private let session: AVCaptureSession
     private var deviceInput: AVCaptureDeviceInput?
     private let videoDataOutput = AVCaptureVideoDataOutput()
-    private let photoOutput = AVCapturePhotoOutput()
+    private var latestVideoFrame: AnalyzableFrame?
     private var device: AVCaptureDevice?
 
     private let configuration: CameraConfiguration
@@ -28,10 +29,11 @@ actor CameraSessionActor: CameraSessionControlling {
     private var exposureWasLocked = false
     private var whiteBalanceWasLocked = false
     private var currentTorchLevel: Float = 0
-    private var torchOverride: Bool? = true
+    private var torchOverride = false
     private var opticsProfile = CameraOpticsProfile.tongue
-    private var lensPosition = CameraLensPosition.back
+    private var lensPosition = CameraLensPosition.front
     private var captureOrientation = CaptureOrientation.portrait
+    private var isSwitchingCamera = false
 
     init(
         configuration: CameraConfiguration = CameraConfiguration(),
@@ -60,10 +62,10 @@ actor CameraSessionActor: CameraSessionControlling {
         case .authorized:
             break
         case .notDetermined:
-            guard await AVCaptureDevice.requestAccess(for: .video) else {
-                fail(.permissionDenied)
-                return
-            }
+            // Permission prompts are owned by CameraPermissionManager on MainActor.
+            // Never start or configure a capture session while authorization is unresolved.
+            fail(.permissionDenied)
+            return
         case .denied:
             fail(.permissionDenied)
             return
@@ -81,15 +83,13 @@ actor CameraSessionActor: CameraSessionControlling {
             if !isConfigured {
                 try configureSession()
             }
-            if !session.isRunning {
-                session.startRunning()
-            }
-            if let torchLevel = desiredTorchLevel {
+            await startSessionIfNeeded()
+            if let torchLevel = desiredTorchLevel, device?.hasTorch == true {
                 try applyTorch(enabled: true, level: torchLevel)
             }
             try beginStabilization()
             transition(.configured)
-            try await settleAndLockControls()
+            try await settleAutomaticControls()
             try await waitForStableFrames()
             transition(.stabilized)
         } catch let error as CameraError {
@@ -101,31 +101,32 @@ actor CameraSessionActor: CameraSessionControlling {
 
     @discardableResult
     func capture() async -> Bool {
-        guard stateMachine.state == .ready else { return false }
-        guard configuration.burstCount > 0 else {
-            fail(.configurationFailed("Burst count must be greater than zero"))
-            return false
-        }
+        guard let latestVideoFrame else { return false }
+        return await capture(from: latestVideoFrame)
+    }
+
+    @discardableResult
+    func capture(from frame: AnalyzableFrame) async -> Bool {
+        guard stateMachine.state == .ready, !isSwitchingCamera else { return false }
         transition(.captureRequested)
 
         do {
-            var candidates = [CapturedFrame]()
-            for _ in 0..<configuration.burstCount {
-                let payload = try await capturePhoto()
-                let quality = analyzer.analyzeCapture(payload.pixelBuffer)
-                let metadata = try makeMetadata(
-                    pixelBuffer: payload.pixelBuffer,
-                    photoWidth: payload.width,
-                    photoHeight: payload.height
-                )
-                candidates.append(CapturedFrame(pixelBuffer: payload.pixelBuffer, metadata: metadata, quality: quality))
-            }
-
-            guard let selected = candidates
-                .filter({ $0.quality.readiness != .unavailable })
-                .max(by: { captureCandidateScore($0) < captureCandidateScore($1) }) else {
-                throw CameraError.noAcceptableCapture
-            }
+            // The video frame is retained for capture and copied before inference.
+            let pixelBuffer = try PixelBufferFactory.makeCrop(
+                from: frame.pixelBuffer,
+                normalizedRect: CGRect(x: 0, y: 0, width: 1, height: 1)
+            )
+            let quality = analyzer.analyzeCapture(pixelBuffer)
+            let metadata = try makeMetadata(
+                pixelBuffer: pixelBuffer,
+                photoWidth: CVPixelBufferGetWidth(pixelBuffer),
+                photoHeight: CVPixelBufferGetHeight(pixelBuffer)
+            )
+            let selected = CapturedFrame(
+                pixelBuffer: pixelBuffer,
+                metadata: metadata,
+                quality: quality
+            )
 
             try finishCaptureLifecycle()
             transition(.captureCompleted)
@@ -151,12 +152,18 @@ actor CameraSessionActor: CameraSessionControlling {
     }
 
     func toggleCamera() async throws {
-        guard isConfigured, let previousInput = deviceInput else {
+        guard stateMachine.state == .ready,
+              !isSwitchingCamera,
+              isConfigured,
+              let previousInput = deviceInput else {
             throw CameraError.configurationFailed("Camera session is not configured")
         }
+        isSwitchingCamera = true
+        latestVideoFrame = nil
+        defer { isSwitchingCamera = false }
 
         let requestedPosition: CameraLensPosition = lensPosition == .back ? .front : .back
-        guard let selectedDevice = discoverCamera(at: requestedPosition) else {
+        guard let selectedDevice = cameraDevice(at: requestedPosition) else {
             throw CameraError.unsupportedDevice
         }
 
@@ -181,35 +188,36 @@ actor CameraSessionActor: CameraSessionControlling {
             throw CameraError.configurationFailed("Requested camera input cannot be added")
         }
         session.addInput(replacementInput)
-        session.commitConfiguration()
-
         device = selectedDevice
         deviceInput = replacementInput
         lensPosition = requestedPosition
+        // Switching lenses requires a new explicit flashlight toggle.
+        torchOverride = false
         focusWasLocked = false
         exposureWasLocked = false
         whiteBalanceWasLocked = false
+        captureOrientation = .portrait
         configureOutputConnections()
-        configureMaximumPhotoDimensions(for: selectedDevice)
+        session.commitConfiguration()
 
         if let torchLevel = desiredTorchLevel, selectedDevice.hasTorch {
             try applyTorch(enabled: true, level: torchLevel)
         }
         eventContinuation?.yield(.capabilities(capabilities(for: selectedDevice)))
         try beginStabilization()
-        try await settleAndLockControls()
+        try await settleAutomaticControls()
         try await waitForStableFrames()
     }
 
     func updateCaptureOrientation(_ orientation: CaptureOrientation) async {
-        guard captureOrientation != orientation else { return }
-        captureOrientation = orientation
+        let appliedOrientation = lensPosition == .front ? .portrait : orientation
+        guard captureOrientation != appliedOrientation else { return }
+        captureOrientation = appliedOrientation
         configureOutputConnections()
     }
 
     func setOpticsProfile(_ profile: CameraOpticsProfile) async throws {
         opticsProfile = profile
-        torchOverride = nil
         guard isConfigured else { return }
 
         if currentTorchLevel > 0 {
@@ -219,13 +227,12 @@ actor CameraSessionActor: CameraSessionControlling {
             try applyTorch(enabled: true, level: torchLevel)
         }
         try beginStabilization()
-        try await settleAndLockControls()
+        try await settleAutomaticControls()
         try await waitForStableFrames()
     }
 
     func setTorchEnabled(_ enabled: Bool) async throws {
         guard stateMachine.state != .idle else { return }
-        torchOverride = enabled
         if enabled {
             try applyTorch(
                 enabled: true,
@@ -234,8 +241,9 @@ actor CameraSessionActor: CameraSessionControlling {
         } else {
             try applyTorch(enabled: false)
         }
+        torchOverride = enabled
         try beginStabilization()
-        try await settleAndLockControls()
+        try await settleAutomaticControls()
         try await waitForStableFrames()
     }
 
@@ -244,7 +252,7 @@ actor CameraSessionActor: CameraSessionControlling {
         transition(.alignmentConfirmed)
         do {
             try beginStabilization()
-            try await settleAndLockControls()
+            try await settleAutomaticControls()
             try await waitForStableFrames()
             transition(.stabilized)
         } catch let error as CameraError {
@@ -254,7 +262,8 @@ actor CameraSessionActor: CameraSessionControlling {
         }
     }
 
-    func stop() {
+    func stop() async {
+        latestVideoFrame = nil
         var cleanupError: CameraError?
         do {
             try finishCaptureLifecycle()
@@ -263,9 +272,7 @@ actor CameraSessionActor: CameraSessionControlling {
         } catch {
             cleanupError = .configurationFailed(error.localizedDescription)
         }
-        if session.isRunning {
-            session.stopRunning()
-        }
+        await stopSessionIfNeeded()
         if let cleanupError {
             transition(.failed(cleanupError))
         } else {
@@ -279,8 +286,34 @@ actor CameraSessionActor: CameraSessionControlling {
         await start()
     }
 
+    private func startSessionIfNeeded() async {
+        let session = session
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            DispatchQueue.global(qos: .userInitiated).async {
+                if !session.isRunning {
+                    session.startRunning()
+                }
+                continuation.resume()
+            }
+        }
+    }
+
+    private func stopSessionIfNeeded() async {
+        let session = session
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            DispatchQueue.global(qos: .userInitiated).async {
+                if session.isRunning {
+                    session.stopRunning()
+                }
+                continuation.resume()
+            }
+        }
+    }
+
     private func configureSession() throws {
-        guard let selectedDevice = discoverCamera(at: .back) else {
+        // IronScan intentionally configures video only. No microphone/audio
+        // device is discovered or added to the capture session.
+        guard let selectedDevice = cameraDevice(at: .back) else {
             throw CameraError.unsupportedDevice
         }
 
@@ -293,10 +326,10 @@ actor CameraSessionActor: CameraSessionControlling {
 
         session.beginConfiguration()
         defer { session.commitConfiguration() }
-        session.sessionPreset = .photo
+        session.sessionPreset = .hd1920x1080
 
         guard session.canAddInput(input) else {
-            throw CameraError.configurationFailed("Rear wide-camera input cannot be added")
+            throw CameraError.configurationFailed("Rear camera input cannot be added")
         }
         session.addInput(input)
 
@@ -310,14 +343,8 @@ actor CameraSessionActor: CameraSessionControlling {
         }
         session.addOutput(videoDataOutput)
 
-        guard session.canAddOutput(photoOutput) else {
-            throw CameraError.configurationFailed("Photo output cannot be added")
-        }
-        session.addOutput(photoOutput)
-        photoOutput.maxPhotoQualityPrioritization = .quality
-
+        lensPosition = .back
         configureOutputConnections()
-        configureMaximumPhotoDimensions(for: selectedDevice)
 
         let processor = LatestFrameProcessor<AnalyzableFrame>(maximumRate: configuration.maximumAnalysisRate) { [weak self] frame in
             await self?.processPreview(frame)
@@ -325,6 +352,9 @@ actor CameraSessionActor: CameraSessionControlling {
         frameProcessor = processor
         inferenceBridge.onPreviewFrame = { frame in
             Task { await processor.submit(frame) }
+        }
+        inferenceBridge.onDisplayFrame = { [weak self] frame in
+            Task { await self?.publishDisplayFrame(frame) }
         }
         inferenceBridge.configureMaximumInferenceRate(configuration.maximumLiveInferenceRate)
         inferenceBridge.onInferenceFrame = { [weak self] frame in
@@ -339,7 +369,14 @@ actor CameraSessionActor: CameraSessionControlling {
         eventContinuation?.yield(.capabilities(capabilities(for: selectedDevice)))
     }
 
-    private func discoverCamera(at position: CameraLensPosition) -> AVCaptureDevice? {
+    private func cameraDevice(at position: CameraLensPosition) -> AVCaptureDevice? {
+        if position == .front {
+            return AVCaptureDevice.default(
+                .builtInWideAngleCamera,
+                for: .video,
+                position: .front
+            )
+        }
         let preferredTypes = CameraDeviceDiscovery.preferredDeviceTypes(for: position)
         let devices = AVCaptureDevice.DiscoverySession(
             deviceTypes: preferredTypes,
@@ -352,35 +389,33 @@ actor CameraSessionActor: CameraSessionControlling {
     }
 
     private func configureOutputConnections() {
-        configure(connection: videoDataOutput.connection(with: .video), enablesStabilization: true)
-        configure(connection: photoOutput.connection(with: .video), enablesStabilization: false)
+        configure(
+            connection: videoDataOutput.connection(with: .video),
+            orientation: captureOrientation,
+            enablesStabilization: true
+        )
     }
 
-    private func configure(connection: AVCaptureConnection?, enablesStabilization: Bool) {
+    private func configure(
+        connection: AVCaptureConnection?,
+        orientation: CaptureOrientation,
+        enablesStabilization: Bool
+    ) {
         guard let connection else { return }
         if #available(iOS 17.0, *) {
-            let angle = captureOrientation.videoRotationAngle
+            let angle = orientation.videoRotationAngle
             if connection.isVideoRotationAngleSupported(angle) {
                 connection.videoRotationAngle = angle
             }
         } else if connection.isVideoOrientationSupported {
-            connection.videoOrientation = captureOrientation.legacyVideoOrientation
+            connection.videoOrientation = orientation.legacyVideoOrientation
         }
         if connection.isVideoMirroringSupported {
             connection.automaticallyAdjustsVideoMirroring = false
-            connection.isVideoMirrored = false
+            connection.isVideoMirrored = lensPosition == .front
         }
         if enablesStabilization, connection.isVideoStabilizationSupported {
             connection.preferredVideoStabilizationMode = .standard
-        }
-    }
-
-    private func configureMaximumPhotoDimensions(for device: AVCaptureDevice) {
-        if #available(iOS 16.0, *),
-           let maximumDimensions = device.activeFormat.supportedMaxPhotoDimensions.max(by: {
-               Int64($0.width) * Int64($0.height) < Int64($1.width) * Int64($1.height)
-           }) {
-            photoOutput.maxPhotoDimensions = maximumDimensions
         }
     }
 
@@ -389,40 +424,17 @@ actor CameraSessionActor: CameraSessionControlling {
         do {
             try device.lockForConfiguration()
             defer { device.unlockForConfiguration() }
-            let centerPoint = CGPoint(x: 0.5, y: 0.5)
-
-            if device.isFocusPointOfInterestSupported {
-                device.focusPointOfInterest = centerPoint
-            }
             if device.isFocusModeSupported(.continuousAutoFocus) {
                 device.focusMode = .continuousAutoFocus
-            }
-            if device.isAutoFocusRangeRestrictionSupported {
-                device.autoFocusRangeRestriction = opticsProfile.usesNearFocusRange ? .near : .none
-            }
-            if device.isSmoothAutoFocusSupported {
-                device.isSmoothAutoFocusEnabled = true
-            }
-            if device.minAvailableVideoZoomFactor <= 1,
-               device.maxAvailableVideoZoomFactor >= 1 {
-                device.videoZoomFactor = 1
-            }
-            if device.isExposurePointOfInterestSupported {
-                device.exposurePointOfInterest = centerPoint
+                if device.isAutoFocusRangeRestrictionSupported {
+                    device.autoFocusRangeRestriction = .near
+                }
             }
             if device.isExposureModeSupported(.continuousAutoExposure) {
                 device.exposureMode = .continuousAutoExposure
             }
-            let exposureBias = min(
-                max(opticsProfile.exposureBias, device.minExposureTargetBias),
-                device.maxExposureTargetBias
-            )
-            device.setExposureTargetBias(exposureBias, completionHandler: nil)
             if device.isWhiteBalanceModeSupported(.continuousAutoWhiteBalance) {
                 device.whiteBalanceMode = .continuousAutoWhiteBalance
-            }
-            if device.activeFormat.supportedColorSpaces.contains(.sRGB) {
-                device.activeColorSpace = .sRGB
             }
         } catch let error as CameraError {
             throw error
@@ -440,12 +452,14 @@ actor CameraSessionActor: CameraSessionControlling {
             try applyTorch(enabled: true, level: torchLevel)
         }
         try beginStabilization()
-        try await settleAndLockControls()
+        try await settleAutomaticControls()
         try await waitForStableFrames()
         transition(.stabilized)
     }
 
-    private func settleAndLockControls() async throws {
+    /// Waits for the standard automatic controls without switching any control
+    /// into a hardware-specific locked or custom mode.
+    private func settleAutomaticControls() async throws {
         guard let device else { throw CameraError.unsupportedDevice }
         let clock = ContinuousClock()
         let deadline = clock.now.advanced(by: configuration.stabilizationTimeout)
@@ -455,38 +469,9 @@ actor CameraSessionActor: CameraSessionControlling {
             try await clock.sleep(for: .milliseconds(50))
         }
 
-        guard abs(device.exposureTargetOffset) <= configuration.exposureTargetTolerance else {
-            throw CameraError.exposureOutOfTolerance
-        }
-
-        do {
-            try device.lockForConfiguration()
-            defer { device.unlockForConfiguration() }
-            if opticsProfile.locksFocusAfterStabilization,
-               device.isFocusModeSupported(.locked) {
-                let lockedLensPosition: Float = isMacroActive(device) ? 0 : device.lensPosition
-                device.setFocusModeLocked(lensPosition: lockedLensPosition, completionHandler: nil)
-                focusWasLocked = true
-            }
-            if opticsProfile.locksExposureAfterStabilization,
-               device.isExposureModeSupported(.custom) {
-                device.setExposureModeCustom(duration: AVCaptureDevice.currentExposureDuration, iso: AVCaptureDevice.currentISO, completionHandler: nil)
-                exposureWasLocked = true
-            } else if opticsProfile.locksExposureAfterStabilization,
-                      device.isExposureModeSupported(.locked) {
-                device.exposureMode = .locked
-                exposureWasLocked = true
-            }
-            if device.isWhiteBalanceModeSupported(.locked) {
-                device.setWhiteBalanceModeLocked(
-                    with: clampedWhiteBalanceGains(device.deviceWhiteBalanceGains, for: device),
-                    completionHandler: nil
-                )
-                whiteBalanceWasLocked = true
-            }
-        } catch {
-            throw CameraError.configurationFailed(error.localizedDescription)
-        }
+        focusWasLocked = false
+        exposureWasLocked = false
+        whiteBalanceWasLocked = false
     }
 
     private func waitForStableFrames() async throws {
@@ -505,48 +490,17 @@ actor CameraSessionActor: CameraSessionControlling {
         eventContinuation?.yield(.quality(observation))
     }
 
+    private func publishDisplayFrame(_ frame: AnalyzableFrame) {
+        guard stateMachine.state == .stabilizing || stateMachine.state == .ready else { return }
+        latestVideoFrame = frame
+        eventContinuation?.yield(.displayFrame(frame))
+    }
+
     private func publishLiveFrame(_ frame: AnalyzableFrame) {
         guard stateMachine.state == .stabilizing || stateMachine.state == .ready else { return }
         eventContinuation?.yield(.liveFrame(frame))
     }
 
-    private func capturePhoto() async throws -> PhotoPayload {
-        guard let selectedPixelFormat = PhotoPixelFormatSelector.select(
-            from: photoOutput.availablePhotoPixelFormatTypes
-        ) else {
-            throw CameraError.configurationFailed("Photo pixel-buffer capture is unavailable")
-        }
-        let settings = AVCapturePhotoSettings(format: [
-            kCVPixelBufferPixelFormatTypeKey as String: selectedPixelFormat
-        ])
-        settings.flashMode = .off
-        settings.photoQualityPrioritization = .quality
-        if #available(iOS 16.0, *), photoOutput.maxPhotoDimensions.width > 0 {
-            settings.maxPhotoDimensions = photoOutput.maxPhotoDimensions
-        }
-
-        let rawPayload = try await withCheckedThrowingContinuation { continuation in
-            let delegate = PhotoCaptureReceiver(continuation: continuation)
-            delegate.retainUntilCompletion()
-            photoOutput.capturePhoto(with: settings, delegate: delegate)
-        }
-        do {
-            let normalizedPixelBuffer = try PixelBufferFactory.makeBGRA(from: rawPayload.pixelBuffer)
-            return PhotoPayload(
-                pixelBuffer: normalizedPixelBuffer,
-                width: CVPixelBufferGetWidth(normalizedPixelBuffer),
-                height: CVPixelBufferGetHeight(normalizedPixelBuffer)
-            )
-        } catch {
-            throw CameraError.captureFailed(error.localizedDescription)
-        }
-    }
-
-    private func captureCandidateScore(_ frame: CapturedFrame) -> Double {
-        frame.quality.sharpnessScore
-            - frame.quality.clippedHighlightFraction * 2
-            - frame.quality.motionScore * 2
-    }
 
     private func recoverFromCaptureIssue(_ issue: CameraError) async {
         transition(.captureAborted)
@@ -555,7 +509,7 @@ actor CameraSessionActor: CameraSessionControlling {
                 try applyTorch(enabled: true, level: torchLevel)
             }
             try beginStabilization()
-            try await settleAndLockControls()
+            try await settleAutomaticControls()
             try await waitForStableFrames()
             transition(.stabilized)
             eventContinuation?.yield(.captureIssue(issue))
@@ -568,10 +522,13 @@ actor CameraSessionActor: CameraSessionControlling {
 
     private func applyTorch(enabled: Bool, level: Float? = nil) throws {
         guard let device else { throw CameraError.unsupportedDevice }
-        if enabled {
-            guard device.hasTorch, device.isTorchAvailable, device.isTorchModeSupported(.on) else {
-                throw CameraError.torchUnavailable
-            }
+        guard device.hasTorch, device.isTorchAvailable else {
+            currentTorchLevel = 0
+            if enabled { throw CameraError.torchUnavailable }
+            return
+        }
+        if enabled, !device.isTorchModeSupported(.on) {
+            throw CameraError.torchUnavailable
         }
 
         do {
@@ -586,26 +543,13 @@ actor CameraSessionActor: CameraSessionControlling {
                 currentTorchLevel = 0
             }
         } catch {
+            print("Torch configuration failed: \(error)")
             throw CameraError.configurationFailed(error.localizedDescription)
         }
     }
 
     private var desiredTorchLevel: Float? {
-        switch torchOverride {
-        case .some(true):
-            opticsProfile.automaticTorchLevel ?? configuration.torchLevel
-        case .some(false):
-            nil
-        case .none:
-            opticsProfile.automaticTorchLevel
-        }
-    }
-
-    private func isMacroActive(_ device: AVCaptureDevice) -> Bool {
-        if device.deviceType == .builtInUltraWideCamera {
-            return true
-        }
-        return device.activePrimaryConstituent?.deviceType == .builtInUltraWideCamera
+        torchOverride ? (opticsProfile.automaticTorchLevel ?? configuration.torchLevel) : nil
     }
 
     private func finishCaptureLifecycle() throws {
@@ -672,23 +616,14 @@ actor CameraSessionActor: CameraSessionControlling {
     private func capabilities(for device: AVCaptureDevice) -> CameraCapabilities {
         CameraCapabilities(
             hasTorch: device.hasTorch && device.isTorchAvailable,
-            supportsCameraToggle: discoverCamera(at: lensPosition == .back ? .front : .back) != nil,
+            supportsCameraToggle: cameraDevice(at: lensPosition == .back ? .front : .back) != nil,
             lensPosition: lensPosition,
             supportsFocusPoint: device.isFocusPointOfInterestSupported,
             supportsExposurePoint: device.isExposurePointOfInterestSupported,
-            supportsFocusLock: device.isFocusModeSupported(.locked),
-            supportsCustomExposure: device.isExposureModeSupported(.custom),
-            supportsWhiteBalanceLock: device.isWhiteBalanceModeSupported(.locked),
-            supportsActiveMaxDimensions: !device.activeFormat.supportedMaxPhotoDimensions.isEmpty
-        )
-    }
-
-    private func clampedWhiteBalanceGains(_ gains: AVCaptureDevice.WhiteBalanceGains, for device: AVCaptureDevice) -> AVCaptureDevice.WhiteBalanceGains {
-        let range: ClosedRange<Float> = 1...device.maxWhiteBalanceGain
-        return AVCaptureDevice.WhiteBalanceGains(
-            redGain: min(max(gains.redGain, range.lowerBound), range.upperBound),
-            greenGain: min(max(gains.greenGain, range.lowerBound), range.upperBound),
-            blueGain: min(max(gains.blueGain, range.lowerBound), range.upperBound)
+            supportsFocusLock: false,
+            supportsCustomExposure: false,
+            supportsWhiteBalanceLock: false,
+            supportsActiveMaxDimensions: false
         )
     }
 
@@ -705,6 +640,7 @@ actor CameraSessionActor: CameraSessionControlling {
     }
 
     private func handleInterruption(_ reason: String) {
+        latestVideoFrame = nil
         do {
             try applyTorch(enabled: false)
         } catch let error as CameraError {
@@ -752,54 +688,6 @@ actor CameraSessionActor: CameraSessionControlling {
     }
 }
 
-private struct PhotoPayload: @unchecked Sendable {
-    let pixelBuffer: CVPixelBuffer
-    let width: Int
-    let height: Int
-}
-
-private final class PhotoCaptureReceiver: NSObject, AVCapturePhotoCaptureDelegate, @unchecked Sendable {
-    private static let lock = NSLock()
-    nonisolated(unsafe) private static var retainedDelegates = [ObjectIdentifier: PhotoCaptureReceiver]()
-    private var continuation: CheckedContinuation<PhotoPayload, Error>?
-
-    init(continuation: CheckedContinuation<PhotoPayload, Error>) {
-        self.continuation = continuation
-    }
-
-    func retainUntilCompletion() {
-        Self.lock.lock()
-        Self.retainedDelegates[ObjectIdentifier(self)] = self
-        Self.lock.unlock()
-    }
-
-    func photoOutput(
-        _ output: AVCapturePhotoOutput,
-        didFinishProcessingPhoto photo: AVCapturePhoto,
-        error: Error?
-    ) {
-        if let error {
-            finish(with: .failure(error))
-            return
-        }
-        guard let pixelBuffer = photo.pixelBuffer else {
-            finish(with: .failure(CameraError.missingPixelBuffer))
-            return
-        }
-        let dimensions = photo.resolvedSettings.photoDimensions
-        finish(with: .success(PhotoPayload(pixelBuffer: pixelBuffer, width: Int(dimensions.width), height: Int(dimensions.height))))
-    }
-
-    private func finish(with result: Result<PhotoPayload, Error>) {
-        guard let continuation else { return }
-        self.continuation = nil
-        continuation.resume(with: result)
-        Self.lock.lock()
-        Self.retainedDelegates.removeValue(forKey: ObjectIdentifier(self))
-        Self.lock.unlock()
-    }
-}
-
 private final class CameraInterruptionObserver: @unchecked Sendable {
     private var tokens = [NSObjectProtocol]()
 
@@ -825,3 +713,4 @@ private final class CameraInterruptionObserver: @unchecked Sendable {
         tokens.forEach(NotificationCenter.default.removeObserver)
     }
 }
+#endif
