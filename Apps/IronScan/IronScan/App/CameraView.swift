@@ -1,533 +1,90 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import SwiftUI
 import UIKit
 
+/// The camera surface deliberately renders only the live preview and alignment guide.
+/// Guidance, status, and capture controls belong to the surrounding scan layout so
+/// they never cover the tissue target.
 struct CameraView: View {
+    @ObservedObject var cameraManager: MedicalCameraManager
     let source: CameraPreviewSource
     let lensPosition: CameraLensPosition
     let captureOrientation: CaptureOrientation
     let tissue: TissueSite
-    let statusText: String
-    let eyeGuidanceText: String?
-    let isBusy: Bool
-    let supportsCameraToggle: Bool
-    let isTorchAvailable: Bool
-    let isTorchEnabled: Bool
-    let isSwitchingCamera: Bool
-    let showsMotionWarning: Bool
-    let autoCapturePhase: AutoCapturePhase
-    let imageQualityAssessment: ImageQualityGatekeeper.Assessment
     let onOrientationChange: (CaptureOrientation) -> Void
-    let onClose: () -> Void
-    let onToggleTorch: () -> Void
-    let onToggleCamera: () -> Void
-    let onManualCapture: () -> Void
-
-    @Namespace private var scanTransition
-    @State private var showsResultCards = false
-
-    private let shutterImpact = UIImpactFeedbackGenerator(style: .medium)
 
     var body: some View {
         ZStack {
-            CameraPreviewView(
-                source: source,
-                lensPosition: lensPosition,
-                onOrientationChange: onOrientationChange
-            )
-            .ignoresSafeArea()
-
-            viewfinderOverlay
-                .ignoresSafeArea()
-
-            VStack(spacing: 0) {
-                topBar
-
-                Spacer(minLength: 0)
-
-                bottomBar
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        }
-        .environment(\.colorScheme, .dark)
-        .toolbar(.hidden, for: .tabBar)
-        .onAppear {
-            showsResultCards = shouldShowResultCards
-            startCameraSessionIfNeeded()
-        }
-        .onDisappear {
-            stopCameraSessionIfNeeded()
-        }
-        .onChange(of: shouldShowResultCards) { _, newValue in
-            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                showsResultCards = newValue
-            }
-        }
-        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: tissue)
-        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: imageQualityAssessment)
-        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: autoCapturePhase)
-    }
-
-    private var topBar: some View {
-        VStack(spacing: 14) {
-            HStack(spacing: 12) {
-                secondaryControlButton(systemName: "xmark", action: onClose)
-                    .accessibilityLabel("Abort scan and return home")
-
-                Spacer(minLength: 0)
-
-                if supportsCameraToggle {
-                    secondaryControlButton(
-                        systemName: "camera.rotate.fill",
-                        action: handleCameraToggle,
-                        enabled: !isSwitchingCamera
-                    )
-                    .accessibilityLabel("Switch camera")
-                }
-
-                secondaryControlButton(
-                    systemName: isTorchEnabled ? "flashlight.on.fill" : "flashlight.off.fill",
-                    action: onToggleTorch,
-                    enabled: isTorchAvailable
+            if !source.isSimulated {
+                CameraPreviewView(
+                    source: source,
+                    lensPosition: lensPosition,
+                    onOrientationChange: onOrientationChange
                 )
-                .accessibilityLabel(isTorchEnabled ? "Turn flashlight off" : "Turn flashlight on")
-            }
-
-            VStack(spacing: 12) {
-                VStack(spacing: 4) {
-                    Text(currentTitle)
-                        .font(.headline.weight(.bold))
-                        .foregroundStyle(.primary)
-                        .multilineTextAlignment(.center)
-
-                    Text(stepLabel)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 12)
-                .cameraFloatingGlass(in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-
-                if let warningText {
-                    warningTag(text: warningText)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                }
-            }
-        }
-        .padding(.horizontal, 20)
-        .padding(.top, 16)
-    }
-
-    private var bottomBar: some View {
-        VStack(spacing: 14) {
-            if showsResultCards {
-                compactDiagnosticStrip
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            } else if let frame = cameraManager.currentFrame {
+                Image(uiImage: frame)
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea()
             } else {
-                compactScanningStrip
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                Color.black.ignoresSafeArea()
             }
 
-            HStack {
-                Spacer(minLength: 0)
-
-                Button {
-                    shutterImpact.impactOccurred()
-                    onManualCapture()
-                } label: {
-                    VStack(spacing: 10) {
-                        ShutterButton(phase: autoCapturePhase)
-
-                        Text(isBusy ? "Processing…" : "Capture")
-                            .font(.headline.weight(.bold))
-                            .foregroundStyle(.primary)
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
-                }
-                .primaryGlassButtonStyle()
-                .disabled(isBusy)
-                .accessibilityLabel("Capture \(tissue.displayName) image")
-
-                Spacer(minLength: 0)
-            }
+            alignmentGuide
         }
-        .padding(.horizontal, 20)
-        .padding(.bottom, 26)
-    }
-
-    private var compactScanningStrip: some View {
-        VStack(spacing: 10) {
-            diagnosticTag(
-                title: scanningTitle,
-                subtitle: statusText,
-                systemName: scanningSymbol,
-                tint: scanTint,
-                glassID: "scanTag"
-            )
-
-            if tissue == .eye, let eyeGuidanceText {
-                diagnosticTag(
-                    title: "Guidance",
-                    subtitle: eyeGuidanceText,
-                    systemName: "viewfinder",
-                    tint: IronTheme.cardGlass.opacity(0.24),
-                    glassID: "scanGuidance"
-                )
-            } else {
-                diagnosticTag(
-                    title: lightingText,
-                    subtitle: lightingDetailText,
-                    systemName: lightingSymbol,
-                    tint: outlineTint.opacity(0.22),
-                    glassID: "scanQuality"
-                )
-            }
+        .aspectRatio(captureOrientation.isPortrait ? 9 / 16 : 16 / 9, contentMode: .fit)
+        .frame(maxWidth: .infinity)
+        .background(Color.black)
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(Color.white.opacity(0.24), lineWidth: 1)
+        }
+        .shadow(color: Color.black.opacity(0.16), radius: 16, y: 8)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Camera alignment guide for \(tissue.displayName)")
+        .onAppear(perform: syncOrientation)
+        .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+            syncOrientation()
         }
     }
 
-    private var compactDiagnosticStrip: some View {
-        VStack(spacing: 10) {
-            resultCard(
-                title: resultTitle,
-                subtitle: resultSubtitle,
-                systemName: "checkmark.circle.fill",
-                tint: outlineTint.opacity(0.22),
-                glassID: "scanTag"
-            )
-
-            diagnosticTag(
-                title: "Capture",
-                subtitle: captureStateText,
-                systemName: "camera.macro",
-                tint: IronTheme.cardGlass.opacity(0.22),
-                glassID: "scanGuidance"
-            )
+    private func syncOrientation() {
+        guard let scene = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive }),
+              let orientation = CaptureOrientation(interfaceOrientation: scene.interfaceOrientation) else {
+            return
         }
+        onOrientationChange(orientation)
     }
 
-    private var viewfinderOverlay: some View {
+    private var alignmentGuide: some View {
         GeometryReader { geometry in
             let rect = tissue.cameraTargetRect(in: geometry.size)
-            let path = tissue.cameraTargetPath(in: rect)
-
-            ZStack {
-                path
-                    .stroke(outlineTint.opacity(0.26), lineWidth: 28)
-                    .blur(radius: 18)
-
-                path
-                    .stroke(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.86),
-                                outlineTint,
-                                Color.white.opacity(0.76)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        style: StrokeStyle(lineWidth: 4.5, lineCap: .round, dash: [16, 10])
-                    )
-
-                GlowingCorners(rect: rect, tint: outlineTint)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            tissue.cameraTargetPath(in: rect)
+                .stroke(
+                    Color.white.opacity(0.82),
+                    style: StrokeStyle(lineWidth: 3, dash: [10, 7])
+                )
         }
         .allowsHitTesting(false)
-    }
-
-    private func diagnosticTag(
-        title: String,
-        subtitle: String,
-        systemName: String,
-        tint: Color,
-        glassID: String
-    ) -> some View {
-        HStack(spacing: 10) {
-            Image(systemName: systemName)
-                .font(.headline.weight(.semibold))
-                .foregroundStyle(.primary)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.primary)
-
-                Text(subtitle)
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-            }
-
-            Spacer(minLength: 0)
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .cameraFloatingGlass(
-            in: Capsule(),
-            tint: tint,
-            interactive: true
-        )
-        .cameraGlassEffectID(glassID, in: scanTransition)
-    }
-
-    private func resultCard(
-        title: String,
-        subtitle: String,
-        systemName: String,
-        tint: Color,
-        glassID: String
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label(title, systemImage: systemName)
-                .font(.subheadline.weight(.bold))
-                .foregroundStyle(.primary)
-
-            Text(subtitle)
-                .font(.caption.weight(.medium))
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .cameraFloatingGlass(
-            in: RoundedRectangle(cornerRadius: 20, style: .continuous),
-            tint: tint,
-            interactive: true
-        )
-        .cameraGlassEffectID(glassID, in: scanTransition)
-    }
-
-    private func warningTag(text: String) -> some View {
-        Text(text)
-            .font(.caption.weight(.bold))
-            .foregroundStyle(.primary)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .frame(maxWidth: .infinity, alignment: .center)
-            .criticalCameraGlass(in: Capsule())
-    }
-
-    private func secondaryControlButton(
-        systemName: String,
-        action: @escaping () -> Void,
-        enabled: Bool = true
-    ) -> some View {
-        Button(action: action) {
-            Image(systemName: systemName)
-                .font(.headline.weight(.bold))
-                .foregroundStyle(enabled ? .primary : .secondary)
-                .frame(width: 46, height: 46)
-        }
-        .secondaryGlassButtonStyle()
-        .disabled(!enabled)
-    }
-
-    private func handleCameraToggle() {
-        guard supportsCameraToggle, !isSwitchingCamera else { return }
-        onToggleCamera()
-    }
-
-    private func startCameraSessionIfNeeded() {
-        guard let session = source.session, !session.isRunning else { return }
-        DispatchQueue.global(qos: .userInitiated).async {
-            session.startRunning()
-        }
-    }
-
-    private func stopCameraSessionIfNeeded() {
-        guard let session = source.session, session.isRunning else { return }
-        DispatchQueue.global(qos: .userInitiated).async {
-            session.stopRunning()
-        }
-    }
-
-    private var shouldShowResultCards: Bool {
-        if case .readyToCapture = autoCapturePhase {
-            return true
-        }
-        return false
-    }
-
-    private var warningText: String? {
-        if showsMotionWarning {
-            return "Move Closer"
-        }
-
-        switch imageQualityAssessment {
-        case .tooDark:
-            return "Add More Light"
-        case .tooBlurry:
-            return "Hold Steady"
-        case .optimal:
-            return nil
-        }
-    }
-
-    private var scanningTitle: String {
-        switch autoCapturePhase {
-        case .disabled:
-            "Manual Capture"
-        case .seeking:
-            "Analyzing…"
-        case let .holding(progress):
-            "Focusing \(Int(progress * 100))%"
-        case let .countdown(secondsRemaining, _):
-            "Capturing in \(secondsRemaining)…"
-        case .readyToCapture:
-            "Ready"
-        case let .reset(message):
-            message
-        }
-    }
-
-    private var scanningSymbol: String {
-        switch autoCapturePhase {
-        case .readyToCapture:
-            "checkmark.circle.fill"
-        case .countdown:
-            "timer"
-        case .holding:
-            "scope"
-        case .reset:
-            "arrow.trianglehead.clockwise"
-        case .disabled, .seeking:
-            "waveform.and.magnifyingglass"
-        }
-    }
-
-    private var resultTitle: String {
-        switch imageQualityAssessment {
-        case .optimal:
-            "Ready to Capture"
-        case .tooDark:
-            "Lighting Needs Work"
-        case .tooBlurry:
-            "Refocus Before Capture"
-        }
-    }
-
-    private var resultSubtitle: String {
-        switch imageQualityAssessment {
-        case .optimal:
-            return "The framing and clarity look good for the next capture."
-        case .tooDark:
-            return "Bring the subject into brighter light before continuing."
-        case .tooBlurry:
-            return "Pause movement briefly so the next frame lands sharply."
-        }
-    }
-
-    private var captureStateText: String {
-        switch autoCapturePhase {
-        case .disabled:
-            "Tap the shutter to capture manually."
-        case .seeking:
-            "Searching for stable framing."
-        case .holding:
-            "Maintaining alignment."
-        case .countdown:
-            "Auto-capture is almost ready."
-        case .readyToCapture:
-            "The next frame is primed for capture."
-        case let .reset(message):
-            message
-        }
-    }
-
-    private var lightingDetailText: String {
-        switch imageQualityAssessment {
-        case .optimal:
-            "Lighting and sharpness look stable."
-        case .tooDark:
-            "Scene is underexposed."
-        case .tooBlurry:
-            "Frame motion is too high."
-        }
-    }
-
-    private var scanTint: Color {
-        switch autoCapturePhase {
-        case .readyToCapture:
-            IronTheme.sageAccent.opacity(0.24)
-        case .countdown:
-            Color.green.opacity(0.22)
-        case .holding:
-            Color.blue.opacity(0.20)
-        case .reset:
-            Color.orange.opacity(0.22)
-        case .disabled, .seeking:
-            IronTheme.cardGlass.opacity(0.24)
-        }
-    }
-
-    private var outlineTint: Color {
-        switch imageQualityAssessment {
-        case .optimal:
-            IronTheme.sageAccent
-        case .tooDark:
-            IronTheme.terracottaPrimary
-        case .tooBlurry:
-            Color.yellow
-        }
-    }
-
-    private var currentTitle: String {
-        switch tissue {
-        case .eye:
-            "Position Your Eye Inside the Frame"
-        case .nail:
-            "Position Your Nail Inside the Frame"
-        case .tongue:
-            "Position Your Tongue Inside the Frame"
-        }
-    }
-
-    private var stepLabel: String {
-        switch tissue {
-        case .eye:
-            "Step 1 of 3"
-        case .nail:
-            "Step 2 of 3"
-        case .tongue:
-            "Step 3 of 3"
-        }
-    }
-
-    private var lightingSymbol: String {
-        switch imageQualityAssessment {
-        case .optimal:
-            "sun.max.fill"
-        case .tooDark:
-            "sun.haze.fill"
-        case .tooBlurry:
-            "camera.aperture"
-        }
-    }
-
-    private var lightingText: String {
-        switch imageQualityAssessment {
-        case .optimal:
-            "EV OK"
-        case .tooDark:
-            "LOW EV"
-        case .tooBlurry:
-            "BLUR"
-        }
+        .accessibilityHidden(true)
     }
 }
 
-private struct ShutterButton: View {
+struct ScanShutterButton: View {
     let phase: AutoCapturePhase
+    let isDisabled: Bool
 
     var body: some View {
         ZStack {
             Circle()
-                .stroke(Color.white.opacity(0.86), lineWidth: 6)
-                .frame(width: 86, height: 86)
+                .stroke(
+                    isDisabled ? IronTheme.textMuted.opacity(0.45) : IronTheme.terracottaPrimary,
+                    lineWidth: 5
+                )
+                .frame(width: 82, height: 82)
 
             if let progress {
                 Circle()
@@ -537,18 +94,24 @@ private struct ShutterButton: View {
                         style: StrokeStyle(lineWidth: 6, lineCap: .round)
                     )
                     .rotationEffect(.degrees(-90))
-                    .frame(width: 96, height: 96)
-
-                Text(progress.label)
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.white)
-                    .offset(y: 64)
+                    .frame(width: 94, height: 94)
             }
 
             Circle()
-                .fill(Color.white)
-                .frame(width: 64, height: 64)
+                .fill(isDisabled ? IronTheme.textMuted.opacity(0.35) : IronTheme.terracottaPrimary)
+                .frame(width: 62, height: 62)
+
+            if let label = progress?.label {
+                Text(label)
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.white)
+            } else {
+                Image(systemName: "camera.fill")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(.white)
+            }
         }
+        .frame(width: 104, height: 104)
     }
 
     private var progress: (value: Double, color: Color, label: String)? {
@@ -561,112 +124,6 @@ private struct ShutterButton: View {
             (1, .green, "Now")
         case .disabled, .seeking, .reset:
             nil
-        }
-    }
-}
-
-private struct GlowingCorners: View {
-    let rect: CGRect
-    let tint: Color
-
-    var body: some View {
-        let length = min(rect.width, rect.height) * 0.18
-
-        Group {
-            corner(at: CGPoint(x: rect.minX, y: rect.minY), xSign: 1, ySign: 1, length: length)
-            corner(at: CGPoint(x: rect.maxX, y: rect.minY), xSign: -1, ySign: 1, length: length)
-            corner(at: CGPoint(x: rect.minX, y: rect.maxY), xSign: 1, ySign: -1, length: length)
-            corner(at: CGPoint(x: rect.maxX, y: rect.maxY), xSign: -1, ySign: -1, length: length)
-        }
-        .foregroundStyle(tint)
-        .shadow(color: tint.opacity(0.4), radius: 8)
-    }
-
-    private func corner(
-        at point: CGPoint,
-        xSign: CGFloat,
-        ySign: CGFloat,
-        length: CGFloat
-    ) -> some View {
-        Path { path in
-            path.move(to: CGPoint(x: point.x + xSign * length, y: point.y))
-            path.addLine(to: point)
-            path.addLine(to: CGPoint(x: point.x, y: point.y + ySign * length))
-        }
-        .stroke(style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
-    }
-}
-
-private struct CameraFloatingGlassModifier<S: InsettableShape>: ViewModifier {
-    let shape: S
-    let tint: Color
-    let interactive: Bool
-
-    @ViewBuilder
-    func body(content: Content) -> some View {
-        if #available(iOS 26.0, *) {
-            if interactive {
-                content.glassEffect(.regular.tint(tint).interactive(), in: shape)
-            } else {
-                content.glassEffect(.regular.tint(tint), in: shape)
-            }
-        } else {
-            content
-                .background(.ultraThinMaterial, in: shape)
-                .background(tint.opacity(interactive ? 0.64 : 0.56), in: shape)
-                .overlay {
-                    shape.stroke(Color.white.opacity(0.28), lineWidth: 0.8)
-                }
-        }
-    }
-}
-
-private struct CameraGlassEffectIDModifier: ViewModifier {
-    let id: String
-    let namespace: Namespace.ID
-
-    @ViewBuilder
-    func body(content: Content) -> some View {
-        if #available(iOS 26.0, *) {
-            content.glassEffectID(id, in: namespace)
-        } else {
-            content
-        }
-    }
-}
-
-private extension View {
-    func cameraFloatingGlass<S: InsettableShape>(
-        in shape: S,
-        tint: Color = IronTheme.cardGlass,
-        interactive: Bool = false
-    ) -> some View {
-        modifier(CameraFloatingGlassModifier(shape: shape, tint: tint, interactive: interactive))
-    }
-
-    func criticalCameraGlass<S: InsettableShape>(in shape: S) -> some View {
-        cameraFloatingGlass(in: shape, tint: IronTheme.criticalGlassTint, interactive: true)
-    }
-
-    func cameraGlassEffectID(_ id: String, in namespace: Namespace.ID) -> some View {
-        modifier(CameraGlassEffectIDModifier(id: id, namespace: namespace))
-    }
-
-    @ViewBuilder
-    func primaryGlassButtonStyle() -> some View {
-        if #available(iOS 26.0, *) {
-            buttonStyle(.glassProminent)
-        } else {
-            liquidGlassButtonStyle(prominent: true)
-        }
-    }
-
-    @ViewBuilder
-    func secondaryGlassButtonStyle() -> some View {
-        if #available(iOS 26.0, *) {
-            buttonStyle(.glass)
-        } else {
-            liquidGlassButtonStyle()
         }
     }
 }

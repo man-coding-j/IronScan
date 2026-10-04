@@ -99,6 +99,16 @@ final class ScanResultSummaryTests: XCTestCase {
         XCTAssertEqual(RiskDecision.unableToAssess.displayTitle, "Unable to assess")
     }
 
+    func testPrototypeFallbackIsClearlySyntheticAndNonDiagnostic() {
+        let summary = ScanResultSummary.prototypeFallback(isSimulatorMode: true)
+
+        XCTAssertEqual(summary.title, "Demo estimate: 12.4 g/dL")
+        XCTAssertEqual(summary.decision, .unableToAssess)
+        XCTAssertNil(summary.riskScore)
+        XCTAssertTrue(summary.detail.contains("Synthetic Simulator fallback"))
+        XCTAssertTrue(summary.detail.contains("not a participant result"))
+    }
+
     func testPhysicalCaptureRemainsUnableWithoutValidatedCalibration() {
         let segmentation = SegmentationResult(
             probabilityMask: [0.9],

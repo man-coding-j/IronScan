@@ -22,7 +22,7 @@ enum LiveScanningState: Equatable, Sendable {
         case .idle:
             "Align tongue inside the oval…"
         case .aligning:
-            "Locking focus and adjusting lighting…"
+            "Adjusting focus and lighting…"
         case let .scanning(progress) where progress < 0.67:
             "Analyzing mucosal color profile…"
         case .scanning:
