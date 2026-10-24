@@ -12,27 +12,38 @@ struct CameraView: View {
     let captureOrientation: CaptureOrientation
     let tissue: TissueSite
     let onOrientationChange: (CaptureOrientation) -> Void
+    var previewAspectRatio: CGFloat? = nil
 
     var body: some View {
-        ZStack {
-            if !source.isSimulated {
-                CameraPreviewView(
-                    source: source,
-                    lensPosition: lensPosition,
-                    onOrientationChange: onOrientationChange
-                )
-            } else if let frame = cameraManager.currentFrame {
-                Image(uiImage: frame)
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea()
-            } else {
-                Color.black.ignoresSafeArea()
-            }
+        GeometryReader { geometry in
+            ZStack {
+                if TutorialCapture.isEnabled {
+                    Color.brandTeal.opacity(0.8)
+                    Text("Simulator preview · no camera feed")
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.8))
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                        .padding(.bottom, 20)
+                } else if !source.isSimulated {
+                    CameraPreviewView(
+                        source: source,
+                        lensPosition: lensPosition,
+                        onOrientationChange: onOrientationChange
+                    )
+                } else if let frame = cameraManager.currentFrame {
+                    Image(uiImage: frame)
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    Color.black
+                }
+                alignmentGuide
 
-            alignmentGuide
+            }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .clipped()
         }
-        .aspectRatio(captureOrientation.isPortrait ? 9 / 16 : 16 / 9, contentMode: .fit)
+        .aspectRatio(previewAspectRatio ?? (captureOrientation.isPortrait ? 9 / 16 : 16 / 9), contentMode: .fit)
         .frame(maxWidth: .infinity)
         .background(Color.black)
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
@@ -64,7 +75,7 @@ struct CameraView: View {
             let rect = tissue.cameraTargetRect(in: geometry.size)
             tissue.cameraTargetPath(in: rect)
                 .stroke(
-                    Color.white.opacity(0.82),
+                    Color.brandMarigold,
                     style: StrokeStyle(lineWidth: 3, dash: [10, 7])
                 )
         }
@@ -158,7 +169,7 @@ private extension TissueSite {
     func cameraTargetPath(in rect: CGRect) -> Path {
         switch self {
         case .eye:
-            Path(roundedRect: rect, cornerRadius: rect.height / 2)
+            Path(ellipseIn: rect)
         case .nail:
             Path(roundedRect: rect, cornerRadius: rect.width * 0.14)
         case .tongue:

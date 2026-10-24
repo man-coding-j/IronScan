@@ -54,6 +54,20 @@ final class DesignSystemAndHistoryTests: XCTestCase {
         XCTAssertTrue(copy.contains("laboratory test"))
     }
 
+    func testTutorialCaptureFixtureIsConsistentAndFictional() {
+        #if targetEnvironment(simulator)
+        let records = TutorialCapture.records
+        XCTAssertEqual(records.count, 7)
+        XCTAssertEqual(records.first?.estimatedHemoglobin, 11.8)
+        XCTAssertEqual(records.first?.severity, .mild)
+        XCTAssertTrue(records.allSatisfy { $0.summary == "Illustrative sample" })
+        XCTAssertTrue(records.allSatisfy(\.isSyncedToCloud))
+        XCTAssertEqual(Set(records.map(\.id)).count, 7)
+        XCTAssertEqual(records.map(\.capturedAt), records.map(\.capturedAt).sorted(by: >))
+        XCTAssertFalse(TutorialCapture.isEnabled, "Capture mode must require an explicit simulator launch argument.")
+        #endif
+    }
+
     private func makeResult(score: Double) -> TriangulationResult {
         TriangulationResult(
             summary: .lowerObservedRisk,

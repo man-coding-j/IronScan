@@ -1,3 +1,5 @@
+// Explicit dependency for Xcode’s app-intents metadata extraction phase.
+import AppIntents
 import SwiftUI
 
 class AppDelegate: NSObject, UIApplicationDelegate {
@@ -17,7 +19,10 @@ final class IronScanAppDependencies: ObservableObject {
     @Published var isReady = false
 
     func initializeHeavyDependencies() async {
-        history = ScanHistoryStore()
+        let store = ScanHistoryStore()
+        ScanHistoryManager.shared.connectSyncStore(store)
+        await ScanHistoryManager.shared.loadData()
+        history = store
         nearbyCare = LocationManager()
         multiTissueInference = MultiTissueInferenceActor()
         healthKit = HealthKitManager()
@@ -31,12 +36,15 @@ struct IronScanApp: App {
 
     @StateObject private var dependencies = IronScanAppDependencies()
     @StateObject var authManager = AuthManager()
-    @StateObject var historyManager = ScanHistoryManager()
+    @StateObject private var historyManager = ScanHistoryManager.shared
 
     var body: some Scene {
         WindowGroup {
             Group {
-                if dependencies.isReady {
+                if TutorialCapture.isEnabled {
+                    TutorialCaptureRoot()
+                        .defaultAppStorage(TutorialCapture.defaults)
+                } else if dependencies.isReady {
                     if !authManager.isAuthenticated {
                         LoginView()
                             .transition(appRouteTransition)

@@ -1,4 +1,5 @@
 import SwiftUI
+import PhotosUI
 import UIKit
 
 struct MultiScanHubView: View {
@@ -24,7 +25,7 @@ struct MultiScanHubView: View {
 
     var body: some View {
         ZStack {
-            IronTheme.beigeBackground
+            MarigoldRibbonBackground()
                 .ignoresSafeArea()
 
             if !biometricProfileIsComplete {
@@ -51,10 +52,10 @@ struct MultiScanHubView: View {
     }
 
     private var biometricProfileIsComplete: Bool {
-        (1...120).contains(userAge)
+        TutorialCapture.isEnabled || ((1...120).contains(userAge)
             && UserBiologicalSex(rawValue: userBiologicalSex) != nil
             && FitzpatrickSkinPhototype(rawValue: fitzpatrickSkinPhototype) != .notProvided
-            && LightingEnvironment(rawValue: lightingEnvironment) != .notProvided
+            && LightingEnvironment(rawValue: lightingEnvironment) != .notProvided)
     }
 
     private var biometricsRequiredState: some View {
@@ -63,7 +64,7 @@ struct MultiScanHubView: View {
                 .font(.system(size: 42, weight: .semibold))
                 .foregroundStyle(IronTheme.terracottaPrimary)
             Text("Complete Your Biometrics First")
-                .font(.title2.weight(.bold))
+                .font(IronTheme.editorialFont(.title2, weight: .bold))
             Text("Age, biological sex, skin phototype, and lighting context are required before the research scan can begin.")
                 .font(.subheadline)
                 .foregroundStyle(IronTheme.textSecondary)
@@ -178,7 +179,7 @@ struct MultiScanHubView: View {
                 }
                 .padding(16)
             }
-            .background(IronTheme.beigeBackground.ignoresSafeArea())
+            .background(MarigoldRibbonBackground())
         }
     }
 
@@ -216,7 +217,7 @@ struct MultiScanHubView: View {
                 .foregroundStyle(IronTheme.terracottaPrimary)
 
             Text("Camera flow closed")
-                .font(.title3.weight(.bold))
+                .font(IronTheme.editorialFont(.title3, weight: .bold))
                 .foregroundStyle(IronTheme.textPrimary)
 
             Text("Start again when you're ready. The next scan will begin fresh at the eye step.")
@@ -267,6 +268,7 @@ private struct MultiScanSessionView: View {
             contentBody
             .toolbar(.hidden, for: .navigationBar)
             .task {
+                guard !TutorialCapture.isEnabled else { return }
                 if viewModel.permissionStatus == .denied {
                     presentedAlert = .cameraPermission
                 }
@@ -274,7 +276,7 @@ private struct MultiScanSessionView: View {
             }
             .onDisappear { viewModel.stop() }
             .onChange(of: scenePhase) { _, phase in
-                if phase == .active { viewModel.refreshPermissionAndRestart() }
+                if phase == .active && !TutorialCapture.isEnabled { viewModel.refreshPermissionAndRestart() }
             }
             .onChange(of: viewModel.permissionStatus) { _, status in
                 if status == .denied {
@@ -329,10 +331,10 @@ private struct MultiScanSessionView: View {
     @ViewBuilder
     private var contentBody: some View {
         ZStack {
-            IronTheme.beigeBackground
+            MarigoldRibbonBackground()
                 .ignoresSafeArea()
 
-            if viewModel.showsPermissionInstructions {
+            if viewModel.showsPermissionInstructions && !TutorialCapture.isEnabled {
                 permissionInstructions
             } else if viewModel.triangulationResult != nil {
                 completedCard
@@ -378,7 +380,11 @@ private struct MultiScanSessionView: View {
     private var cameraExperience: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: 14) {
+                Text("New Scan Suite")
+                    .font(IronTheme.roundedFont(.largeTitle, weight: .bold))
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 scanTopBar
+                    .zIndex(999)
                 guidanceCard
 
                 CameraView(
@@ -392,11 +398,13 @@ private struct MultiScanSessionView: View {
 
                 bottomControls
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 10)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
             .padding(.bottom, 28)
         }
-        .background(IronTheme.beigeBackground.ignoresSafeArea())
+        .background(MarigoldRibbonBackground())
+        .frame(maxWidth: .infinity)
         .scrollBounceBehavior(.basedOnSize)
     }
 
@@ -411,12 +419,16 @@ private struct MultiScanSessionView: View {
 
                 Spacer(minLength: 0)
 
-                if viewModel.supportsCameraToggle {
+                if viewModel.supportsCameraToggle || TutorialCapture.isEnabled {
                     scanControlButton(
                         systemName: "camera.rotate.fill",
                         accessibilityLabel: "Switch camera",
-                        isEnabled: !viewModel.isSwitchingCamera,
-                        action: viewModel.toggleCamera
+                        isEnabled: viewModel.canToggleCamera,
+                        action: {
+                            print("🎥 Switch camera button tapped (scan controls).")
+                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                            viewModel.toggleCamera()
+                        }
                     )
                 }
 
@@ -671,6 +683,7 @@ private struct MultiScanSessionView: View {
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(isEnabled ? IronTheme.textPrimary : IronTheme.textMuted)
                 .frame(width: 44, height: 44)
+                .contentShape(Circle())
                 .background(Color.white.opacity(0.52), in: Circle())
         }
         .buttonStyle(.plain)
@@ -684,9 +697,9 @@ private struct MultiScanSessionView: View {
                 VStack(spacing: 6) {
                     Text("\(step.rawValue)")
                         .font(.caption.weight(.bold))
-                        .foregroundStyle(stepColor(for: step))
+                        .foregroundStyle(viewModel.currentStep == step ? Color.brandTeal : stepColor(for: step))
                         .frame(width: 26, height: 26)
-                        .background(stepColor(for: step).opacity(0.14), in: Circle())
+                        .background(viewModel.currentStep == step ? Color.brandMarigold : stepColor(for: step).opacity(0.14), in: Circle())
                     Text(step.progressTitle)
                         .font(.caption2.weight(.bold))
                         .foregroundStyle(viewModel.currentStep == step ? IronTheme.textPrimary : IronTheme.textSecondary)
@@ -705,7 +718,7 @@ private struct MultiScanSessionView: View {
                 .font(.system(size: 50))
                 .foregroundStyle(IronTheme.sageAccent)
             Text("Multi-site scan complete")
-                .font(.title2.weight(.bold))
+                .font(IronTheme.editorialFont(.title2, weight: .bold))
                 .foregroundStyle(IronTheme.textPrimary)
             Text("Review the combined research summary or begin a new scan.")
                 .font(.subheadline)
@@ -734,7 +747,7 @@ private struct MultiScanSessionView: View {
                 .font(.system(size: 42))
                 .foregroundStyle(IronTheme.terracottaPrimary)
             Text(viewModel.permissionStatus == .restricted ? "Camera access is restricted" : "Camera access is required for the three-step scan")
-                .font(.title3.weight(.bold))
+                .font(IronTheme.editorialFont(.title3, weight: .bold))
                 .foregroundStyle(IronTheme.textPrimary)
                 .multilineTextAlignment(.center)
             Text(viewModel.permissionStatus == .restricted
@@ -798,6 +811,8 @@ private struct PersistentScanSuiteView: View {
     @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject var historyManager: ScanHistoryManager
     @StateObject private var viewModel: MultiScanHubViewModel
+    @State private var selectedPickerItems: [PhotosPickerItem] = []
+    @State private var showsImportPulse = false
     private let onCompleted: (TriangulationResult) -> Void
     private let onAbort: () -> Void
 
@@ -817,21 +832,31 @@ private struct PersistentScanSuiteView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if viewModel.showsPermissionInstructions {
-                    permissionView
-                } else {
-                    scanSuite
-                }
+                scanSuite
             }
-            .background(IronTheme.beigeBackground.ignoresSafeArea())
+            .background(MarigoldRibbonBackground())
             .toolbar(.hidden, for: .navigationBar)
             .task {
+                guard !TutorialCapture.isEnabled else { return }
                 viewModel.setAutoCaptureEnabled(false)
                 viewModel.start()
             }
-            .onDisappear { viewModel.stop() }
+            .onDisappear {
+                selectedPickerItems.removeAll()
+                viewModel.stop()
+            }
+            .onChange(of: selectedPickerItems) { _, items in
+                viewModel.importPhotos(items)
+                selectedPickerItems.removeAll()
+            }
+            .task(id: viewModel.importPulseID) {
+                guard viewModel.importPulseID > 0 else { return }
+                withAnimation(.easeOut(duration: 0.12)) { showsImportPulse = true }
+                do { try await Task.sleep(for: .milliseconds(600)) } catch { return }
+                withAnimation(.easeOut(duration: 0.18)) { showsImportPulse = false }
+            }
             .onChange(of: scenePhase) { _, phase in
-                if phase == .active { viewModel.refreshPermissionAndRestart() }
+                if phase == .active && !TutorialCapture.isEnabled { viewModel.refreshPermissionAndRestart() }
             }
             .onChange(of: viewModel.triangulationResult) { _, result in
                 if let result { onCompleted(result) }
@@ -862,65 +887,98 @@ private struct PersistentScanSuiteView: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(viewModel.currentStep.progressTitle)
-                        .font(.title3.weight(.bold))
+                        .font(IronTheme.editorialFont(.title3, weight: .bold))
                     Text(viewModel.currentStep.guideInstruction)
                         .font(.subheadline)
                         .foregroundStyle(IronTheme.textSecondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                CameraView(
-                    cameraManager: viewModel.cameraManager,
-                    source: viewModel.previewSource,
-                    lensPosition: viewModel.lensPosition,
-                    captureOrientation: viewModel.captureOrientation,
-                    tissue: viewModel.currentTissue,
-                    onOrientationChange: viewModel.updateCaptureOrientation
-                )
-                .overlay(alignment: .topTrailing) {
-                    VStack(spacing: 16) {
-                        if viewModel.supportsCameraToggle {
-                            Button(action: viewModel.toggleCamera) {
-                                Image(systemName: "arrow.triangle.2.circlepath.camera")
-                                    .font(.system(size: 20, weight: .semibold))
-                                    .foregroundStyle(.white)
-                                    .frame(width: 48, height: 48)
-                                    .background(.ultraThinMaterial, in: Circle())
-                            }
-                            .buttonStyle(.plain)
-                            .disabled(viewModel.isBusy || viewModel.isSwitchingCamera)
-                            .accessibilityLabel(viewModel.lensPosition == .front ? "Switch to back camera" : "Switch to front camera")
+                ZStack(alignment: .topTrailing) {
+                    CameraView(
+                        cameraManager: viewModel.cameraManager,
+                        source: viewModel.previewSource,
+                        lensPosition: viewModel.lensPosition,
+                        captureOrientation: viewModel.captureOrientation,
+                        tissue: viewModel.currentTissue,
+                        onOrientationChange: viewModel.updateCaptureOrientation,
+                        previewAspectRatio: viewModel.captureOrientation.isPortrait ? 3.0 / 4.0 : 16.0 / 9.0
+                    )
+                    .overlay {
+                        if viewModel.isRunningAssessment {
+                            BiometricScanOverlayView(imagesCleared: viewModel.assessmentImagesCleared)
+                                .clipShape(RoundedRectangle(cornerRadius: 24))
+                                .allowsHitTesting(false)
                         }
-
-                        if viewModel.lensPosition == .back && viewModel.isTorchAvailable {
+                    }
+                    .overlay(alignment: .top) {
+                        Text("Align \(viewModel.currentStep.progressTitle) Here")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 7)
+                            .background(.black.opacity(0.58), in: Capsule())
+                            .padding(12)
+                            .allowsHitTesting(false)
+                    }
+                    HStack(spacing: 10) {
+                        Button(action: {
+                            print("🔘 Switch camera button tapped directly!")
+                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                            viewModel.toggleCamera()
+                        }) {
+                            Image(systemName: "arrow.triangle.2.circlepath.camera")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundColor(.white)
+                                .frame(width: 48, height: 48)
+                                .contentShape(Circle())
+                                .background(.ultraThinMaterial, in: Circle())
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(!viewModel.canToggleCamera)
+                        .accessibilityLabel("Switch camera")
+                        .zIndex(999)
+                        if (viewModel.lensPosition == .back && viewModel.isTorchAvailable) || TutorialCapture.isEnabled {
                             Button(action: viewModel.toggleFlashlight) {
                                 Image(systemName: viewModel.isTorchEnabled ? "bolt.fill" : "bolt.slash.fill")
                                     .font(.system(size: 20, weight: .semibold))
                                     .foregroundStyle(.white)
                                     .frame(width: 48, height: 48)
+                                    .contentShape(Circle())
                                     .background(.ultraThinMaterial, in: Circle())
                             }
                             .buttonStyle(.plain)
-                            .disabled(viewModel.isBusy || viewModel.isSwitchingCamera)
+                            .disabled(TutorialCapture.isEnabled || viewModel.isBusy || viewModel.isSwitchingCamera)
                             .accessibilityLabel(viewModel.isTorchEnabled ? "Turn flashlight off" : "Turn flashlight on")
                         }
                     }
                     .padding(16)
-                }
-                .overlay(alignment: .top) {
-                    Text("Align \(viewModel.currentStep.progressTitle) Here")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 7)
-                        .background(.black.opacity(0.58), in: Capsule())
-                        .padding(12)
-                        .allowsHitTesting(false)
+                    .zIndex(999)
                 }
 
                 captureThumbnails
 
-                Text(viewModel.statusText)
+                PhotosPicker(selection: $selectedPickerItems, maxSelectionCount: 3,
+                             selectionBehavior: .ordered, matching: .images) {
+                    Label("Import 3 Photos",
+                          systemImage: "photo.on.rectangle.angled")
+                        .font(.headline)
+                        .foregroundStyle(Color.brandTeal)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(.ultraThinMaterial, in: Capsule())
+                        .overlay {
+                            Capsule().stroke(LinearGradient(
+                                colors: [.brandGlacier, .brandMarigold],
+                                startPoint: .topLeading, endPoint: .bottomTrailing
+                            ), lineWidth: 1)
+                        }
+                }
+                .disabled(viewModel.isBusy)
+
+                if viewModel.showsPermissionInstructions { permissionView }
+
+                Text(TutorialCapture.isEnabled ? "Simulator layout preview. Capture is disabled." : viewModel.statusText)
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(viewModel.lastError == nil ? IronTheme.textSecondary : .red)
                     .frame(maxWidth: .infinity)
@@ -940,8 +998,8 @@ private struct PersistentScanSuiteView: View {
                     .padding(.vertical, 15)
                 }
                 .buttonStyle(.plain)
-                .foregroundStyle(.white)
-                .background(Color.red, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .foregroundStyle(Color.brandSand)
+                .background(IronTheme.primaryGradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .disabled(viewModel.isBusy || viewModel.cameraState != .ready)
                 .opacity(viewModel.isBusy || viewModel.cameraState != .ready ? 0.48 : 1)
 
@@ -954,8 +1012,14 @@ private struct PersistentScanSuiteView: View {
                         .padding(.vertical, 15)
                 }
                 .buttonStyle(.plain)
-                .foregroundStyle(.white)
-                .background(Color.green, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .foregroundStyle(Color.brandSand)
+                .background(IronTheme.primaryGradient, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(Color.brandMarigold.opacity(0.55), lineWidth: 1)
+                }
+                .shadow(color: IronTheme.shadowColor, radius: 14, x: 0, y: 8)
                 .disabled(!viewModel.isSessionComplete || viewModel.isBusy)
                 .opacity(!viewModel.isSessionComplete || viewModel.isBusy ? 0.42 : 1)
 
@@ -964,8 +1028,12 @@ private struct PersistentScanSuiteView: View {
                     .foregroundStyle(IronTheme.textSecondary)
                     .multilineTextAlignment(.center)
             }
-            .padding(16)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
+            .padding(.bottom, 28)
         }
+        .frame(maxWidth: .infinity)
     }
 
     private var header: some View {
@@ -981,7 +1049,7 @@ private struct PersistentScanSuiteView: View {
 
             Spacer()
             Text("New Scan Suite")
-                .font(.title2.weight(.bold))
+                .font(IronTheme.editorialFont(.title2, weight: .bold))
             Spacer()
             Color.clear.frame(width: 42, height: 42)
         }
@@ -993,16 +1061,16 @@ private struct PersistentScanSuiteView: View {
                 VStack(spacing: 6) {
                     ZStack {
                         Circle()
-                            .fill(indicatorColor(for: step).opacity(0.16))
+                            .fill(viewModel.currentStep == step ? Color.brandMarigold : indicatorColor(for: step).opacity(0.16))
                             .frame(width: 30, height: 30)
                         if viewModel.sessionImages[step] != nil {
                             Image(systemName: "checkmark")
                                 .font(.caption.bold())
-                                .foregroundStyle(indicatorColor(for: step))
+                                .foregroundStyle(viewModel.currentStep == step ? Color.brandTeal : indicatorColor(for: step))
                         } else {
                             Text("\(step.rawValue)")
                                 .font(.caption.bold())
-                                .foregroundStyle(indicatorColor(for: step))
+                                .foregroundStyle(viewModel.currentStep == step ? Color.brandTeal : indicatorColor(for: step))
                         }
                     }
                     Text("\(step.rawValue). \(step.progressTitle)")
@@ -1022,7 +1090,8 @@ private struct PersistentScanSuiteView: View {
         HStack(spacing: 10) {
             ForEach(ScanStep.allCases) { step in
                 VStack(spacing: 5) {
-                    Group {
+                    GeometryReader { geometry in
+                      Group {
                         if let image = viewModel.sessionImages[step] {
                             Image(uiImage: image)
                                 .resizable()
@@ -1035,9 +1104,18 @@ private struct PersistentScanSuiteView: View {
                                 .background(Color.gray.opacity(0.12))
                         }
                     }
+                      .frame(width: geometry.size.width, height: geometry.size.height)
+                      .clipped()
+                    }
                     .frame(height: 72)
                     .frame(maxWidth: .infinity)
                     .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.brandMarigold, lineWidth: showsImportPulse ? 3 : 0)
+                            .shadow(color: .brandMarigold.opacity(showsImportPulse ? 0.8 : 0), radius: 8)
+                            .allowsHitTesting(false)
+                    }
 
                     Text(step.progressTitle)
                         .font(.caption2.weight(.semibold))
@@ -1071,9 +1149,95 @@ private struct PersistentScanSuiteView: View {
     }
 
     private func indicatorColor(for step: ScanStep) -> Color {
-        if viewModel.sessionImages[step] != nil { return .green }
-        if viewModel.currentStep == step { return .red }
+        if viewModel.sessionImages[step] != nil { return .brandTeal }
+        if viewModel.currentStep == step { return .brandMarigold }
         return .gray
+    }
+}
+
+/// A time-based presentation sequence, not a measurement of model progress.
+private struct BiometricScanOverlayView: View {
+    let imagesCleared: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var startedAt = Date()
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 60)) { timeline in
+            let elapsed = max(0, timeline.date.timeIntervalSince(startedAt))
+            let progress = min(elapsed / 2, imagesCleared ? 1 : 0.95)
+            GeometryReader { geometry in
+                ZStack {
+                    Color.brandTeal.opacity(0.25)
+                    if !reduceMotion {
+                        let sweep = (sin(elapsed * .pi - .pi / 2) + 1) / 2
+                        VStack(spacing: 0) {
+                            LinearGradient(colors: [.clear, .brandMarigold.opacity(0.32)],
+                                           startPoint: .top, endPoint: .bottom)
+                                .frame(height: 55)
+                            Color.brandMarigold.frame(height: 3)
+                                .shadow(color: .brandMarigold, radius: 10)
+                        }
+                        .position(x: geometry.size.width / 2,
+                                  y: 29 + sweep * max(0, geometry.size.height - 58))
+                    }
+                    VStack(spacing: 18) {
+                        Text("Research scan in progress")
+                            .font(IronTheme.editorialFont(.headline, weight: .bold))
+                            .foregroundStyle(Color.brandSand)
+                        HStack(alignment: .top, spacing: 10) {
+                            ForEach(ScanStep.allCases) { step in
+                                let complete = elapsed >= Double(step.rawValue) * 0.5
+                                VStack(spacing: 8) {
+                                    Image(systemName: complete ? "checkmark" : "circle.dotted")
+                                        .font(.headline)
+                                        .foregroundStyle(complete ? Color.brandMarigold : .brandGlacier)
+                                        .frame(width: 36, height: 36)
+                                        .background(.ultraThinMaterial, in: Circle())
+                                        .overlay {
+                                            Circle().stroke(Color.brandMarigold.opacity(complete ? 0.9 : 0.2), lineWidth: 2)
+                                        }
+                                        .scaleEffect(complete && !reduceMotion ? 1.08 + sin(elapsed * 8) * 0.04 : 1)
+                                        .animation(.spring(response: 0.3), value: complete)
+                                    Text("\(step.rawValue). \(step == .fingernail ? "Fingernail" : step.progressTitle)")
+                                        .font(.caption2.weight(.semibold))
+                                        .foregroundStyle(Color.brandSand)
+                                        .multilineTextAlignment(.center)
+                                }
+                                .frame(maxWidth: .infinity)
+                            }
+                        }
+                        Text(elapsed < 0.65 ? "Validating tissue regions with Apple Vision…" :
+                             elapsed < 1.4 ? "Running Sigmoid-normalized CoreML fusion…" :
+                             imagesCleared ? "Temporary photo references cleared from memory" : "Finishing local research scores…")
+                            .font(.caption)
+                            .foregroundStyle(Color.brandSand)
+                            .multilineTextAlignment(.center)
+                            .frame(minHeight: 36)
+                        GeometryReader { bar in
+                            Capsule().fill(Color.brandGlacier.opacity(0.2))
+                            Capsule().fill(Color.brandMarigold)
+                                .frame(width: bar.size.width * progress)
+                        }
+                        .frame(height: 6)
+                        Text("Processing on this device")
+                            .font(.caption2)
+                            .foregroundStyle(Color.brandSand)
+                    }
+                    .padding(20)
+                    .background(Color.brandTeal.opacity(0.88), in: RoundedRectangle(cornerRadius: 28))
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 28))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 28).stroke(LinearGradient(
+                            colors: [.brandMarigold, .brandGlacier, .brandMarigold.opacity(0.3)],
+                            startPoint: .topLeading, endPoint: .bottomTrailing
+                        ), lineWidth: 1)
+                    }
+                    .padding(16)
+                }
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Processing local research images. Please wait.")
     }
 }
 
@@ -1124,7 +1288,7 @@ struct ScanSummaryView: View {
                 }
                 .padding(20)
             }
-            .background(IronTheme.beigeBackground.ignoresSafeArea())
+            .background(MarigoldRibbonBackground())
             .navigationTitle("Scan Summary")
             .navigationBarTitleDisplayMode(.inline)
             .interactiveDismissDisabled()

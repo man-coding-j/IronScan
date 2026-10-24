@@ -6,6 +6,7 @@ struct CameraPreviewView: View {
     let source: CameraPreviewSource
     let lensPosition: CameraLensPosition
     let onOrientationChange: (CaptureOrientation) -> Void
+    @State private var sessionRevision = 0
 
     var body: some View {
         #if targetEnvironment(simulator)
@@ -15,8 +16,14 @@ struct CameraPreviewView: View {
             CaptureSessionPreview(
                 session: session,
                 lensPosition: lensPosition,
-                onOrientationChange: onOrientationChange
+                onOrientationChange: onOrientationChange,
+                sessionRevision: sessionRevision
             )
+            .onReceive(NotificationCenter.default.publisher(
+                for: AVCaptureSession.didStartRunningNotification, object: session
+            ).receive(on: DispatchQueue.main)) { _ in
+                sessionRevision += 1
+            }
         } else {
             SimulatedTonguePreview()
         }
@@ -30,21 +37,17 @@ private struct CaptureSessionPreview: UIViewRepresentable {
     let lensPosition: CameraLensPosition
     let onOrientationChange: (CaptureOrientation) -> Void
 
+    let sessionRevision: Int
+
     func makeUIView(context: Context) -> PreviewView {
         let view = PreviewView()
         if let previewLayer = view.previewLayer {
             previewLayer.session = session
-            if let connection = previewLayer.connection {
-                if #available(iOS 17.0, *) {
-                    connection.videoRotationAngle = 90
-                } else {
-                    connection.videoOrientation = .portrait
-                }
-            }
             previewLayer.videoGravity = .resizeAspectFill
         }
         view.onOrientationChange = onOrientationChange
         view.lensPosition = lensPosition
+        view.updateConnection()
         return view
     }
 
@@ -137,8 +140,10 @@ private final class PreviewView: UIView {
         guard let connection = previewLayer?.connection else { return }
         connection.isEnabled = true
         if #available(iOS 17.0, *) {
-            connection.videoRotationAngle = 90
-        } else {
+            if connection.isVideoRotationAngleSupported(90) {
+                connection.videoRotationAngle = 90
+            }
+        } else if connection.isVideoOrientationSupported {
             connection.videoOrientation = .portrait
         }
         previewLayer?.videoGravity = .resizeAspectFill

@@ -3,6 +3,7 @@ import CoreImage
 import Foundation
 import CoreML
 import ImageIO
+import PhotosUI
 import SwiftUI
 import UIKit
 import Vision
@@ -120,6 +121,35 @@ private actor PallorInferenceActor {
     }
 }
 
+/// Decoding and orientation normalization stay off the UI actor. The picker
+/// supplies bytes in memory; no application photo files are created.
+private actor ScanPhotoLoader {
+
+    func load(_ items: [PhotosPickerItem]) async throws -> [UIImage] {
+        var images: [UIImage] = []
+        for item in items {
+            try Task.checkCancellation()
+            guard let data = try await item.loadTransferable(type: Data.self),
+                  let source = CGImageSourceCreateWithData(data as CFData, nil),
+                  let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, [
+                    kCGImageSourceCreateThumbnailFromImageAlways: true,
+                    kCGImageSourceCreateThumbnailWithTransform: true,
+                    kCGImageSourceThumbnailMaxPixelSize: 2048,
+                    kCGImageSourceShouldCacheImmediately: true,
+                  ] as CFDictionary) else {
+                throw ScanValidationError.invalidImage
+            }
+            images.append(UIImage(cgImage: cgImage, scale: 1, orientation: .up))
+        }
+        return images
+    }
+}
+
+private enum SessionCapture {
+    case camera(CapturedFrame)
+    case imported(UIImage)
+}
+
 enum ScanStep: Int, CaseIterable, Identifiable, Sendable {
     case conjunctiva = 1
     case fingernail = 2
@@ -213,7 +243,7 @@ struct ScanAssessmentSummary: Equatable, Sendable {
 
 @MainActor
 final class MultiScanHubViewModel: ObservableObject {
-    @Published var cameraManager: MedicalCameraManager
+    let cameraManager: MedicalCameraManager
     private let historyManager: ScanHistoryManager
     @Published private(set) var currentStep: ScanStep = .conjunctiva
     @Published private(set) var completedOutputs: [TissueSite: TissueScreeningOutput] = [:]
@@ -230,6 +260,10 @@ final class MultiScanHubViewModel: ObservableObject {
     @Published private(set) var isTorchEnabled = false
     @Published private(set) var isSwitchingCamera = false
     @Published private(set) var isAnalyzing = false
+    @Published private(set) var isRunningAssessment = false
+    @Published private(set) var assessmentImagesCleared = false
+    @Published private(set) var isImportingPhotos = false
+    @Published private(set) var importPulseID = 0
     @Published private(set) var errorToast: String?
     @Published private(set) var lastError: String?
     @Published private(set) var eyeGuidanceText: String?
@@ -248,8 +282,8 @@ final class MultiScanHubViewModel: ObservableObject {
     @Published private(set) var scanRecord: ScanRecord?
     @Published var showSummary = false
     @Published var validationAlert: String?
-    /// Raw session captures remain in memory for the lifetime of this view
-    /// model. They are never written to the history store or cloud database.
+    /// Raw captures stay in memory until assessment finishes or the session
+    /// resets. They are never written to the history store or cloud database.
     @Published private(set) var sessionImages: [ScanStep: UIImage] = [:]
 
     let previewSource: CameraPreviewSource
@@ -268,7 +302,9 @@ final class MultiScanHubViewModel: ObservableObject {
     private let liveInferenceMaximumRate: Double = 4
     private var readiness: MultiTissueReadiness?
     private var latestQuality = QualityObservation.unavailable
-    private var capturedFrames: [TissueSite: CapturedFrame] = [:]
+    private var capturedFrames: [TissueSite: SessionCapture] = [:]
+    private let photoLoader = ScanPhotoLoader()
+    private var importTask: Task<Void, Never>?
     private var eventTask: Task<Void, Never>?
     private var processingTask: Task<Void, Never>?
     private var liveEyeTask: Task<Void, Never>?
@@ -285,22 +321,24 @@ final class MultiScanHubViewModel: ObservableObject {
     var currentTissue: TissueSite { currentStep.tissue }
 
     init(
-        historyManager: ScanHistoryManager,
-        camera: any CameraSessionControlling = CameraControllerFactory.makeDefault(),
+        historyManager: ScanHistoryManager = .shared,
+        camera: (any CameraSessionControlling)? = nil,
         permissionManager: CameraPermissionManager = CameraPermissionManager(),
         inference: MultiTissueInferenceActor = MultiTissueInferenceActor(),
         motionMonitor: any MotionStabilityMonitoring = MotionStabilityMonitor(),
         autoCaptureManager: AutoCaptureManager = AutoCaptureManager()
     ) {
         self.historyManager = historyManager
-        self.camera = camera
-        cameraManager = MedicalCameraManager(camera: camera)
+        let manager = camera.map { MedicalCameraManager(camera: $0) } ?? .shared
+        cameraManager = manager
+        self.camera = manager.camera
         self.permissionManager = permissionManager
         self.inference = inference
         self.motionMonitor = motionMonitor
         self.autoCaptureManager = autoCaptureManager
-        previewSource = camera.previewSource
-        isSimulatorMode = camera.previewSource.isSimulated
+        previewSource = manager.camera.previewSource
+        isSimulatorMode = manager.camera.previewSource.isSimulated
+        lensPosition = manager.isUsingFrontCamera ? .front : .back
         permissionStatus = permissionManager.authorizationStatus
     }
 
@@ -322,6 +360,10 @@ final class MultiScanHubViewModel: ObservableObject {
 
     var isSessionComplete: Bool {
         ScanStep.allCases.allSatisfy { sessionImages[$0] != nil }
+    }
+
+    var canToggleCamera: Bool {
+        supportsCameraToggle && cameraState == .ready && !isBusy && !isSwitchingCamera
     }
 
     func start() {
@@ -347,16 +389,29 @@ final class MultiScanHubViewModel: ObservableObject {
             self?.isBusy = false
             self?.statusText = "Ready to capture the conjunctiva image"
             let stream = await camera.eventStream()
-            try? await camera.setOpticsProfile(.eye)
-            await self?.cameraManager.start()
-            for await event in stream {
+            guard !Task.isCancelled, let manager = self?.cameraManager else { return }
+            // Consume events while startup stabilizes. Otherwise display frames
+            // can evict the capabilities event from the bounded stream buffer,
+            // leaving supportsCameraToggle false even on a two-camera device.
+            async let startup: Void = {
+                try? await camera.setOpticsProfile(.eye)
                 guard !Task.isCancelled else { return }
+                await manager.start()
+            }()
+            for await event in stream {
+                guard !Task.isCancelled else { break }
                 self?.handle(event)
             }
+            _ = await startup
         }
     }
 
     func stop() {
+        importTask?.cancel()
+        importTask = nil
+        isImportingPhotos = false
+        isRunningAssessment = false
+        purgeSessionImages()
         cameraManager.clear()
         pendingCaptureImage = nil
         eventTask?.cancel()
@@ -455,6 +510,11 @@ final class MultiScanHubViewModel: ObservableObject {
     }
 
     func resetDemo() {
+        importTask?.cancel()
+        importTask = nil
+        isImportingPhotos = false
+        isRunningAssessment = false
+        purgeSessionImages()
         pendingCaptureImage = nil
         processingTask?.cancel()
         processingTask = nil
@@ -492,7 +552,7 @@ final class MultiScanHubViewModel: ObservableObject {
     }
 
     func toggleCamera() {
-        guard supportsCameraToggle, !isBusy, !isSwitchingCamera else { return }
+        guard canToggleCamera else { return }
         cameraManager.clear()
         isSwitchingCamera = true
         eyeGuidanceText = nil
@@ -529,9 +589,9 @@ final class MultiScanHubViewModel: ObservableObject {
     }
 
     func updateCaptureOrientation(_ orientation: CaptureOrientation) {
-        guard captureOrientation != orientation else { return }
-        captureOrientation = orientation
-        Task { [camera] in await camera.updateCaptureOrientation(orientation) }
+        guard captureOrientation != .portrait else { return }
+        captureOrientation = .portrait
+        Task { [camera] in await camera.updateCaptureOrientation(.portrait) }
     }
 
     func dismissCaptureQualityFeedback() {
@@ -552,7 +612,13 @@ final class MultiScanHubViewModel: ObservableObject {
     private func handle(_ event: CameraEvent) {
         switch event {
         case let .displayFrame(frame):
-            cameraManager.display(frame)
+            if !isRunningAssessment, !isSwitchingCamera {
+                Task { [weak self] in
+                    guard let self, self.eventTask != nil,
+                          !self.isRunningAssessment, !self.isSwitchingCamera else { return }
+                    await self.cameraManager.display(frame)
+                }
+            }
         case let .state(state):
             cameraState = state
             if state == .ready, !isBusy, !isSwitchingCamera {
@@ -574,7 +640,13 @@ final class MultiScanHubViewModel: ObservableObject {
             cameraManager.clear()
             fail("Camera interrupted: \(reason)")
         case let .liveFrame(frame):
-            if isSimulatorMode { cameraManager.display(frame) }
+            if isSimulatorMode, !isRunningAssessment, !isSwitchingCamera {
+                Task { [weak self] in
+                    guard let self, self.eventTask != nil,
+                          !self.isRunningAssessment, !self.isSwitchingCamera else { return }
+                    await self.cameraManager.display(frame)
+                }
+            }
             processLiveFrame(frame)
         case let .quality(observation):
             latestQuality = observation
@@ -603,7 +675,7 @@ final class MultiScanHubViewModel: ObservableObject {
             do {
                 _ = try await self.validateImage(previewImage, for: step)
                 guard !Task.isCancelled, self.activeCaptureID == captureID else { return }
-                self.capturedFrames[tissue] = frame
+                self.capturedFrames[tissue] = .camera(frame)
                 self.tissuePreviewImages[tissue] = previewImage
                 self.sessionImages[step] = previewImage
                 self.captureQualityAssessment = self.imageQualityAnalyzer.captureAssessment(for: frame.pixelBuffer)
@@ -689,51 +761,109 @@ final class MultiScanHubViewModel: ObservableObject {
         }
     }
 
+    /// Import is deliberately separate from assessment. A partial selection
+    /// wraps from the active slot so every selected photo has a destination.
+    func importPhotos(_ items: [PhotosPickerItem]) {
+        guard !items.isEmpty, !isBusy, !isImportingPhotos else { return }
+        let startingStep = currentStep
+        isImportingPhotos = true
+        isBusy = true
+        statusText = "Loading selected photos"
+        importTask = Task { [weak self, photoLoader] in
+            do {
+                let images = try await photoLoader.load(Array(items.prefix(3)))
+                try Task.checkCancellation()
+                guard let self else { return }
+                self.storeImportedImages(images, startingAt: startingStep)
+                self.isImportingPhotos = false
+                self.isBusy = false
+            } catch {
+                guard !Task.isCancelled, let self else { return }
+                self.isImportingPhotos = false
+                self.isBusy = false
+                self.validationAlert = "The selected photos could not be loaded. Please try again."
+            }
+        }
+    }
+
+    func storeImportedImages(_ images: [UIImage], startingAt step: ScanStep) {
+        guard !images.isEmpty, !isRunningAssessment else { return }
+        let steps = ScanStep.allCases
+        let start = images.count == 3 ? 0 : step.rawValue - 1
+        for (offset, image) in images.prefix(3).enumerated() {
+            let target = steps[(start + offset) % steps.count]
+            sessionImages[target] = image
+            capturedFrames[target.tissue] = .imported(image)
+            tissuePreviewImages[target.tissue] = image
+        }
+        currentStep = isSessionComplete ? .tongue : steps[(start + min(images.count, 3)) % steps.count]
+        validationAlert = nil
+        lastError = nil
+        statusText = isSessionComplete ? "All three images ready — tap Run Anemia Assessment" : "Photo imported — capture or import the next image"
+        importPulseID += 1
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+    }
+
+    /// Clears every session-owned reference, including thumbnail and pending
+    /// capture aliases. ARC releases images; this does not promise RAM zeroing.
+    private func purgeSessionImages() {
+        sessionImages.removeAll()
+        capturedFrames.removeAll()
+        tissuePreviewImages.removeAll()
+        latestTongueImage = nil
+        pendingCaptureImage = nil
+        cameraManager.clear()
+    }
+
+    func resetSession() {
+        resetDemo()
+    }
+
+    /// Image locals live only in this helper and are released before the
+    /// minimum-duration animation wait in runMLAssessment.
+    private func extractAssessmentScores() async throws -> [ScanStep: Double] {
+        defer {
+            purgeSessionImages()
+            assessmentImagesCleared = true
+        }
+        let images = sessionImages
+        var scores: [ScanStep: Double] = [:]
+        for step in ScanStep.allCases {
+            try Task.checkCancellation()
+            guard let image = images[step], let cgImage = image.cgImage else {
+                throw ScanValidationError.invalidImage
+            }
+            _ = try await validateImage(image, for: step)
+            scores[step] = try await pallorInference.predict(cgImage, for: step)
+        }
+        return scores
+    }
+
     func runMLAssessment() {
-        guard isSessionComplete, capturedFrames.count == ScanStep.allCases.count else { return }
+        guard !isBusy, !isRunningAssessment, isSessionComplete,
+              capturedFrames.count == ScanStep.allCases.count else { return }
         processingTask?.cancel()
         isBusy = true
         isAnalyzing = true
+        isRunningAssessment = true
+        assessmentImagesCleared = false
         lastError = nil
         statusText = "Running research assessment"
-        let images = sessionImages
-        processingTask = Task { [weak self, pallorInference] in
+        processingTask = Task { [weak self] in
             guard let self else { return }
+            let clock = ContinuousClock()
+            let deadline = clock.now.advanced(by: .milliseconds(2150))
+            defer { self.isRunningAssessment = false }
             do {
-                for step in ScanStep.allCases {
-                    guard let image = images[step] else {
-                        throw CameraError.captureFailed("Missing \(step.progressTitle) image")
-                    }
-                    _ = try await self.validateImage(image, for: step)
-                }
-                let preparedImages = try Dictionary(uniqueKeysWithValues: ScanStep.allCases.map { step in
-                    guard let cgImage = images[step]?.cgImage else {
-                        throw ScanValidationError.invalidImage
-                    }
-                    return (step, cgImage)
-                })
-                let inferenceTask = Task.detached(priority: .userInitiated) { [pallorInference, preparedImages] in
-                    var scores = [ScanStep: Double]()
-                    for step in ScanStep.allCases {
-                        try Task.checkCancellation()
-                        guard let image = preparedImages[step] else {
-                            throw ScanValidationError.invalidImage
-                        }
-                        scores[step] = try await pallorInference.predict(image, for: step)
-                    }
-                    return scores
-                }
-                let scores = try await withTaskCancellationHandler {
-                    try await inferenceTask.value
-                } onCancel: {
-                    inferenceTask.cancel()
-                }
-                guard !Task.isCancelled else { return }
+                let scores = try await self.extractAssessmentScores()
+                try Task.checkCancellation()
                 guard let eyeScore = scores[.conjunctiva],
                       let nailScore = scores[.fingernail],
                       let tongueScore = scores[.tongue] else {
                     throw ScanValidationError.invalidModelOutput
                 }
+                try await clock.sleep(until: deadline)
+                try Task.checkCancellation()
                 let estimatedHb = min(16.0, max(7.0, 15.5 - ((eyeScore + nailScore + tongueScore) * 2.2)))
                 let riskLevel: ScanRiskLevel = if estimatedHb > 12.0 {
                     .normal

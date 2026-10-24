@@ -6,11 +6,26 @@ import Foundation
 import UIKit
 
 #if !targetEnvironment(simulator)
+/// All session and device mutations execute on one dedicated queue while
+/// preserving actor isolation across suspension points.
+private final class CameraSessionExecutor: SerialExecutor {
+    let sessionQueue = DispatchQueue(label: "com.ironscan.cameraQueue", qos: .userInitiated)
+
+    func enqueue(_ job: consuming ExecutorJob) {
+        let job = UnownedJob(job)
+        sessionQueue.async { job.runSynchronously(on: self.asUnownedSerialExecutor()) }
+    }
+}
+
 actor CameraSessionActor: CameraSessionControlling {
+    private nonisolated let sessionExecutor = CameraSessionExecutor()
+    nonisolated var unownedExecutor: UnownedSerialExecutor {
+        sessionExecutor.asUnownedSerialExecutor()
+    }
     nonisolated let previewSource: CameraPreviewSource
 
     private let session: AVCaptureSession
-    private var deviceInput: AVCaptureDeviceInput?
+    private var currentInput: AVCaptureDeviceInput?
     private let videoDataOutput = AVCaptureVideoDataOutput()
     private var latestVideoFrame: AnalyzableFrame?
     private var device: AVCaptureDevice?
@@ -34,6 +49,8 @@ actor CameraSessionActor: CameraSessionControlling {
     private var lensPosition = CameraLensPosition.front
     private var captureOrientation = CaptureOrientation.portrait
     private var isSwitchingCamera = false
+    private var cameraGeneration = UUID()
+    private var lensStabilizationTask: Task<Void, Never>?
 
     init(
         configuration: CameraConfiguration = CameraConfiguration(),
@@ -51,11 +68,17 @@ actor CameraSessionActor: CameraSessionControlling {
         eventContinuation?.finish()
         eventContinuation = streamPair.continuation
         streamPair.continuation.yield(.state(stateMachine.state))
+        // A shared session can already be configured when a new view subscribes.
+        if let device, isConfigured {
+            streamPair.continuation.yield(.capabilities(capabilities(for: device)))
+        }
         return streamPair.stream
     }
 
     func start() async {
         guard stateMachine.state == .idle else { return }
+        let generation = UUID()
+        cameraGeneration = generation
         transition(.requestPermission)
 
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -91,10 +114,13 @@ actor CameraSessionActor: CameraSessionControlling {
             transition(.configured)
             try await settleAutomaticControls()
             try await waitForStableFrames()
+            guard cameraGeneration == generation else { return }
             transition(.stabilized)
         } catch let error as CameraError {
+            guard cameraGeneration == generation else { return }
             fail(error)
         } catch {
+            guard cameraGeneration == generation else { return }
             fail(.configurationFailed(error.localizedDescription))
         }
     }
@@ -152,10 +178,12 @@ actor CameraSessionActor: CameraSessionControlling {
     }
 
     func toggleCamera() async throws {
-        guard stateMachine.state == .ready,
+        guard session.isRunning,
+              stateMachine.state != .capturing,
               !isSwitchingCamera,
               isConfigured,
-              let previousInput = deviceInput else {
+              let previousInput = currentInput else {
+            print("❌ ERROR: Camera session is not configured or is busy")
             throw CameraError.configurationFailed("Camera session is not configured")
         }
         isSwitchingCamera = true
@@ -163,7 +191,9 @@ actor CameraSessionActor: CameraSessionControlling {
         defer { isSwitchingCamera = false }
 
         let requestedPosition: CameraLensPosition = lensPosition == .back ? .front : .back
+        print("🎥 Target position determined: \(requestedPosition.avPosition)")
         guard let selectedDevice = cameraDevice(at: requestedPosition) else {
+            print("❌ ERROR: No video device found for position \(requestedPosition.avPosition)")
             throw CameraError.unsupportedDevice
         }
 
@@ -171,6 +201,7 @@ actor CameraSessionActor: CameraSessionControlling {
         do {
             replacementInput = try AVCaptureDeviceInput(device: selectedDevice)
         } catch {
+            print("❌ ERROR creating AVCaptureDeviceInput: \(error.localizedDescription)")
             throw CameraError.configurationFailed(error.localizedDescription)
         }
 
@@ -179,17 +210,28 @@ actor CameraSessionActor: CameraSessionControlling {
         }
 
         session.beginConfiguration()
-        session.removeInput(previousInput)
+        if session.canSetSessionPreset(.high) { session.sessionPreset = .high }
+        let previousInputs = session.inputs.compactMap { $0 as? AVCaptureDeviceInput }
+            .filter { $0.device.hasMediaType(.video) }
+        for input in previousInputs {
+            session.removeInput(input)
+            print("🎥 Removed old camera input.")
+        }
         guard session.canAddInput(replacementInput) else {
-            if session.canAddInput(previousInput) {
-                session.addInput(previousInput)
+            print("❌ ERROR: captureSession cannot add newInput for \(requestedPosition.avPosition)")
+            for input in previousInputs where session.canAddInput(input) {
+                session.addInput(input)
+                print("🎥 Restored previous camera input.")
             }
+            configureOutputConnections()
             session.commitConfiguration()
+            eventContinuation?.yield(.capabilities(capabilities(for: previousInput.device)))
             throw CameraError.configurationFailed("Requested camera input cannot be added")
         }
         session.addInput(replacementInput)
         device = selectedDevice
-        deviceInput = replacementInput
+        currentInput = replacementInput
+        print("🎥 Successfully added new camera input for \(requestedPosition.avPosition).")
         lensPosition = requestedPosition
         // Switching lenses requires a new explicit flashlight toggle.
         torchOverride = false
@@ -199,18 +241,35 @@ actor CameraSessionActor: CameraSessionControlling {
         captureOrientation = .portrait
         configureOutputConnections()
         session.commitConfiguration()
-
-        if let torchLevel = desiredTorchLevel, selectedDevice.hasTorch {
-            try applyTorch(enabled: true, level: torchLevel)
-        }
+        // A format/60fps preference must never turn a successful input swap
+        // into a failed flip. The device's supported default remains usable.
+        try? configureFrameRate(for: selectedDevice)
         eventContinuation?.yield(.capabilities(capabilities(for: selectedDevice)))
-        try beginStabilization()
-        try await settleAutomaticControls()
-        try await waitForStableFrames()
+        transition(.cameraChanged)
+        let generation = UUID()
+        cameraGeneration = generation
+        lensStabilizationTask?.cancel()
+        lensStabilizationTask = Task { [weak self] in
+            await self?.stabilizeChangedCamera(generation: generation)
+        }
+    }
+
+    private func stabilizeChangedCamera(generation: UUID) async {
+        do {
+            try Task.checkCancellation()
+            try beginStabilization()
+            try await settleAutomaticControls()
+            try await waitForStableFrames()
+            guard !Task.isCancelled, cameraGeneration == generation else { return }
+            transition(.stabilized)
+        } catch {
+            guard !Task.isCancelled, cameraGeneration == generation else { return }
+            fail((error as? CameraError) ?? .configurationFailed(error.localizedDescription))
+        }
     }
 
     func updateCaptureOrientation(_ orientation: CaptureOrientation) async {
-        let appliedOrientation = lensPosition == .front ? .portrait : orientation
+        let appliedOrientation = CaptureOrientation.portrait
         guard captureOrientation != appliedOrientation else { return }
         captureOrientation = appliedOrientation
         configureOutputConnections()
@@ -263,6 +322,9 @@ actor CameraSessionActor: CameraSessionControlling {
     }
 
     func stop() async {
+        cameraGeneration = UUID()
+        lensStabilizationTask?.cancel()
+        lensStabilizationTask = nil
         latestVideoFrame = nil
         var cleanupError: CameraError?
         do {
@@ -287,33 +349,17 @@ actor CameraSessionActor: CameraSessionControlling {
     }
 
     private func startSessionIfNeeded() async {
-        let session = session
-        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-            DispatchQueue.global(qos: .userInitiated).async {
-                if !session.isRunning {
-                    session.startRunning()
-                }
-                continuation.resume()
-            }
-        }
+        if !session.isRunning { session.startRunning() }
     }
 
     private func stopSessionIfNeeded() async {
-        let session = session
-        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-            DispatchQueue.global(qos: .userInitiated).async {
-                if session.isRunning {
-                    session.stopRunning()
-                }
-                continuation.resume()
-            }
-        }
+        if session.isRunning { session.stopRunning() }
     }
 
     private func configureSession() throws {
         // IronScan intentionally configures video only. No microphone/audio
         // device is discovered or added to the capture session.
-        guard let selectedDevice = cameraDevice(at: .back) else {
+        guard let selectedDevice = cameraDevice(at: .front) else {
             throw CameraError.unsupportedDevice
         }
 
@@ -326,10 +372,10 @@ actor CameraSessionActor: CameraSessionControlling {
 
         session.beginConfiguration()
         defer { session.commitConfiguration() }
-        session.sessionPreset = .hd1920x1080
+        if session.canSetSessionPreset(.high) { session.sessionPreset = .high }
 
         guard session.canAddInput(input) else {
-            throw CameraError.configurationFailed("Rear camera input cannot be added")
+            throw CameraError.configurationFailed("Camera input cannot be added")
         }
         session.addInput(input)
 
@@ -343,8 +389,9 @@ actor CameraSessionActor: CameraSessionControlling {
         }
         session.addOutput(videoDataOutput)
 
-        lensPosition = .back
+        lensPosition = .front
         configureOutputConnections()
+        try? configureFrameRate(for: selectedDevice)
 
         let processor = LatestFrameProcessor<AnalyzableFrame>(maximumRate: configuration.maximumAnalysisRate) { [weak self] frame in
             await self?.processPreview(frame)
@@ -362,30 +409,29 @@ actor CameraSessionActor: CameraSessionControlling {
         }
 
         device = selectedDevice
-        deviceInput = input
-        lensPosition = .back
+        currentInput = input
+        lensPosition = .front
         isConfigured = true
         installInterruptionObserver()
         eventContinuation?.yield(.capabilities(capabilities(for: selectedDevice)))
     }
 
     private func cameraDevice(at position: CameraLensPosition) -> AVCaptureDevice? {
-        if position == .front {
-            return AVCaptureDevice.default(
-                .builtInWideAngleCamera,
-                for: .video,
-                position: .front
-            )
-        }
-        let preferredTypes = CameraDeviceDiscovery.preferredDeviceTypes(for: position)
-        let devices = AVCaptureDevice.DiscoverySession(
-            deviceTypes: preferredTypes,
-            mediaType: .video,
-            position: position.avPosition
-        ).devices
-        return preferredTypes.lazy.compactMap { preferredType in
-            devices.first(where: { $0.deviceType == preferredType })
-        }.first
+        AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position.avPosition) ??
+        AVCaptureDevice.DiscoverySession(
+            deviceTypes: [.builtInWideAngleCamera, .builtInTrueDepthCamera, .builtInDualCamera, .builtInTripleCamera],
+            mediaType: .video, position: position.avPosition
+        ).devices.first
+    }
+
+    private func configureFrameRate(for device: AVCaptureDevice) throws {
+        guard device.activeFormat.videoSupportedFrameRateRanges.contains(where: {
+            $0.minFrameRate <= 60 && $0.maxFrameRate >= 60
+        }) else { return }
+        try device.lockForConfiguration()
+        defer { device.unlockForConfiguration() }
+        device.activeVideoMinFrameDuration = CMTime(value: 1, timescale: 60)
+        device.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: 60)
     }
 
     private func configureOutputConnections() {
