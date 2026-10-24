@@ -1,44 +1,107 @@
 import SwiftUI
+import UIKit
+
+extension Color {
+    static let brandTeal = Color(red: 20 / 255, green: 82 / 255, blue: 71 / 255)
+    static let brandMarigold = Color(red: 250 / 255, green: 168 / 255, blue: 5 / 255)
+    static let brandGlacier = Color(red: 205 / 255, green: 224 / 255, blue: 228 / 255)
+    static let brandSand = Color(red: 232 / 255, green: 217 / 255, blue: 201 / 255)
+}
 
 enum IronTheme {
-    static let beigeBackground = Color(red: 0.96, green: 0.94, blue: 0.91)
+    static let brandTeal = Color.brandTeal
+    static let brandMarigold = Color.brandMarigold
+    static let brandGlacier = Color.brandGlacier
+    static let brandSand = Color.brandSand
+    static let beigeBackground = brandSand
     static let creamBackground = beigeBackground
     static let mintBackground = beigeBackground
 
-    static let terracottaPrimary = Color(red: 0.66, green: 0.41, blue: 0.30)
-    static let terracottaAccent = Color(red: 0.78, green: 0.54, blue: 0.40)
-    static let sageAccent = Color(red: 0.70, green: 0.74, blue: 0.64)
-
-    static let textPrimary = Color(red: 0.20, green: 0.17, blue: 0.15)
-    static let textSecondary = Color(red: 0.48, green: 0.43, blue: 0.39)
+    // Compatibility aliases keep existing screens on the centralized palette.
+    static let terracottaPrimary = brandTeal
+    static let terracottaAccent = Color(red: 29 / 255, green: 107 / 255, blue: 93 / 255)
+    static let sageAccent = brandTeal
+    static let textPrimary = brandTeal
+    static let textSecondary = brandTeal.opacity(0.68)
     static let textSlate = textPrimary
     static let slateText = textPrimary
     static let textMuted = textSecondary
     static let textDark = textPrimary
     static let deepSlate = textPrimary
 
-    static let cardFill = Color.white.opacity(0.40)
-    static let cardHighlight = Color.white.opacity(0.60)
-    static let shadowColor = Color.black.opacity(0.04)
-    static let warning = Color(red: 0.76, green: 0.47, blue: 0.34)
-    static let criticalGlassTint = Color(red: 0.82, green: 0.60, blue: 0.52).opacity(0.16)
-
-    static let tealPrimary = terracottaPrimary
-    static let tealDeep = textPrimary
+    static let primaryGradient = LinearGradient(
+        colors: [brandTeal, terracottaAccent], startPoint: .leading, endPoint: .trailing
+    )
+    static let cardFill = brandGlacier.opacity(0.38)
+    static let cardHighlight = Color.white.opacity(0.75)
+    static let glassBorder = LinearGradient(
+        colors: [Color.white.opacity(0.75), brandGlacier.opacity(0.35)],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    static let shadowColor = brandTeal.opacity(0.09)
+    static let warning = brandMarigold
+    static let criticalGlassTint = brandMarigold.opacity(0.16)
+    static let tealPrimary = brandTeal
+    static let tealDeep = brandTeal
     static let cardGlass = cardFill
+
+    static func editorialFont(
+        _ style: Font.TextStyle,
+        weight: Font.Weight = .regular
+    ) -> Font {
+        .system(style, design: .serif, weight: weight)
+    }
 
     static func roundedFont(
         _ style: Font.TextStyle,
         weight: Font.Weight = .regular
     ) -> Font {
-        .system(style, design: .rounded, weight: weight)
+        // Keep call sites stable; only display and section headings use serif.
+        switch style {
+        case .largeTitle, .title, .title2, .title3, .headline:
+            editorialFont(style, weight: weight)
+        default:
+            .system(style, design: .default, weight: weight)
+        }
     }
 
     enum Hex {
-        static let creamBackground = "#F8F6F0"
-        static let terracottaPrimary = "#FF6B35"
-        static let slateText = "#2A2830"
-        static let sageAccent = "#8DAA82"
+        static let brandTeal = "#145247"
+        static let brandMarigold = "#FAA805"
+        static let brandGlacier = "#CDE0E4"
+        static let brandSand = "#E8D9C9"
+        static let creamBackground = brandSand
+        static let terracottaPrimary = brandTeal
+        static let slateText = brandTeal
+        static let sageAccent = brandTeal
+    }
+
+    @MainActor
+    static func configureTabBarAppearance() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithDefaultBackground()
+        appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterial)
+        appearance.backgroundColor = UIColor(brandTeal.opacity(0.92))
+        for item in [appearance.stackedLayoutAppearance, appearance.inlineLayoutAppearance,
+                     appearance.compactInlineLayoutAppearance] {
+            item.normal.iconColor = UIColor(brandSand.opacity(0.75))
+            item.normal.titleTextAttributes = [.foregroundColor: UIColor(brandSand.opacity(0.75))]
+            item.selected.iconColor = UIColor(brandMarigold)
+            item.selected.titleTextAttributes = [.foregroundColor: UIColor(brandMarigold)]
+        }
+        // Style the native selection indicator without replacing or resizing tabs.
+        appearance.selectionIndicatorImage = UIGraphicsImageRenderer(size: CGSize(width: 64, height: 48)).image { _ in
+            let capsule = UIBezierPath(roundedRect: CGRect(x: 0.5, y: 0.5, width: 63, height: 47), cornerRadius: 23.5)
+            UIColor(brandMarigold.opacity(0.22)).setFill()
+            capsule.fill()
+            UIColor(brandMarigold).setStroke()
+            capsule.lineWidth = 1
+            capsule.stroke()
+        }.resizableImage(withCapInsets: UIEdgeInsets(top: 24, left: 24, bottom: 24, right: 24)).withRenderingMode(.alwaysOriginal)
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
+        UITabBar.appearance().unselectedItemTintColor = UIColor(brandSand.opacity(0.75))
     }
 }
 
@@ -53,7 +116,7 @@ struct LiquidGlassCardStyle: ViewModifier {
             .background(.ultraThinMaterial, in: shape)
             .background(fill, in: shape)
             .overlay {
-                shape.stroke(IronTheme.cardHighlight, lineWidth: 1.5)
+                shape.stroke(IronTheme.glassBorder, lineWidth: 1)
             }
             .shadow(color: IronTheme.shadowColor, radius: 15, x: 0, y: 8)
     }
@@ -68,7 +131,7 @@ private struct LiquidGlassPanelModifier<PanelShape: Shape>: ViewModifier {
             .background(.ultraThinMaterial, in: shape)
             .background(fill, in: shape)
             .overlay {
-                shape.stroke(IronTheme.cardHighlight, lineWidth: 1.2)
+                shape.stroke(IronTheme.glassBorder, lineWidth: 1)
             }
             .shadow(color: IronTheme.shadowColor, radius: 12, x: 0, y: 6)
     }
@@ -77,7 +140,7 @@ private struct LiquidGlassPanelModifier<PanelShape: Shape>: ViewModifier {
 private struct OrganicTypographyModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .fontDesign(.rounded)
+            .fontDesign(.default)
             .foregroundStyle(IronTheme.textPrimary)
     }
 }
@@ -126,8 +189,8 @@ extension View {
 struct OrganicPrimaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(IronTheme.roundedFont(.headline, weight: .bold))
-            .foregroundStyle(.white)
+            .font(.system(.headline, design: .default, weight: .bold))
+            .foregroundStyle(Color.brandSand)
             .padding(.horizontal, 22)
             .padding(.vertical, 16)
             .frame(maxWidth: .infinity)
@@ -136,16 +199,17 @@ struct OrganicPrimaryButtonStyle: ButtonStyle {
                     .fill(
                         LinearGradient(
                             colors: [
-                                IronTheme.terracottaPrimary.opacity(configuration.isPressed ? 0.88 : 0.96),
-                                IronTheme.terracottaAccent.opacity(configuration.isPressed ? 0.84 : 0.92)
+                                IronTheme.terracottaPrimary.opacity(configuration.isPressed ? 0.88 : 1),
+                                IronTheme.terracottaAccent.opacity(configuration.isPressed ? 0.84 : 1)
                             ],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
                     )
             )
+            .background(.ultraThinMaterial, in: Capsule())
             .overlay {
-                Capsule().stroke(Color.white.opacity(0.24), lineWidth: 1)
+                Capsule().stroke(Color.brandMarigold.opacity(0.55), lineWidth: 1)
             }
             .shadow(color: IronTheme.terracottaPrimary.opacity(0.18), radius: 14, x: 0, y: 8)
             .scaleEffect(configuration.isPressed ? 0.98 : 1)
@@ -155,35 +219,48 @@ struct OrganicPrimaryButtonStyle: ButtonStyle {
 
 typealias TealPrimaryButtonStyle = OrganicPrimaryButtonStyle
 
-struct IronScreenBackground: View {
+/// Fixed canvas curves remain behind scrolling translucent surfaces.
+struct MarigoldRibbonBackground: View {
     var body: some View {
-        ZStack {
-            IronTheme.beigeBackground
-
-            LinearGradient(
-                colors: [
-                    Color.white.opacity(0.55),
-                    IronTheme.beigeBackground,
-                    Color(red: 0.91, green: 0.88, blue: 0.83)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-
-            RadialGradient(
-                colors: [
-                    Color.white.opacity(0.45),
-                    .clear
-                ],
-                center: .topLeading,
-                startRadius: 40,
-                endRadius: 380
-            )
-
-            IronLeafGlow(alignment: .topTrailing, rotation: -14, scale: 0.92, opacity: 0.16)
-            IronLeafGlow(alignment: .bottomLeading, rotation: 18, scale: 1.08, opacity: 0.12)
+        GeometryReader { geometry in
+            let w = geometry.size.width
+            let h = geometry.size.height
+            ZStack {
+                Color.brandSand
+                Path { path in
+                    path.move(to: CGPoint(x: -0.12 * w, y: 0.16 * h))
+                    path.addCurve(to: CGPoint(x: 0.78 * w, y: 0.13 * h),
+                                  control1: CGPoint(x: 0.27 * w, y: 0.23 * h),
+                                  control2: CGPoint(x: 0.43 * w, y: 0.04 * h))
+                    path.addCurve(to: CGPoint(x: 1.12 * w, y: 0.40 * h),
+                                  control1: CGPoint(x: 0.22 * w, y: 0.34 * h),
+                                  control2: CGPoint(x: 0.86 * w, y: 0.45 * h))
+                }
+                .stroke(Color.brandMarigold.opacity(0.8), style: StrokeStyle(lineWidth: 4.5, lineCap: .round))
+                Path { path in
+                    path.move(to: CGPoint(x: 1.12 * w, y: 0.54 * h))
+                    path.addCurve(to: CGPoint(x: 0.68 * w, y: 0.72 * h),
+                                  control1: CGPoint(x: 0.17 * w, y: 0.34 * h),
+                                  control2: CGPoint(x: 0.17 * w, y: 0.58 * h))
+                    path.addCurve(to: CGPoint(x: 0.40 * w, y: 0.87 * h),
+                                  control1: CGPoint(x: 1.02 * w, y: 0.80 * h),
+                                  control2: CGPoint(x: 0.72 * w, y: 0.94 * h))
+                    path.addCurve(to: CGPoint(x: -0.12 * w, y: 0.85 * h),
+                                  control1: CGPoint(x: 0.14 * w, y: 0.85 * h),
+                                  control2: CGPoint(x: 0.10 * w, y: 0.80 * h))
+                }
+                .stroke(Color.brandMarigold.opacity(0.8), style: StrokeStyle(lineWidth: 4.5, lineCap: .round))
+            }
         }
         .ignoresSafeArea()
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+}
+
+struct IronScreenBackground: View {
+    var body: some View {
+        MarigoldRibbonBackground()
     }
 }
 
@@ -207,7 +284,7 @@ struct GlossyTerracottaDrop: View {
                 .fill(
                     LinearGradient(
                         colors: [
-                            Color(red: 0.93, green: 0.76, blue: 0.66),
+                            Color.brandGlacier,
                             IronTheme.terracottaAccent,
                             IronTheme.terracottaPrimary
                         ],

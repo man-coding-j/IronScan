@@ -85,6 +85,7 @@
 		A7C409CDD3BE36F377D186E1 /* GoldenInputs in Resources */ = {isa = PBXBuildFile; fileRef = B331AFD4156DE3F78DBC23CA /* GoldenInputs */; };
 		AA0000000000000000000001 /* Models in Resources */ = {isa = PBXBuildFile; fileRef = 0D7A23A682BDA80B83764377 /* Models */; };
 		AB93B24C5E4DF15EAB3223F6 /* HomeDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BBB970EAF7F97D55BFCFF8 /* HomeDashboardView.swift */; };
+		D318B4100A4149089D010001 /* DemoFeatureViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D318B4100A4149089D010002 /* DemoFeatureViews.swift */; };
 		AD670F0E966AFF3A67DD2ABE /* GeneratedModelInterfaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B0FAA5331B7ED8A17F1476 /* GeneratedModelInterfaces.swift */; };
 		B2046439305F20EB003B2785 /* RiveRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = B2046438305F20EB003B2785 /* RiveRuntime */; };
 		B211B220306F6E5A00FB2A7F /* TonguePallor.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = B211B21F306F6E5A00FB2A7F /* TonguePallor.mlpackage */; };
@@ -210,6 +211,7 @@
 		8F6E0456ADCDA35F2DD3B17A /* OnboardingFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlowTests.swift; sourceTree = "<group>"; };
 		8F7E6D5C4B3A291807162534 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		90BBB970EAF7F97D55BFCFF8 /* HomeDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeDashboardView.swift; sourceTree = "<group>"; };
+		D318B4100A4149089D010002 /* DemoFeatureViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoFeatureViews.swift; sourceTree = "<group>"; };
 		98A7B6C5D4E3F20192837465 /* AnalyzingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyzingView.swift; sourceTree = "<group>"; };
 		9A1B2C3D4E5F60718293A4B2 /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
 		9B08EC28262CA4056308E001 /* CalibrationMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationMath.swift; sourceTree = "<group>"; };
@@ -324,6 +326,7 @@
 				9A1B2C3D4E5F60718293A4B2 /* HealthKitManager.swift */,
 				83032E866467B729ABF35364 /* HealthGuidanceView.swift */,
 				90BBB970EAF7F97D55BFCFF8 /* HomeDashboardView.swift */,
+				D318B4100A4149089D010002 /* DemoFeatureViews.swift */,
 				6EDB70D69E9510F54931E442 /* HumanResultsView.swift */,
 				4AB1C2D3E4F5061728394058 /* InformedConsentModalView.swift */,
 				ACE22C656DA84609D181555F /* IntegratedResearchReportView.swift */,
@@ -688,6 +691,7 @@
 				9A1B2C3D4E5F60718293A4B1 /* HealthKitManager.swift in Sources */,
 				55E29B2B60816E0EA84D658F /* HealthGuidanceView.swift in Sources */,
 				AB93B24C5E4DF15EAB3223F6 /* HomeDashboardView.swift in Sources */,
+				D318B4100A4149089D010001 /* DemoFeatureViews.swift in Sources */,
 				3B65BEBD5357CCBD7958AA16 /* HumanResultsView.swift in Sources */,
 				89EE4188E32A98B4D677A04C /* IDARiskEngine.swift in Sources */,
 				0EA95B5AF890DF404D16AE1F /* ImageQualityAnalyzer.swift in Sources */,

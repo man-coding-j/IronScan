@@ -2,6 +2,15 @@ import XCTest
 @testable import IronScan
 
 final class CameraStateMachineTests: XCTestCase {
+    func testLensChangeCanRecoverFromStabilizationFailure() {
+        var machine = CameraStateMachine()
+        machine.handle(.failed(.stabilizationTimedOut))
+        machine.handle(.cameraChanged)
+        XCTAssertEqual(machine.state, .stabilizing)
+        machine.handle(.stabilized)
+        XCTAssertEqual(machine.state, .ready)
+    }
+
     func testSuccessfulCaptureLifecycle() {
         var stateMachine = CameraStateMachine()
 

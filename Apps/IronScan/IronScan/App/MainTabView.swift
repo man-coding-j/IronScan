@@ -38,13 +38,16 @@ struct MainTabView: View {
     @EnvironmentObject private var historyManager: ScanHistoryManager
     @State private var selection = MainTab.home
 
+    init() {
+        IronTheme.configureTabBarAppearance()
+    }
+
     var body: some View {
         Group {
             if let history = dependencies.history,
-               let inference = dependencies.multiTissueInference,
-               let healthKit = dependencies.healthKit {
+               let inference = dependencies.multiTissueInference {
                 TabView(selection: $selection) {
-                    HomeDashboardView(history: history, healthKit: healthKit) {
+                    HomeDashboardView(history: history) {
                         selection = .scan
                     }
                     .tag(MainTab.home)
@@ -56,11 +59,7 @@ struct MainTabView: View {
                         .tag(MainTab.history)
                         .tabItem { Label(MainTab.history.title, systemImage: MainTab.history.symbol) }
 
-                    MultiScanHubView(inference: inference) { result in
-                        Task {
-                            await history.saveScan(result)
-                        }
-                    }
+                    MultiScanHubView(inference: inference)
                     .tag(MainTab.scan)
                     .tabItem { Label(MainTab.scan.title, systemImage: MainTab.scan.symbol) }
 
@@ -76,7 +75,8 @@ struct MainTabView: View {
                 ProgressView("Loading history")
             }
         }
-        .tint(IronTheme.terracottaPrimary)
+        .background(MarigoldRibbonBackground())
+        .tint(Color.brandMarigold)
         .organicTypography()
         .animation(.spring(response: 0.4, dampingFraction: 0.8), value: selection)
         .task {
@@ -133,70 +133,82 @@ private struct HeroDashboardView: View {
     }
 }
 
+@MainActor
 struct HistoryView: View {
     @EnvironmentObject var historyManager: ScanHistoryManager
     @ObservedObject var history: ScanHistoryStore
     let startScan: () -> Void
-    @State private var shareDocument: ShareablePDFDocument?
-    @State private var exportError: String?
+    @State private var showTelehealthReport = false
+    @State private var showNutritionPlan = false
 
     private var recentHistoryRecords: [ScanHistoryRecord] {
-        DashboardHistoryRecords.from(historyManager.records)
+        TutorialCapture.isEnabled ? history.records : historyManager.displayRecords
     }
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 20) {
-                HStack {
-                    Text("Your History")
-                        .font(IronTheme.roundedFont(.largeTitle, weight: .bold))
-                    Spacer()
-                    Image(systemName: "calendar")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(IronTheme.textSlate)
-                        .frame(width: 40, height: 40)
-                        .background(Color.white.opacity(0.68), in: Circle())
+        ZStack {
+            MarigoldRibbonBackground()
+                .ignoresSafeArea()
+
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 20) {
+                    HStack {
+                        Text("Your History")
+                            .font(IronTheme.roundedFont(.largeTitle, weight: .bold))
+                        Spacer()
+                        Image(systemName: "calendar")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(IronTheme.textSlate)
+                            .frame(width: 40, height: 40)
+                            .background(Color.white.opacity(0.68), in: Circle())
+                    }
+
+                    syncStatusBanner
+                        .frame(maxWidth: .infinity)
+
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text("Hemoglobin Trend")
+                            .font(IronTheme.roundedFont(.title3, weight: .bold))
+                            .foregroundStyle(IronTheme.textPrimary)
+
+                        HistoricalHemoglobinTrendCard(
+                            records: recentHistoryRecords,
+                            height: 150,
+                            emptyMessage: "Complete a scan to start your longitudinal research trend."
+                        )
+                        .frame(maxWidth: .infinity)
+                    }
+
+                    Button { showTelehealthReport = true } label: {
+                        IronCTAButtonLabel(title: "Export PDF for Doctor")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(OrganicPrimaryButtonStyle())
+
+                    recentHistorySection
+                    MockWatchVitalsView()
+                    Button("Explore Nutrition Plan") { showNutritionPlan = true }
+                        .buttonStyle(OrganicPrimaryButtonStyle())
                 }
-                .padding(.top, 16)
-
-                syncStatusBanner
-
-                VStack(alignment: .leading, spacing: 14) {
-                    Text("Hemoglobin Trend")
-                        .font(IronTheme.roundedFont(.title3, weight: .bold))
-                        .foregroundStyle(IronTheme.textPrimary)
-
-                    HistoricalHemoglobinTrendCard(
-                        records: recentHistoryRecords,
-                        height: 260,
-                        emptyMessage: "Complete at least two scans to reveal your longitudinal recovery curve."
-                    )
-                }
-
-                Button(action: exportPDF) {
-                    IronCTAButtonLabel(title: "Export PDF for Doctor")
-                }
-                .buttonStyle(OrganicPrimaryButtonStyle())
-
-                recentHistorySection
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 20)
+                .padding(.top, 12)
+                .padding(.bottom, 110)
             }
-            .padding(.bottom, 128)
+            .frame(maxWidth: .infinity)
         }
-        .sheet(item: $shareDocument) { document in
-            ActivityShareSheet(activityItems: [document.url])
+        .sheet(isPresented: $showNutritionPlan) {
+            NutritionPlanView()
         }
-        .alert("PDF Export Unavailable", isPresented: exportAlertBinding) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(exportError ?? "The PDF could not be created.")
+        .sheet(isPresented: $showTelehealthReport) {
+            MockTelehealthPDFView()
         }
-        .background(IronTheme.beigeBackground.ignoresSafeArea())
     }
 
     private var syncStatusBanner: some View {
         HStack(spacing: 10) {
             Circle()
-                .fill(history.pendingSyncCount == 0 ? IronTheme.sageAccent : IronTheme.warning)
+                .fill(history.pendingSyncCount == 0 ? Color.brandMarigold : IronTheme.warning)
                 .frame(width: 8, height: 8)
 
             Text(history.syncStatusText)
@@ -242,7 +254,7 @@ struct HistoryView: View {
                 .liquidGlassCard(cornerRadius: 26)
             } else {
                 VStack(spacing: 12) {
-                    ForEach(recentHistoryRecords.prefix(6)) { record in
+                    ForEach(recentHistoryRecords) { record in
                         historyRow(record)
                     }
                 }
@@ -274,7 +286,7 @@ struct HistoryView: View {
 
             Spacer(minLength: 8)
 
-            Text(record.opticalPatternIndex?.formatted(.number.precision(.fractionLength(2))) ?? "--")
+            Text(record.estimatedHemoglobin.map { "\($0.formatted(.number.precision(.fractionLength(1)))) g/dL" } ?? "--")
                 .font(IronTheme.roundedFont(.headline, weight: .bold))
                 .foregroundStyle(IronTheme.textPrimary)
         }
@@ -316,20 +328,6 @@ struct HistoryView: View {
         }
     }
 
-    private var exportAlertBinding: Binding<Bool> {
-        Binding(
-            get: { exportError != nil },
-            set: { if !$0 { exportError = nil } }
-        )
-    }
-
-    private func exportPDF() {
-        if let url = PDFReportGenerator.generateReport(for: recentHistoryRecords.first, history: recentHistoryRecords) {
-            shareDocument = ShareablePDFDocument(url: url)
-        } else {
-            exportError = "The PDF could not be created."
-        }
-    }
 }
 
 struct LearnView: View {
@@ -345,7 +343,6 @@ struct LearnView: View {
             VStack(alignment: .leading, spacing: 20) {
                 Text("Learn More")
                     .font(IronTheme.roundedFont(.largeTitle, weight: .bold))
-                    .padding(.top, 16)
 
                 featuredRecommendationCard
 
@@ -385,9 +382,13 @@ struct LearnView: View {
                     }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
             .padding(.bottom, 128)
         }
-        .background(IronTheme.beigeBackground.ignoresSafeArea())
+        .frame(maxWidth: .infinity)
+        .background(MarigoldRibbonBackground())
     }
 
     private var featuredRecommendationCard: some View {
@@ -400,6 +401,7 @@ struct LearnView: View {
                 .font(IronTheme.roundedFont(.subheadline))
                 .foregroundStyle(IronTheme.textMuted)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
         .liquidGlassCard(cornerRadius: 26, interactive: true)
     }
@@ -421,6 +423,7 @@ struct LearnView: View {
 
 @MainActor
 struct ProfileView: View {
+    @EnvironmentObject private var historyManager: ScanHistoryManager
     @ObservedObject var history: ScanHistoryStore
     @AppStorage("userAge") private var userAge = 0
     @AppStorage("userBiologicalSex") private var userBiologicalSex = ""
@@ -456,7 +459,6 @@ struct ProfileView: View {
                     .buttonStyle(.plain)
                     .accessibilityLabel("Open settings")
                 }
-                .padding(.top, 16)
 
                 VStack(spacing: 18) {
                     PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
@@ -516,7 +518,7 @@ struct ProfileView: View {
                                 : "Not provided"
                         )
                         Divider()
-                        profileRow("Saved Scans", "\(history.records.count)")
+                        profileRow("Saved Scans", "\(TutorialCapture.isEnabled ? history.records.count : historyManager.displayRecords.count)")
                     }
                 }
                 .padding(16)
@@ -616,12 +618,39 @@ struct ProfileView: View {
                 .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .liquidGlassCard()
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Demo Data")
+                        .font(IronTheme.roundedFont(.headline, weight: .bold))
+                    Text("Replace local scan history with two synthetic baseline samples, or start at zero. Your next scan adds its actual prototype result. Previously synced cloud records are unaffected.")
+                        .font(IronTheme.roundedFont(.subheadline))
+                        .foregroundStyle(IronTheme.textMuted)
+                    Button("Reset to 2 Baseline Scans (For Demo Video)") {
+                        historyManager.resetToDemoBaseline()
+                    }
+                    .buttonStyle(OrganicPrimaryButtonStyle())
+                    Button("Clear All Scans (Start at 0)") {
+                        historyManager.clearAllRecords()
+                    }
+                    .font(IronTheme.roundedFont(.subheadline, weight: .semibold))
+                    .foregroundStyle(IronTheme.textSlate)
+                    .frame(minHeight: 44)
+                    if let error = historyManager.persistenceError {
+                        Text(error)
+                            .font(IronTheme.roundedFont(.caption))
+                            .foregroundStyle(IronTheme.textMuted)
+                    }
+                }
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .liquidGlassCard()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
             .padding(.bottom, 128)
         }
-        .background(IronTheme.beigeBackground.ignoresSafeArea())
+        .frame(maxWidth: .infinity)
+        .background(MarigoldRibbonBackground())
         .sheet(item: $exportedResearchBundle) { document in
             ActivityShareSheet(activityItems: [document.url])
         }
@@ -762,7 +791,7 @@ private struct SettingsView: View {
                 }
                 .padding(16)
             }
-            .background(IronTheme.beigeBackground.ignoresSafeArea())
+            .background(MarigoldRibbonBackground())
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -824,5 +853,32 @@ private struct LearnDisclosureCard: View {
         }
         .padding(18)
         .liquidGlassCard()
+    }
+}
+
+
+/// Renders the production views with an isolated, fictional history for repeatable simulator captures.
+@MainActor
+struct TutorialCaptureRoot: View {
+    @StateObject private var history = ScanHistoryStore(defaults: TutorialCapture.defaults)
+    @StateObject private var manager = ScanHistoryManager.shared
+    @State private var selection = MainTab(rawValue: TutorialCapture.screen) ?? .home
+
+    var body: some View {
+        TabView(selection: $selection) {
+            HomeDashboardView(history: history) { selection = .scan }
+                .tag(MainTab.home).tabItem { Label("Home", systemImage: "house") }
+            HistoryView(history: history) { selection = .scan }
+                .tag(MainTab.history).tabItem { Label("History", systemImage: "clock") }
+            MultiScanHubView()
+                .tag(MainTab.scan).tabItem { Label("Scan", systemImage: "camera.fill") }
+            LearnView(history: history)
+                .tag(MainTab.learn).tabItem { Label("Learn", systemImage: "book.closed") }
+            ProfileView(history: history)
+                .tag(MainTab.profile).tabItem { Label("Profile", systemImage: "person") }
+        }
+        .environmentObject(manager)
+        .tint(Color.brandMarigold)
+        .onAppear { IronTheme.configureTabBarAppearance() }
     }
 }

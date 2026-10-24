@@ -31,12 +31,17 @@ final class ScanHistoryStore: ObservableObject {
     @Published private(set) var persistenceError: String?
     @Published private(set) var isSyncing = false
 
+    private var resetTask: Task<Void, Never>?
+    private var historyGeneration = UUID()
+    private var isResetting = false
+    private let cacheURLOverride: URL?
     private let defaults: UserDefaults
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
     private let cloudSyncQueue = DispatchQueue(label: "org.ironscan.scan-history.sync", qos: .utility)
 
-    init(defaults: UserDefaults = .standard) {
+    init(defaults: UserDefaults = .standard, cacheURL: URL? = nil) {
+        self.cacheURLOverride = cacheURL
         self.defaults = defaults
         encoder.dateEncodingStrategy = .iso8601
         decoder.dateDecodingStrategy = .iso8601
@@ -47,6 +52,11 @@ final class ScanHistoryStore: ObservableObject {
             age: savedAge > 0 ? String(savedAge) : "Unknown",
             gender: savedGender
         )
+
+        if TutorialCapture.isEnabled {
+            records = TutorialCapture.records
+            return
+        }
 
         loadLocalRecords()
         Task {
@@ -68,6 +78,7 @@ final class ScanHistoryStore: ObservableObject {
     }
 
     func fetchHistory() async {
+        guard !TutorialCapture.isEnabled else { return }
         loadLocalRecords()
         await syncPendingRecordsToSupabase()
     }
@@ -103,10 +114,53 @@ final class ScanHistoryStore: ObservableObject {
         }
     }
 
+    /// Adapt canonical numerical records to the existing sync payload using
+    /// the same ID. Existing sync acknowledgements survive repeated loading.
+    func upsert(_ scan: ScanRecord) {
+        guard scan.isDemoSample != true else { return }
+        guard !records.contains(where: { $0.id == scan.id }) else { return }
+        guard let record = DashboardHistoryRecords.from([scan]).first else { return }
+        appendLocalRecord(record)
+        Task { await syncPendingRecordsToSupabase() }
+    }
+
+    /// Clear both legacy persistence locations so migration cannot restore scans.
+    func clearAllRecords() {
+        historyGeneration = UUID()
+        records = []
+        defaults.removeObject(forKey: Self.storageKey)
+        isResetting = true
+        let generation = historyGeneration
+        let previous = resetTask
+        let url = localCacheURL
+        let queue = cloudSyncQueue
+        resetTask = Task {
+            await previous?.value
+            let error: String? = await withCheckedContinuation { continuation in
+                queue.async {
+                    do {
+                        try Data("[]".utf8).write(to: url, options: .atomic)
+                        continuation.resume(returning: nil)
+                    } catch {
+                        continuation.resume(returning: "Local scan history could not be reset.")
+                    }
+                }
+            }
+            guard generation == historyGeneration else { return }
+            persistenceError = error
+            isResetting = false
+            if !records.isEmpty { persist() }
+        }
+    }
+
+    func waitForReset() async { await resetTask?.value }
+
     func syncPendingRecordsToSupabase() async {
+        guard !TutorialCapture.isEnabled else { return }
         guard !isSyncing else { return }
         guard pendingSyncCount > 0 else { return }
-        guard await isNetworkAvailable() else { return }
+        let generation = historyGeneration
+        guard await isNetworkAvailable(), generation == historyGeneration else { return }
 
         isSyncing = true
         defer { isSyncing = false }
@@ -132,6 +186,7 @@ final class ScanHistoryStore: ObservableObject {
                 .insert(payload)
                 .execute()
 
+            guard generation == historyGeneration else { return }
             let syncedIDs = Set(pendingRecords.map(\.id))
             records = records.map { record in
                 guard syncedIDs.contains(record.id) else { return record }
@@ -154,6 +209,7 @@ final class ScanHistoryStore: ObservableObject {
     }
 
     private func loadLocalRecords() {
+        guard !isResetting else { return }
         if let data = try? Data(contentsOf: localCacheURL),
            let decoded = try? decoder.decode([ScanHistoryRecord].self, from: data) {
             records = decoded.sorted { $0.capturedAt > $1.capturedAt }
@@ -176,6 +232,8 @@ final class ScanHistoryStore: ObservableObject {
     }
 
     private func persist() {
+        // The reset completion writes any records added while its cache write runs.
+        guard !isResetting else { return }
         do {
             let data = try encoder.encode(records)
             try data.write(to: localCacheURL, options: .atomic)
@@ -186,6 +244,7 @@ final class ScanHistoryStore: ObservableObject {
     }
 
     private var localCacheURL: URL {
+        if let cacheURLOverride { return cacheURLOverride }
         let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
             ?? FileManager.default.temporaryDirectory
         return directory.appendingPathComponent(Self.cacheFilename)

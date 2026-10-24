@@ -39,6 +39,12 @@ class AuthManager: ObservableObject {
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
+        if TutorialCapture.isEnabled {
+            isAuthenticated = false
+            currentUserId = nil
+            showLogin = false
+            return
+        }
         let existingSession = SupabaseManager.client.auth.currentSession
         self.isAuthenticated = existingSession != nil
         self.currentUserId = existingSession.map(Self.userIdentifier(for:)) ?? defaults.string(forKey: Self.authUserIdKey)

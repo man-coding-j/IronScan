@@ -1,0 +1,6 @@
+node_modules/
+out/
+build/
+.DS_Store
+# Local app captures may contain profile information; do not commit.
+public/screenshots/*.png
