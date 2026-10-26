@@ -1,7 +1,7 @@
 * @man-coding-j
-/Apps/IronScan/ @man-coding-j
-/Packages/ @man-coding-j
-/Models/ @man-coding-j
-/MLTraining/ @man-coding-j
-/Server/ @man-coding-j
-/compliance/ @man-coding-j
+/IronScan/Apps/IronScan/ @man-coding-j
+/IronScan/Packages/ @man-coding-j
+/IronScan/Models/ @man-coding-j
+/IronScan/MLTraining/ @man-coding-j
+/IronScan/Server/ @man-coding-j
+/Documentation/compliance/ @man-coding-j

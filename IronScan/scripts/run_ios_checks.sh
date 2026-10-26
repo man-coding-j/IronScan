@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Resolve paths from the technical workspace even when invoked from the repository root.
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
 IOS_DESTINATION="${IOS_DESTINATION:-}"
 if [ -z "$IOS_DESTINATION" ] || [ "$IOS_DESTINATION" = "generic/platform=iOS Simulator" ]; then
   echo "Detecting available iPhone simulator..."
