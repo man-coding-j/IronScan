@@ -10,6 +10,7 @@ export const Process = () => {
   return <Scene duration={sceneFrames.process}>
     <Ribbon subtle/>
     <div style={{position: 'absolute', left: 110, top: 115}}><Eyebrow>{config.copy.processEyebrow}</Eyebrow><h2 style={{fontFamily: serif, fontSize: config.type.title, fontWeight: 400, letterSpacing: -4, margin: '22px 0'}}>{config.copy.processHeading}</h2></div>
+    <div style={{position:'absolute',left:110,top:310,padding:'10px 24px',borderRadius:26,background:C.blue+'B3',border:`1px solid ${C.border}`,fontSize:23,fontWeight:500}}>{config.copy.acquisition}</div>
     <svg viewBox="0 0 1920 1080" style={{position: 'absolute', inset: 0}}>
       {[0,1,2].map(i=><g key={i} opacity={flow}><path d={`M${272+i*366} 697 V758 Q${272+i*366} 790 ${302+i*366} 790 H1225 Q1265 790 1265 750 V638 H1322`} fill="none" stroke={C.teal} strokeWidth="3" pathLength="1" strokeDasharray="1" strokeDashoffset={1-flow}/></g>)}
       <path d="M1308 626 L1322 638 L1308 650" fill="none" stroke={C.teal} strokeWidth="3" opacity={flow}/>

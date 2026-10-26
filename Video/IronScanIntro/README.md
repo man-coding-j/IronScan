@@ -1,10 +1,10 @@
-# IronScan tutorial intro
+# IronScan intro — 32 seconds at 60 fps
 
-A 29.2-second silent Remotion animation: 1920×1080, 30 fps, 876 frames. Five React/TypeScript scene components use Fraunces headings, DM Sans body text, original SVG icons, marigold ribbons, glass cards, and actual simulator captures of the app's production SwiftUI views.
+A silent 1920×1080 Remotion MP4 with the IronScan warm sand, deep teal, marigold, glacier blue, editorial serif, and glass-card aesthetic. Six phone slides include an animated three-photo import / laser scan / image-release workflow.
 
 ## Install, preview, render
 
-Use Node.js 22.18 or newer. From this directory:
+Node.js 22.18 or newer:
 
 ```sh
 npm ci
@@ -12,51 +12,67 @@ npm run check-assets
 npx remotion studio
 npm run typecheck
 npm run stills
+npm run export-readme
 npm run render
 ```
 
-The first render may download Chrome Headless Shell. Google Fonts loading requires network access and blocks rendering until fonts are ready. The output is `out/ironscan-intro.mp4`: H.264, 4:2:0 color, CRF 16, no audio track. All Remotion packages are pinned to matching versions.
+Output: `out/new.mp4` — H.264, CRF 16, 60 fps, 1920 frames, exactly 32 seconds, no audio stream. The prior `out/ironscan-intro.mp4` is retained separately. First use can download Chrome Headless Shell; Google Fonts require network access and block rendering until loaded.
 
-## Edit
+## Editorial control panel
 
-`src/config.ts` contains editorial text, brand colors, scene durations, asset names, and output paths. The problem placeholder has been replaced with source-backed wording approved in chat. The 1.62 billion estimate is explicitly dated to WHO's 1993–2005 assessment. No claim that blood draws cause millions of missed diagnoses is made.
+`src/config.ts` contains copy, colors, timing, per-slide durations, filenames, review times, and video-verification settings. Each scene has a separate component. `src/scenes/PhoneScreens.tsx` contains original code-native phone UI, SVG anatomical illustrations, the laser/HUD, and the three-point chart. No emojis, patient photos, external icon packs, or manufacturer logos are added.
 
-Sources:
-
-- [WHO: Worldwide prevalence of anaemia 1993–2005](https://www.who.int/publications/i/item/9789241596657)
-- [WHO: Anaemia fact sheet](https://www.who.int/news-room/fact-sheets/detail/anaemia)
-
-| Time | Scene |
+| Time | Scene / phone caption |
 | --- | --- |
-| 0–4 s | IronScan title and updated on-device AI subtitle |
-| 4–8 s | Source-backed problem statement and visible WHO attribution |
-| 8–14 s | Three tissue cards → on-device AI; tech-stack caption |
-| 14–26.2 s | Home, Scan, History, Learn, Profile |
-| 26.2–29.2 s | Tutorial handoff and non-clinical disclaimer |
+| 0–4 s | IronScan title, updated subtitle, Naman Jain & Ved Patel credit |
+| 4–8 s | WHY IT MATTERS, dated WHO estimate and visible citation |
+| 8–13 s | How it works; live-or-library pill; RAM caption; PhotosUI tech stack |
+| 13–16 s | 01 / 06 — Your dashboard |
+| 16–19 s | 02 / 06 — Guided 3-step live scan |
+| 19–23 s | 03 / 06 — Import photos & private AI scan |
+| 23–26 s | 04 / 06 — Track trends over time |
+| 26–28 s | 05 / 06 — Learn about iron health |
+| 28–30 s | 06 / 06 — Your profile |
+| 30–32 s | Tutorial handoff and non-clinical disclaimer |
 
-Five 2.2-second screenshot intervals plus four 0.3-second transitions take 12.2 seconds. Only one screenshot is mounted at a time; the old image fades out before the source changes. The phone stays centered at x=960. All captures are measured at load time and contained within the screen, with a gentle zoom that never exceeds 100% scale. Caption cards have a fixed size to avoid layout jumps.
+The import slide highlights the Photos pill, fills three synthetic anatomical thumbnails with completion borders/checks, sweeps a 3-pixel glowing laser, pulses telemetry nodes, fills fusion progress to 100%, then clears the image illustrations and shows shields. The right caption and HUD distinguish releasing imported working copies from deleting originals in the Photos library or guaranteeing memory zeroing.
 
-## Re-capture the app screens
+## Phone sources and privacy
 
-The app has an explicitly enabled Debug/simulator-only capture mode. It renders `HomeDashboardView`, `HistoryView`, `MultiScanHubView`, `LearnView`, and `ProfileView` with seven deterministic **fictional** readings ending at 11.8 g/dL / Mild. The history store bypasses disk loading and cloud sync. Profile defaults use a separate suite and the greeting is fictional. Camera startup is disabled; its surface is labeled as a simulator preview. No captured tissue image or participant record is used.
+Home, Learn, and Profile use the existing native simulator captures in `public/screenshots/demo-*.png`. These three public fixture images are versioned so a fresh checkout can render the intro. Their sample profile and seven scan records are fictional. Live scan, import, and three-point History are deliberately **illustrated React/SVG UI**, not new app recordings or model evaluations. The chart shows 10.9 → 11.4 → 11.8 g/dL and a glacier reference band. The original native scan/history PNGs remain local and are not used in this video.
 
-Build on a Mac with Xcode, replacing `DEVICE_ID` with an available, booted simulator UUID:
+The app's `purgeSessionImages()` releases session-owned image references; its source explicitly does not promise RAM zeroing. This video adds no raw tissue images and makes no claim that originals are deleted from the Photos library. The four-second animation demonstrates a workflow rather than measuring inference duration. The visible non-clinical disclaimer remains.
+
+Personal/local captures remain gitignored; only the three explicitly named fictional `demo-*.png` fixtures are versioned. Optional `public/logo.png` remains disabled. Do not substitute participant photos for the vector illustrations.
+
+To regenerate the three native screenshot inputs, build the app for a booted simulator and use the existing isolated capture mode:
 
 ```sh
-# Run from the repository root:
+# From the repository root (replace DEVICE_ID):
 xcodebuild -project Apps/IronScan/IronScan.xcodeproj -scheme IronScan \
   -configuration Debug -destination 'platform=iOS Simulator,id=DEVICE_ID' \
   -derivedDataPath /private/tmp/ironscan-intro-build CODE_SIGNING_ALLOWED=NO build
 
-# Run from Video/IronScanIntro:
+# From Video/IronScanIntro:
 python3 scripts/capture-screenshots.py DEVICE_ID \
   /private/tmp/ironscan-intro-build/Build/Products/Debug-iphonesimulator/IronScan.app
-npm run stills
-npm run render
 ```
 
-The capture script uses `--tutorial-capture --tutorial-screen=home` (or scan/history/learn/profile). It first saves PNGs in a temporary directory because CoreSimulator cannot write directly to protected Documents folders, then copies them to `public/screenshots/`. Launch the app without these flags to use the ordinary app flow. Capture mode is unavailable in Release or on physical devices.
+## Cross-dissolve and blank-frame verification
 
-These five PNGs are the current inputs: `home.png`, `scan.png`, `history.png`, `learn.png`, `profile.png`. `login.png` is not shown. Screenshot files remain local and gitignored; do not replace them with participant data. No screenshot overlays manufacture readings or hide clipping. The image sources themselves are native app captures. Health Vitals remains a static sample preview, as its visible explanatory text states. Camera flip/flash hardware behavior and clinical/model accuracy are not validated by a simulator video.
+At each internal change, the outgoing screen stays fully opaque beneath the incoming one. Only the incoming layer's opacity changes. This produces `previous × (1 − blend) + next × blend` without exposing the sand canvas. A 0.3-second dissolve starts at 16, 19, 23, 26, and 28 seconds. The six progress segments and captions use the same timeline.
 
-The optional `public/logo.png` is disabled. Only enable it for your original IronScan mark. The phone frame is drawn with CSS and includes no manufacturer logo.
+Verify the **encoded MP4**, not just the component logic, with Python and NumPy (the repository virtualenv already supplies NumPy):
+
+```sh
+../../.venv/bin/python scripts/verify-output.py
+```
+
+The verifier checks dimensions, fps, frame count, duration, codec, and absence of audio, then decodes all 1,020 carousel frames. It checks deep-teal UI pixel coverage within the phone interior in every fully visible phone frame and all 90 internal-transition frames. A blank warm-sand image is the detector's negative control. Only the deliberate scene-entry and closing fades are excluded. A second pass decodes the entire video. The report is saved to `out/transition-verification.json`. Representative PNGs, including boundary frames and import phases, are in `out/stills/`.
+
+## Sources
+
+- [WHO: Worldwide prevalence of anaemia 1993–2005](https://www.who.int/publications/i/item/9789241596657)
+- [WHO: Anaemia fact sheet](https://www.who.int/news-room/fact-sheets/detail/anaemia)
+
+The historical 1.62 billion estimate remains explicitly dated. No claim about blood draws causing millions of missed diagnoses is introduced.

@@ -97,7 +97,6 @@
 		B23CAF3130198BD0004DF14C /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = B23CAF3030198BD0004DF14C /* FirebaseAuth */; };
 		B23CAF3330198BDF004DF14C /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = B23CAF3230198BDF004DF14C /* FirebaseCore */; settings = {ATTRIBUTES = (Required, ); }; };
 		B23CAF3530198BE6004DF14C /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = B23CAF3430198BE6004DF14C /* FirebaseFirestore */; };
-		B23CAF3B3019C454004DF14C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B23CAF3A3019C454004DF14C /* GoogleService-Info.plist */; };
 		B24E6D8830323F83004593E8 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = B24E6D8730323F83004593E8 /* Supabase */; };
 		B24E6D92303BF87B004593E8 /* ConjunctivaModel.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = B24E6D8D303BF87B004593E8 /* ConjunctivaModel.mlpackage */; };
 		B24E6D94303C0FE2004593E8 /* HbRegressionModel.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = B24E6D8E303BF87B004593E8 /* HbRegressionModel.mlpackage */; };
@@ -230,10 +229,8 @@
 		B211B21D306F6E5A00FB2A7F /* ConjunctivaPallor.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = ConjunctivaPallor.mlpackage; sourceTree = "<group>"; };
 		B211B21E306F6E5A00FB2A7F /* NailHemoglobin.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = NailHemoglobin.mlpackage; sourceTree = "<group>"; };
 		B211B21F306F6E5A00FB2A7F /* TonguePallor.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = TonguePallor.mlpackage; sourceTree = "<group>"; };
-		B23CAF3A3019C454004DF14C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B24E6D8A3033E3A4004593E8 /* IronScan.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = IronScan.entitlements; sourceTree = "<group>"; };
 		B24E6D8B3033E3FA004593E8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		B24E6D8C3033F24C004593E8 /* Untitled.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Untitled.swift; sourceTree = "<group>"; };
 		B24E6D8D303BF87B004593E8 /* ConjunctivaModel.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = ConjunctivaModel.mlpackage; sourceTree = "<group>"; };
 		B24E6D8E303BF87B004593E8 /* HbRegressionModel.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = HbRegressionModel.mlpackage; sourceTree = "<group>"; };
 		B24E6D97303E7DDB004593E8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = ../Assets.xcassets; sourceTree = SOURCE_ROOT; };
@@ -308,87 +305,74 @@
 			path = IronScanTests/ML;
 			sourceTree = "<group>";
 		};
-		16428011072E0F1EBA70C100 /* App */ = {
+		16428011072E0F1EBA70C100 /* AppAndUI */ = {
 			isa = PBXGroup;
 			children = (
-				98A7B6C5D4E3F20192837465 /* AnalyzingView.swift */,
-				24D70D7B2D72B27579C0D9B3 /* AuthManager.swift */,
 				B24E6D97303E7DDB004593E8 /* Assets.xcassets */,
-				D81E16B037A0A9CA6FCE917A /* AutoCaptureManager.swift */,
-				BF081E85AE18E47ECCDE44FF /* AvailabilityEngine.swift */,
-				8F7E6D5C4B3A291807162534 /* CameraView.swift */,
+				98A7B6C5D4E3F20192837465 /* AnalyzingView.swift */,
 				7B53F5DBBA9B4B0234C650E6 /* CameraPreviewView.swift */,
+				8F7E6D5C4B3A291807162534 /* CameraView.swift */,
 				C214FD97A093F448B6284F90 /* CareResourcesView.swift */,
-				3FA91CEB7D8F4A0F9B8A1002 /* ClinicalReportGenerator.swift */,
 				1BB9618BB0B2B7C26228A634 /* ClinicDetailSheet.swift */,
-				BBCCDDEEFF00112233445566 /* CoreMLInferenceManager.swift */,
-				4AB1C2D3E4F5061728394056 /* DemographicProfile.swift */,
-				9A1B2C3D4E5F60718293A4B2 /* HealthKitManager.swift */,
+				D318B4100A4149089D010002 /* DemoFeatureViews.swift */,
 				83032E866467B729ABF35364 /* HealthGuidanceView.swift */,
 				90BBB970EAF7F97D55BFCFF8 /* HomeDashboardView.swift */,
-				D318B4100A4149089D010002 /* DemoFeatureViews.swift */,
 				6EDB70D69E9510F54931E442 /* HumanResultsView.swift */,
 				4AB1C2D3E4F5061728394058 /* InformedConsentModalView.swift */,
 				ACE22C656DA84609D181555F /* IntegratedResearchReportView.swift */,
 				B3C5B18F24F17B8D829F225A /* IntegratedTriangulationReportView.swift */,
-				7C6B5A4938271605F4E3D2C1 /* ImageQualityGatekeeper.swift */,
 				2855A955B977BB96DE8AC76F /* IronHealthInsightsView.swift */,
 				5C2D43B1333283339DAAB1A2 /* IronScanApp.swift */,
-				B23CAF3A3019C454004DF14C /* GoogleService-Info.plist */,
 				D355473F6361D54CA97933B2 /* IronTheme.swift */,
-				B24E6D8C3033F24C004593E8 /* Untitled.swift */,
 				4AA1B8738F5F4A22B2D9B002 /* LiquidGlassModifier.swift */,
-				9E5DD93499E94B80E235234B /* LiveScanningState.swift */,
 				24D70D7B2D72B27579C0D9B5 /* LoginView.swift */,
-				FF58ADE215E7FFB7343FB4CA /* LocationManager.swift */,
 				7AD6F5EE5B90937854CB4A31 /* MainTabView.swift */,
 				B27692D47BCDB9056A242261 /* MultiHealthDashboardView.swift */,
 				0D654FBEECD0C973CF6F522A /* MultiScanHubView.swift */,
-				B8EC1DB78925749755F72C35 /* MultiScanHubViewModel.swift */,
-				B24E6D9F303F51E1004593E8 /* NotificationManager.swift */,
 				5CBBC27689B1D6992CE064AD /* OnboardingConsentView.swift */,
 				0CE0701A075B8E4C345EF153 /* OnboardingFlowView.swift */,
 				4AB1C2D3E4F5061728394060 /* OnboardingProfileView.swift */,
-				7F8F28B81C826B47FB436F0E /* PersonalizedPlanEngine.swift */,
-				A16619C1546F3F0256ADF8BB /* PrototypeDemoMode.swift */,
-				4AB1C2D3E4F5061728394062 /* ResearchDataExporter.swift */,
-				3EA4498D7B44EECC80F86350 /* ResultTranslator.swift */,
-				4AB1C2D3E4F5061728394054 /* ScanHistoryStore.swift */,
-				A03000000000000000000004 /* ScanModels.swift */,
-				9CB71EA68B5C4D0EA4F92002 /* SaliencyHeatmapGenerator.swift */,
-				4AB1C2D3E4F5061728394052 /* ScanResultView.swift */,
-				3CDE1BC212E278C815A26473 /* ScanHapticsManager.swift */,
 				29D4524BE67BE6FD8A4190A6 /* ScanningOverlayView.swift */,
-				649273439084E53AF490FF85 /* ScanPipelineActor.swift */,
+				4AB1C2D3E4F5061728394052 /* ScanResultView.swift */,
 				0FAAE579A2288B01A9DB4382 /* ScanView.swift */,
-				D2A9EE179039AF10C116D439 /* ScanViewModel.swift */,
 				8759AA28CA65469EC27C5E48 /* ScreeningIntakeView.swift */,
 				24D70D7B2D72B27579C0D9B7 /* SignupView.swift */,
-				9D1E2F3A4B5C6D7E8F901235 /* SupabaseManager.swift */,
-				F483D6BE4B152413D512043D /* VisualRiskSummaryEngine.swift */,
 			);
-			path = App;
+			path = AppAndUI;
 			sourceTree = "<group>";
 		};
-		2112B7555206086CC11345A7 /* Camera */ = {
+		2112B7555206086CC11345A7 /* ServicesAndManagers */ = {
 			isa = PBXGroup;
 			children = (
+				24D70D7B2D72B27579C0D9B3 /* AuthManager.swift */,
+				D81E16B037A0A9CA6FCE917A /* AutoCaptureManager.swift */,
+				BF081E85AE18E47ECCDE44FF /* AvailabilityEngine.swift */,
 				128E22481DD933AF311F1FA4 /* CameraControllerFactory.swift */,
 				07A9289DE497D5480CB6DF2C /* CameraInferenceBridge.swift */,
 				CEA6CB768C98398A8A7420AC /* CameraPermissionManager.swift */,
 				EB6AA327A15381DF435F33B6 /* CameraProtocols.swift */,
 				216E3263067D5F8CD5F79591 /* CameraSessionActor.swift */,
-				A03000000000000000000002 /* MedicalCameraManager.swift */,
 				E1391A04C0D992B8864317FF /* CameraStateMachine.swift */,
-				F1428C9A7E7B879C5CD7864D /* CameraTypes.swift */,
+				3FA91CEB7D8F4A0F9B8A1002 /* ClinicalReportGenerator.swift */,
 				34969953DEEE585BC4B844CD /* FrameStrideThrottle.swift */,
-				3FF3CF2511DE06DB258F385D /* ImageQualityAnalyzer.swift */,
+				9A1B2C3D4E5F60718293A4B2 /* HealthKitManager.swift */,
 				39C687323CDFF8CBFB6C28AF /* LatestFrameProcessor.swift */,
+				9E5DD93499E94B80E235234B /* LiveScanningState.swift */,
+				FF58ADE215E7FFB7343FB4CA /* LocationManager.swift */,
+				A03000000000000000000002 /* MedicalCameraManager.swift */,
 				201F1EC52294D79326EBA988 /* MotionStabilityMonitor.swift */,
+				B8EC1DB78925749755F72C35 /* MultiScanHubViewModel.swift */,
+				B24E6D9F303F51E1004593E8 /* NotificationManager.swift */,
+				A16619C1546F3F0256ADF8BB /* PrototypeDemoMode.swift */,
+				4AB1C2D3E4F5061728394062 /* ResearchDataExporter.swift */,
+				3CDE1BC212E278C815A26473 /* ScanHapticsManager.swift */,
+				4AB1C2D3E4F5061728394054 /* ScanHistoryStore.swift */,
+				649273439084E53AF490FF85 /* ScanPipelineActor.swift */,
+				D2A9EE179039AF10C116D439 /* ScanViewModel.swift */,
 				754B466C772DA3ADBBCE6081 /* SimulatorCameraActor.swift */,
-				62DD2163A5AB3B41F5AE2CF9 /* SyntheticTongueFrameFactory.swift */,
+				9D1E2F3A4B5C6D7E8F901235 /* SupabaseManager.swift */,
 			);
-			path = Camera;
+			path = ServicesAndManagers;
 			sourceTree = "<group>";
 		};
 		259A24E8E2B4C7F9242ED93B /* IronScanModels */ = {
@@ -400,21 +384,32 @@
 			path = ../../Packages/IronScanModels/Sources/IronScanModels;
 			sourceTree = "<group>";
 		};
-		4FF5C807F6D1C3F5BDB8BF35 /* ML */ = {
+		4FF5C807F6D1C3F5BDB8BF35 /* ModelsAndML */ = {
 			isa = PBXGroup;
 			children = (
+				F1428C9A7E7B879C5CD7864D /* CameraTypes.swift */,
+				B24E6D8D303BF87B004593E8 /* ConjunctivaModel.mlpackage */,
+				B211B21D306F6E5A00FB2A7F /* ConjunctivaPallor.mlpackage */,
+				BBCCDDEEFF00112233445566 /* CoreMLInferenceManager.swift */,
+				4AB1C2D3E4F5061728394056 /* DemographicProfile.swift */,
+				B24E6D8E303BF87B004593E8 /* HbRegressionModel.mlpackage */,
 				DA9AF19F565891DE00509172 /* IDARiskEngine.swift */,
+				3FF3CF2511DE06DB258F385D /* ImageQualityAnalyzer.swift */,
+				7C6B5A4938271605F4E3D2C1 /* ImageQualityGatekeeper.swift */,
 				6968486D2A25A9D0677F8D80 /* LiveInferenceEngine.swift */,
 				A6533D40DE71F4150952FEA1 /* MultiInferenceEngine.swift */,
 				F88F8E6786FBC5BEFA4BFD1F /* MultiTissueInferenceActor.swift */,
-				E3F12B9F23753C31E2366C19 /* TriangulationEngine.swift */,
-				B24E6D8D303BF87B004593E8 /* ConjunctivaModel.mlpackage */,
-				B24E6D8E303BF87B004593E8 /* HbRegressionModel.mlpackage */,
-				B211B21D306F6E5A00FB2A7F /* ConjunctivaPallor.mlpackage */,
 				B211B21E306F6E5A00FB2A7F /* NailHemoglobin.mlpackage */,
+				7F8F28B81C826B47FB436F0E /* PersonalizedPlanEngine.swift */,
+				3EA4498D7B44EECC80F86350 /* ResultTranslator.swift */,
+				9CB71EA68B5C4D0EA4F92002 /* SaliencyHeatmapGenerator.swift */,
+				A03000000000000000000004 /* ScanModels.swift */,
+				62DD2163A5AB3B41F5AE2CF9 /* SyntheticTongueFrameFactory.swift */,
 				B211B21F306F6E5A00FB2A7F /* TonguePallor.mlpackage */,
+				E3F12B9F23753C31E2366C19 /* TriangulationEngine.swift */,
+				F483D6BE4B152413D512043D /* VisualRiskSummaryEngine.swift */,
 			);
-			path = ML;
+			path = ModelsAndML;
 			sourceTree = "<group>";
 		};
 		8A986129803FB215759FA3D4 /* IronScanTests */ = {
@@ -502,9 +497,9 @@
 			children = (
 				B24E6D8B3033E3FA004593E8 /* Info.plist */,
 				B24E6D8A3033E3A4004593E8 /* IronScan.entitlements */,
-				16428011072E0F1EBA70C100 /* App */,
-				2112B7555206086CC11345A7 /* Camera */,
-				4FF5C807F6D1C3F5BDB8BF35 /* ML */,
+				16428011072E0F1EBA70C100 /* AppAndUI */,
+				2112B7555206086CC11345A7 /* ServicesAndManagers */,
+				4FF5C807F6D1C3F5BDB8BF35 /* ModelsAndML */,
 			);
 			path = IronScan;
 			sourceTree = "<group>";
@@ -644,7 +639,6 @@
 			files = (
 				D757A71B1B455A8D86C15A79 /* Models in Resources */,
 				B24E6D98303E7DDB004593E8 /* Assets.xcassets in Resources */,
-				B23CAF3B3019C454004DF14C /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

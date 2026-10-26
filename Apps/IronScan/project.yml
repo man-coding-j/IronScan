@@ -1,3 +1,5 @@
+# Supplemental XcodeGen structure. The submitted .xcodeproj is authoritative;
+# CI and bootstrap resolve/build it directly to preserve its explicit dependencies.
 name: IronScan
 options:
   bundleIdPrefix: org.ironscan
@@ -14,7 +16,9 @@ targets:
     type: application
     platform: iOS
     sources:
-      - path: IronScan
+      - path: IronScan/AppAndUI
+      - path: IronScan/ModelsAndML
+      - path: IronScan/ServicesAndManagers
       - path: ../../Packages/IronScanCore/Sources/IronScanCore
       - path: ../../Packages/IronScanModels/Sources/IronScanModels
       - path: ../../Models

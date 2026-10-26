@@ -17,7 +17,8 @@ export const Eyebrow: React.FC<React.PropsWithChildren> = ({children}) => <div s
 export const Ribbon: React.FC<{subtle?: boolean}> = ({subtle = false}) => {
   const f = useCurrentFrame();
   const draw = ramp(f, 0, frames(config.timing.ribbon));
-  return <svg viewBox="0 0 1920 1080" style={{position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: subtle ? 0.35 : 0.85}}>
+  const wave = Math.sin(f / frames(config.timing.ribbonLoop) * Math.PI * 2) * 9;
+  return <svg viewBox="0 0 1920 1080" style={{position: 'absolute', inset: 0, width: '100%', height: '100%', transform: `translateY(${wave}px)`, opacity: subtle ? 0.35 : 0.85}}>
     <path d="M-160 870 C230 500 460 1120 780 852 S1190 380 1430 480 S1820 490 2050 110" fill="none" stroke={C.marigold} strokeWidth="9" strokeLinecap="round" pathLength="1" strokeDasharray="1" strokeDashoffset={1 - draw}/>
     <path d="M-120 904 C230 534 460 1154 780 886 S1190 414 1430 514 S1820 524 2050 144" fill="none" stroke={C.marigold} strokeWidth="2" strokeLinecap="round" pathLength="1" strokeDasharray="1" strokeDashoffset={1 - ramp(f, frames(config.timing.ribbonEchoDelay), frames(config.timing.ribbon))}/>
   </svg>;

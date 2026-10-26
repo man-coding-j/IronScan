@@ -1,0 +1,47 @@
+{
+  "source": "IronScanIntro Remotion composition",
+  "fps": 60,
+  "content": "Fictional data and original vector UI illustrations; not clinical evidence",
+  "assets": [
+    {
+      "file": "01_hero_banner.png",
+      "second": 2.5,
+      "frame": 150,
+      "width": 1920,
+      "height": 1080,
+      "sha256": "37cb3d86028743caf551a77f3d70c55cbfff4947b8c03f058e0d2f4908412589"
+    },
+    {
+      "file": "02_why_it_matters.png",
+      "second": 6.5,
+      "frame": 390,
+      "width": 1920,
+      "height": 1080,
+      "sha256": "e4d1555d3f4382584eca93fd6ed2eb3247112c76bbf77bbc884bfb4d503c065f"
+    },
+    {
+      "file": "03_how_it_works_ml.png",
+      "second": 12,
+      "frame": 720,
+      "width": 1920,
+      "height": 1080,
+      "sha256": "180a80ff0288117e47e4bf4da5c1a12393946eb4085e0e0f08c053b6d8e4b3c4"
+    },
+    {
+      "file": "04_import_and_private_scan.png",
+      "second": 21.5,
+      "frame": 1290,
+      "width": 1920,
+      "height": 1080,
+      "sha256": "84e5e288789f4151b055b235beba9d3ef4b1d223bf21a6f80e7d90b9eaaa2990"
+    },
+    {
+      "file": "05_history_trend_graph.png",
+      "second": 24.5,
+      "frame": 1470,
+      "width": 1920,
+      "height": 1080,
+      "sha256": "3f75f92b5612c700d2ef20b25f71d0279d9446d2dcb51339694e3886cb2c83ad"
+    }
+  ]
+}

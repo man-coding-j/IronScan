@@ -7,7 +7,7 @@ const browser=await openBrowser('chrome');
 try {
   const composition=await selectComposition({serveUrl,id:config.video.id,puppeteerInstance:browser});
   await mkdir(config.output.stills,{recursive:true});
-  for(const frame of config.output.reviewFrames) {
+  for(const frame of config.output.reviewSeconds.map(seconds=>Math.round(seconds*config.video.fps))) {
     await renderStill({serveUrl,composition,frame,output:`${config.output.stills}/${frame}.png`,puppeteerInstance:browser});
     console.log(`Rendered frame ${frame}`);
   }
