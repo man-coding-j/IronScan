@@ -1788,7 +1788,7 @@
       "from": "Video/IronScanIntro/scripts/capture-screenshots.py",
       "to": "IronScan/Video/IronScanIntro/scripts/capture-screenshots.py",
       "sha256_before": "edd8b01da86521d862a482b648d7cdf97caf3381101125c357de9fa76a3c8a86",
-      "sha256_after": "edd8b01da86521d862a482b648d7cdf97caf3381101125c357de9fa76a3c8a86"
+      "sha256_after": "ddd39e4b523d4e0deb2cc85fd006811812352a93cd6ded50b21f030d3579dd85"
     },
     {
       "from": "Video/IronScanIntro/scripts/check-assets.mjs",
@@ -1818,7 +1818,7 @@
       "from": "Video/IronScanIntro/scripts/verify-output.py",
       "to": "IronScan/Video/IronScanIntro/scripts/verify-output.py",
       "sha256_before": "80a97e9ec16c3d76d4fb9a5ba2cbd3f59ebf682e11e9b00c23b3d3f8683491dd",
-      "sha256_after": "80a97e9ec16c3d76d4fb9a5ba2cbd3f59ebf682e11e9b00c23b3d3f8683491dd"
+      "sha256_after": "cc304024472627f24d01476e88fa8dc862c9faf5f533775ff8cc742045b444b6"
     },
     {
       "from": "Video/IronScanIntro/src/Intro.tsx",
@@ -2136,7 +2136,7 @@
       "from": "scripts/check_repository_layout.py",
       "to": "IronScan/scripts/check_repository_layout.py",
       "sha256_before": "4f237ca89367db261e8223b1904fd79a0e1355d6f79cc1709044585671385544",
-      "sha256_after": "2448831731c65b854fc42de911cc7b2706017765d225d16381c7054e1a0e62d1"
+      "sha256_after": "b1bed66df29c11c004a8c9bcfaa45cd46a29bd52c289ffdc83e7f69073480a5f"
     },
     {
       "from": "scripts/compare_swift_python_outputs.py",

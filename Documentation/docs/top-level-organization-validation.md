@@ -9,7 +9,7 @@ GitHub metadata (`.github`), README, license, security, contributor instructions
 
 ## Preservation and path updates
 
-The [relocation map](top-level-relocation-map.json) records all 363 relocated tracked files with before/after checksums; 353 retain identical bytes. Content edits are limited to workspace configuration, workflow/script paths, documentation, the audit metadata, and the Remotion README-asset output path. App Swift source, Python implementation/tests, model packages, model manifests, parity fixtures, and screenshot/PNG content are unchanged.
+The [relocation map](top-level-relocation-map.json) records all 363 relocated tracked files with before/after checksums; 351 retain identical bytes. Content edits are limited to workspace configuration, workflow/script paths, documentation, the audit metadata, and the Remotion README-asset output path. App Swift source, Python implementation/tests, model packages, model manifests, parity fixtures, and screenshot/PNG content are unchanged.
 
 CI shell steps now run from `IronScan/`. Provenance checks point to `../Documentation/compliance`. Shell entry points resolve their own technical workspace, making invocation from the repository root safe. README links and clone/build/media instructions reflect the new locations. `Package.swift` and `pyproject.toml` move with their sources; create the technical workspace environment with `cd IronScan && uv sync --all-groups` rather than depending on an old root virtualenv.
 
@@ -38,3 +38,7 @@ xcodebuild -project IronScan/Apps/IronScan/IronScan.xcodeproj -scheme IronScan \
 ## Limits
 
 An additional run including `MLTraining/tests` stopped during collection because the existing local environment lacks Pillow (`PIL`). The configured reference/server suites were run separately and passed. This folder-only change does not install or change training dependencies. Swift tests were not rerun for this repository-level move; the previous focused-test and full-suite results remain in [the earlier validation](repository-organization-validation.md). Existing full-suite assertion failures, physical-device assumptions, and non-clinical research limitations remain unresolved.
+
+## Pre-merge helper-script checks
+
+Corrected import ordering, line wrapping, and missing type annotations in the repository-layout and media helper scripts after Python CI exposed them. Local Ruff and strict mypy checks pass (69 Python source files); configured pytest suites pass with 25 tests. Runtime app code and model contents remain unchanged. The user authorized merging despite remaining CI failures or pending checks, provided the layout is correct and there are no conflicts with main.

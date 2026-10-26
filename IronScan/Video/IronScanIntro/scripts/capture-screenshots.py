@@ -4,12 +4,12 @@ Usage: python3 scripts/capture-screenshots.py DEVICE_ID /path/to/IronScan.app
 Build Debug for the simulator first. No participant data, camera capture, or cloud sync is used.
 """
 import json
-from pathlib import Path
+import shutil
 import subprocess
 import sys
-import time
 import tempfile
-import shutil
+import time
+from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
 device, app = sys.argv[1:3]
@@ -21,7 +21,7 @@ bundle_id = subprocess.check_output([
     "/usr/libexec/PlistBuddy", "-c", "Print:CFBundleIdentifier", str(Path(app) / "Info.plist")
 ], text=True).strip()
 
-def sim(*args):
+def sim(*args: str) -> None:
     subprocess.run(["xcrun", "simctl", *args], check=True)
 
 sim("install", device, app)

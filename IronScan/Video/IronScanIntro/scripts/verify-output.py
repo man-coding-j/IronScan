@@ -3,9 +3,10 @@ Run with the repository virtualenv (NumPy required):
   ../../.venv/bin/python scripts/verify-output.py
 """
 import json
-from pathlib import Path
-import subprocess
 import struct
+import subprocess
+from pathlib import Path
+
 import numpy as np
 
 root = Path(__file__).resolve().parents[1]
@@ -38,7 +39,7 @@ w, h = roi['width'], roi['height']
 minimum = config['verification']['minimumTealPixels']
 frame_bytes = w*h*3
 
-def teal_pixels(data, bgr=False):
+def teal_pixels(data: bytes | bytearray, bgr: bool = False) -> int:
     pixels = np.frombuffer(data, dtype=np.uint8).reshape(h,w,3).astype(np.int16)
     if bgr:
         pixels = pixels[:,:,::-1]
@@ -54,7 +55,8 @@ command = [str(binary), '-v', 'error', '-ss', str(start), '-i', str(video), '-t'
 process = subprocess.Popen(command, cwd=binary.parent, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 # The bundled ffmpeg has a rawvideo encoder but no rawvideo muxer.
 # Stream uncompressed BGR frames in AVI instead; keep every frame in order.
-def read_exact(size):
+def read_exact(size: int) -> bytearray:
+    assert process.stdout is not None
     data = bytearray()
     while len(data) < size:
         part = process.stdout.read(size-len(data))
@@ -86,6 +88,7 @@ while True:
         read_exact(size)
     if size % 2:
         read_exact(1)
+assert process.stderr is not None
 errors = process.stderr.read().decode()
 assert process.wait() == 0, errors
 assert len(counts) == round(length*fps)
