@@ -341,7 +341,16 @@
 			path = AppAndUI;
 			sourceTree = "<group>";
 		};
-		2112B7555206086CC11345A7 /* ServicesAndManagers */ = {
+		259A24E8E2B4C7F9242ED93B /* IronScanModels */ = {
+			isa = PBXGroup;
+			children = (
+				EE6E523B672E380D6D4D8FCD /* ML */,
+			);
+			name = IronScanModels;
+			path = ../../Packages/IronScanModels/Sources/IronScanModels;
+			sourceTree = "<group>";
+		};
+		4FF5C807F6D1C3F5BDB8BF35 /* CoreAndML */ = {
 			isa = PBXGroup;
 			children = (
 				24D70D7B2D72B27579C0D9B3 /* AuthManager.swift */,
@@ -353,63 +362,47 @@
 				EB6AA327A15381DF435F33B6 /* CameraProtocols.swift */,
 				216E3263067D5F8CD5F79591 /* CameraSessionActor.swift */,
 				E1391A04C0D992B8864317FF /* CameraStateMachine.swift */,
-				3FA91CEB7D8F4A0F9B8A1002 /* ClinicalReportGenerator.swift */,
-				34969953DEEE585BC4B844CD /* FrameStrideThrottle.swift */,
-				9A1B2C3D4E5F60718293A4B2 /* HealthKitManager.swift */,
-				39C687323CDFF8CBFB6C28AF /* LatestFrameProcessor.swift */,
-				9E5DD93499E94B80E235234B /* LiveScanningState.swift */,
-				FF58ADE215E7FFB7343FB4CA /* LocationManager.swift */,
-				A03000000000000000000002 /* MedicalCameraManager.swift */,
-				201F1EC52294D79326EBA988 /* MotionStabilityMonitor.swift */,
-				B8EC1DB78925749755F72C35 /* MultiScanHubViewModel.swift */,
-				B24E6D9F303F51E1004593E8 /* NotificationManager.swift */,
-				A16619C1546F3F0256ADF8BB /* PrototypeDemoMode.swift */,
-				4AB1C2D3E4F5061728394062 /* ResearchDataExporter.swift */,
-				3CDE1BC212E278C815A26473 /* ScanHapticsManager.swift */,
-				4AB1C2D3E4F5061728394054 /* ScanHistoryStore.swift */,
-				649273439084E53AF490FF85 /* ScanPipelineActor.swift */,
-				D2A9EE179039AF10C116D439 /* ScanViewModel.swift */,
-				754B466C772DA3ADBBCE6081 /* SimulatorCameraActor.swift */,
-				9D1E2F3A4B5C6D7E8F901235 /* SupabaseManager.swift */,
-			);
-			path = ServicesAndManagers;
-			sourceTree = "<group>";
-		};
-		259A24E8E2B4C7F9242ED93B /* IronScanModels */ = {
-			isa = PBXGroup;
-			children = (
-				EE6E523B672E380D6D4D8FCD /* ML */,
-			);
-			name = IronScanModels;
-			path = ../../Packages/IronScanModels/Sources/IronScanModels;
-			sourceTree = "<group>";
-		};
-		4FF5C807F6D1C3F5BDB8BF35 /* ModelsAndML */ = {
-			isa = PBXGroup;
-			children = (
 				F1428C9A7E7B879C5CD7864D /* CameraTypes.swift */,
+				3FA91CEB7D8F4A0F9B8A1002 /* ClinicalReportGenerator.swift */,
 				B24E6D8D303BF87B004593E8 /* ConjunctivaModel.mlpackage */,
 				B211B21D306F6E5A00FB2A7F /* ConjunctivaPallor.mlpackage */,
 				BBCCDDEEFF00112233445566 /* CoreMLInferenceManager.swift */,
 				4AB1C2D3E4F5061728394056 /* DemographicProfile.swift */,
+				34969953DEEE585BC4B844CD /* FrameStrideThrottle.swift */,
 				B24E6D8E303BF87B004593E8 /* HbRegressionModel.mlpackage */,
+				9A1B2C3D4E5F60718293A4B2 /* HealthKitManager.swift */,
 				DA9AF19F565891DE00509172 /* IDARiskEngine.swift */,
 				3FF3CF2511DE06DB258F385D /* ImageQualityAnalyzer.swift */,
 				7C6B5A4938271605F4E3D2C1 /* ImageQualityGatekeeper.swift */,
+				39C687323CDFF8CBFB6C28AF /* LatestFrameProcessor.swift */,
 				6968486D2A25A9D0677F8D80 /* LiveInferenceEngine.swift */,
+				9E5DD93499E94B80E235234B /* LiveScanningState.swift */,
+				FF58ADE215E7FFB7343FB4CA /* LocationManager.swift */,
+				A03000000000000000000002 /* MedicalCameraManager.swift */,
+				201F1EC52294D79326EBA988 /* MotionStabilityMonitor.swift */,
 				A6533D40DE71F4150952FEA1 /* MultiInferenceEngine.swift */,
+				B8EC1DB78925749755F72C35 /* MultiScanHubViewModel.swift */,
 				F88F8E6786FBC5BEFA4BFD1F /* MultiTissueInferenceActor.swift */,
 				B211B21E306F6E5A00FB2A7F /* NailHemoglobin.mlpackage */,
+				B24E6D9F303F51E1004593E8 /* NotificationManager.swift */,
 				7F8F28B81C826B47FB436F0E /* PersonalizedPlanEngine.swift */,
+				A16619C1546F3F0256ADF8BB /* PrototypeDemoMode.swift */,
+				4AB1C2D3E4F5061728394062 /* ResearchDataExporter.swift */,
 				3EA4498D7B44EECC80F86350 /* ResultTranslator.swift */,
 				9CB71EA68B5C4D0EA4F92002 /* SaliencyHeatmapGenerator.swift */,
+				3CDE1BC212E278C815A26473 /* ScanHapticsManager.swift */,
+				4AB1C2D3E4F5061728394054 /* ScanHistoryStore.swift */,
 				A03000000000000000000004 /* ScanModels.swift */,
+				649273439084E53AF490FF85 /* ScanPipelineActor.swift */,
+				D2A9EE179039AF10C116D439 /* ScanViewModel.swift */,
+				754B466C772DA3ADBBCE6081 /* SimulatorCameraActor.swift */,
+				9D1E2F3A4B5C6D7E8F901235 /* SupabaseManager.swift */,
 				62DD2163A5AB3B41F5AE2CF9 /* SyntheticTongueFrameFactory.swift */,
 				B211B21F306F6E5A00FB2A7F /* TonguePallor.mlpackage */,
 				E3F12B9F23753C31E2366C19 /* TriangulationEngine.swift */,
 				F483D6BE4B152413D512043D /* VisualRiskSummaryEngine.swift */,
 			);
-			path = ModelsAndML;
+			path = CoreAndML;
 			sourceTree = "<group>";
 		};
 		8A986129803FB215759FA3D4 /* IronScanTests */ = {
@@ -498,8 +491,7 @@
 				B24E6D8B3033E3FA004593E8 /* Info.plist */,
 				B24E6D8A3033E3A4004593E8 /* IronScan.entitlements */,
 				16428011072E0F1EBA70C100 /* AppAndUI */,
-				2112B7555206086CC11345A7 /* ServicesAndManagers */,
-				4FF5C807F6D1C3F5BDB8BF35 /* ModelsAndML */,
+				4FF5C807F6D1C3F5BDB8BF35 /* CoreAndML */,
 			);
 			path = IronScan;
 			sourceTree = "<group>";

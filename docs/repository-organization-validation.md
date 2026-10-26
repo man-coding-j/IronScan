@@ -2,13 +2,17 @@
 
 ## Scope and preservation
 
-The main iOS target now has exactly three source folders: `AppAndUI`, `ModelsAndML`, and `ServicesAndManagers`. Info.plist and entitlements remain at the target root. Shared Swift packages, runtime model contracts, Python training/reference tools, tests, and documentation remain outside the application target.
+The main iOS target now has exactly two source folders: `AppAndUI` and `CoreAndML`. Info.plist and entitlements remain at the target root. Shared Swift packages, runtime model contracts, Python training/reference tools, tests, and documentation remain outside the application target.
 
 Moved 78 top-level source files/model packages. The relocation map records 90 individual moved files and SHA-256 hashes; every moved file, model, weight, and manifest is byte-for-byte unchanged. Removed two zero-byte Untitled placeholders. No inference algorithm, camera actor behavior, preprocessing, parity fixture, or trained artifact content was changed.
 
-Updated the three explicit PBXGroup memberships and paths without recreating the project or changing target dependency versions. All 77 main-target Xcode file references resolve. The unused ignored GoogleService-Info.plist resource membership was removed so a fresh checkout does not need a private local plist to build. Local configuration remains ignored.
+Consolidated the explicit PBXGroup memberships into two groups and updated paths without recreating the project or changing target dependency versions. All 77 main-target Xcode file references resolve. The unused ignored GoogleService-Info.plist resource membership was removed so a fresh checkout does not need a private local plist to build. Local configuration remains ignored.
 
 Bootstrap and iOS build CI now resolve/build the checked-in project instead of overwriting it with the supplemental XcodeGen structure. CI execution on GitHub is separate from the local results below.
+
+## Two-folder follow-up
+
+Consolidated models and services into `CoreAndML`, leaving `AppAndUI` as the other main source folder. The original relocation map now points to the final paths; all 90 preservation hashes still match and all 77 Xcode references resolve. Source and trained artifact content remain unchanged. Repeated the generic iOS Simulator build after consolidation: **BUILD SUCCEEDED**, with no build errors or warnings (`/private/tmp/ironscan-two-folder-build.log`). All 19 local README links resolve. The 26 focused tests below were run before this path-only follow-up; they were not rerun.
 
 ## Verified build
 

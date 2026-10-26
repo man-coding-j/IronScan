@@ -50,14 +50,14 @@ The three-photo assessment path:
 1. **Acquire images:** capture through the guided camera suite or select up to three images with the ordered Photos picker.
 2. **Check image quality and framing:** heuristic brightness/focus checks and Vision face/hand guidance support acquisition. These checks are engineering safeguards, not a validated anatomical classifier.
 3. **Prepare model input:** the assessment prepares **224 × 224 pixel buffers** for the three tissue heads. Model manifests and Python/Swift parity fixtures remain the reference for the corresponding model contracts; other engines may use different contracts.
-4. **Run specialized models:** `ConjunctivaPallor.mlpackage`, `NailHemoglobin.mlpackage`, and `TonguePallor.mlpackage` supply tissue-specific scores. These models are bundled under `ModelsAndML/`.
+4. **Run specialized models:** `ConjunctivaPallor.mlpackage`, `NailHemoglobin.mlpackage`, and `TonguePallor.mlpackage` supply tissue-specific scores. These models are bundled under `CoreAndML/`.
 5. **Normalize and combine scores:** the assessment implementation applies sigmoid normalization to the nail head's raw scalar; the eye and tongue heads already supply probability-scale scores. It does **not** apply a second sigmoid indiscriminately to every output.
 
 $$\sigma(x) = \frac{1}{1 + e^{-x}}$$
 
 The normalized scores feed the prototype's multimodal fusion and experimental hemoglobin/risk presentation. The UI can display an estimated value in **g/dL** and **Normal, Mild, Moderate, or Severe** tiers. These labels and mappings do not establish clinical calibration or accuracy.
 
-Relevant implementation: [assessment view model](Apps/IronScan/IronScan/ServicesAndManagers/MultiScanHubViewModel.swift), [multimodal fusion](Apps/IronScan/IronScan/ModelsAndML/TriangulationEngine.swift), and [model contracts](Models/Manifests/).
+Relevant implementation: [assessment view model](Apps/IronScan/IronScan/CoreAndML/MultiScanHubViewModel.swift), [multimodal fusion](Apps/IronScan/IronScan/CoreAndML/TriangulationEngine.swift), and [model contracts](Models/Manifests/).
 
 Core ML may select CPU, GPU, or Neural Engine execution according to device and operation support. No claim is made that every operation uses the Neural Engine. Authentication, configured numerical-history synchronization, and nearby-care lookup can use a network; on-device image inference should not be confused with a completely offline app.
 
@@ -94,7 +94,7 @@ Numerical result summaries are intentionally retained in local history. Account 
 
 ## 5. Repository Structure
 
-The **main iOS target** has three source folders. Shared libraries, training, and documentation remain separate so Xcode does not ingest the Python toolchain as application sources.
+The **main iOS target** has two source folders. Shared libraries, training, and documentation remain separate so Xcode does not ingest the Python toolchain as application sources.
 
 ```text
 conrad-challenge-ironscan/
@@ -107,13 +107,12 @@ conrad-challenge-ironscan/
 │   │   │   ├── HomeDashboardView.swift
 │   │   │   ├── MultiScanHubView.swift
 │   │   │   └── IronTheme.swift
-│   │   ├── ModelsAndML/               # Model packages, data types, quality/fusion logic
+│   │   ├── CoreAndML/                 # Models, inference, camera, storage, services
 │   │   │   ├── ConjunctivaPallor.mlpackage/
 │   │   │   ├── NailHemoglobin.mlpackage/
 │   │   │   ├── TonguePallor.mlpackage/
 │   │   │   ├── ScanModels.swift
-│   │   │   └── TriangulationEngine.swift
-│   │   ├── ServicesAndManagers/       # Camera actors, stores, view models, system services
+│   │   │   ├── TriangulationEngine.swift
 │   │   │   ├── MedicalCameraManager.swift
 │   │   │   ├── MultiScanHubViewModel.swift
 │   │   │   └── ScanHistoryStore.swift

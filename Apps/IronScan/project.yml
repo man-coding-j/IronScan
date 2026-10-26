@@ -17,8 +17,7 @@ targets:
     platform: iOS
     sources:
       - path: IronScan/AppAndUI
-      - path: IronScan/ModelsAndML
-      - path: IronScan/ServicesAndManagers
+      - path: IronScan/CoreAndML
       - path: ../../Packages/IronScanCore/Sources/IronScanCore
       - path: ../../Packages/IronScanModels/Sources/IronScanModels
       - path: ../../Models
