@@ -1,6 +1,6 @@
 import {existsSync} from 'node:fs';
 import {config} from '../src/config.ts';
-const files = [...config.copy.screens.map(screen=>screen.file),config.assets.login];
+const files = [...new Set(config.copy.screens.map(screen=>screen.file).filter(Boolean))];
 let missing = false;
 for(const file of files) {
   const path = config.assets.screenshots+file;

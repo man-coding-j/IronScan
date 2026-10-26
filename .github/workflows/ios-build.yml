@@ -5,6 +5,7 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
-      - run: brew install xcodegen
-      - run: xcodegen generate --spec Apps/IronScan/project.yml --project Apps/IronScan
-      - run: xcodebuild -workspace IronScan.xcworkspace -scheme IronScan -destination 'generic/platform=iOS Simulator' build
+      - name: Validate maintained Xcode references
+        run: python3 scripts/check_repository_layout.py
+      - name: Build the checked-in submission project
+        run: xcodebuild -project Apps/IronScan/IronScan.xcodeproj -scheme IronScan -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build

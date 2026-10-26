@@ -28,6 +28,8 @@ sim("install", device, app)
 sim("status_bar", device, "override", "--time", "9:41", "--dataNetwork", "wifi",
     "--wifiMode", "active", "--wifiBars", "3", "--batteryState", "charged", "--batteryLevel", "100")
 for screen in config["copy"]["screens"]:
+    if screen["kind"] != "capture":
+        continue
     subprocess.run(["xcrun", "simctl", "terminate", device, bundle_id], capture_output=True)
     sim("launch", device, bundle_id, "--tutorial-capture", f"--tutorial-screen={screen['short'].lower()}")
     time.sleep(4)

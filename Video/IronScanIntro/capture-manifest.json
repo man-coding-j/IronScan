@@ -1,37 +1,30 @@
 {
-  "source": "Native production SwiftUI views with isolated fictional simulator fixtures",
+  "source": "Native production SwiftUI views using isolated fictional simulator fixtures",
   "device": "iPhone 17 Pro",
   "os": "iOS 26.5",
   "captures": [
     {
-      "file": "public/screenshots/home.png",
+      "file": "public/screenshots/demo-home.png",
       "width": 1206,
       "height": 2622,
       "sha256": "0a5b4898870e352b20f4e39ca667d4c9e2e867d689bb14c687fd433030971339"
     },
     {
-      "file": "public/screenshots/scan.png",
-      "width": 1206,
-      "height": 2622,
-      "sha256": "1305289066d024f7477fecd4d7a5d7274c8fa20cb3336d73339a567d7d0aaa9a"
-    },
-    {
-      "file": "public/screenshots/history.png",
-      "width": 1206,
-      "height": 2622,
-      "sha256": "f8bbc5f84829c3144603f2cb80b3127089b5655d733543612b544fbb553eaf69"
-    },
-    {
-      "file": "public/screenshots/learn.png",
+      "file": "public/screenshots/demo-learn.png",
       "width": 1206,
       "height": 2622,
       "sha256": "07b77aea25837a55ca14d0b46c5bcedf236f65f7949e362a3e4fa53bfe94a1f6"
     },
     {
-      "file": "public/screenshots/profile.png",
+      "file": "public/screenshots/demo-profile.png",
       "width": 1206,
       "height": 2622,
       "sha256": "51bbde6080230fc9c7fb276739a2d3e00b56b274a789d296351e9098d94accd4"
     }
+  ],
+  "code_native_ui": [
+    "live scan",
+    "photo import / laser HUD / image-release sequence",
+    "three-point history"
   ]
 }

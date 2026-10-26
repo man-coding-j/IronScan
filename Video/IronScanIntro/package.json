@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "engines": {"node": ">=22.18.0"},
+  "engines": {
+    "node": ">=22.18.0"
+  },
   "scripts": {
     "studio": "remotion studio",
     "typecheck": "tsc --noEmit",
     "render": "node scripts/render-video.mjs",
     "stills": "node scripts/render-stills.mjs",
-    "check-assets": "node scripts/check-assets.mjs"
+    "check-assets": "node scripts/check-assets.mjs",
+    "export-readme": "node scripts/export-readme-assets.mjs"
   },
   "dependencies": {
     "@remotion/cli": "4.0.484",

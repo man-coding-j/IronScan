@@ -1,0 +1,459 @@
+{
+  "target": "Apps/IronScan/IronScan",
+  "files": [
+    {
+      "from": "App/PDFExportManager.swift",
+      "to": "ServicesAndManagers/PDFExportManager.swift",
+      "sha256": "15d410ac9cab342db3f699d310a28a18ba9e67649a14a5d2d43af248c9c6a333"
+    },
+    {
+      "from": "App/MainTabView.swift",
+      "to": "AppAndUI/MainTabView.swift",
+      "sha256": "ce1d7362e4ad6973f6d4c743d5da7da483c180891fc3a3861b429489b530ca25"
+    },
+    {
+      "from": "App/DemoFeatureViews.swift",
+      "to": "AppAndUI/DemoFeatureViews.swift",
+      "sha256": "9b6a6354e0ae6f130a5f746af1f90df5c71f441438019d52ddf5a577b0b726ae"
+    },
+    {
+      "from": "App/OnboardingConsentView.swift",
+      "to": "AppAndUI/OnboardingConsentView.swift",
+      "sha256": "68b6140db5c60e51c42d853ce00d234d28c43aae5f5a20147b1260a306bde15b"
+    },
+    {
+      "from": "App/MultiScanHubView.swift",
+      "to": "AppAndUI/MultiScanHubView.swift",
+      "sha256": "e861bae8f3095eae3c3e860d22afe6cc229a602a192a38139f4116cc1a32a2bf"
+    },
+    {
+      "from": "App/ScanView.swift",
+      "to": "AppAndUI/ScanView.swift",
+      "sha256": "a8ad9d1ead76fe469396cc994d1478b2d3a9d3323e5ea429b7da52ecfb771b8d"
+    },
+    {
+      "from": "App/VisualRiskSummaryEngine.swift",
+      "to": "ModelsAndML/VisualRiskSummaryEngine.swift",
+      "sha256": "1b094bc481f3b3a2211706e546178877ab2cc7c4be1cebdece801b42f53547fd"
+    },
+    {
+      "from": "App/ScanViewModel.swift",
+      "to": "ServicesAndManagers/ScanViewModel.swift",
+      "sha256": "bffa6135dbdd071645549999ebb44599a961d2175656aaf6ddaa282ce02817fb"
+    },
+    {
+      "from": "App/ClinicalReportGenerator.swift",
+      "to": "ServicesAndManagers/ClinicalReportGenerator.swift",
+      "sha256": "dcd1c5bfca9546f4e8eebdc780420be35af37267b10435f58dcc7a4be16311ed"
+    },
+    {
+      "from": "App/ResearchDataExporter.swift",
+      "to": "ServicesAndManagers/ResearchDataExporter.swift",
+      "sha256": "f1c9392a3998b11bce71c81ec52ccece74d9cde252c44f46aad09e10d5a811e6"
+    },
+    {
+      "from": "App/CameraPreviewView.swift",
+      "to": "AppAndUI/CameraPreviewView.swift",
+      "sha256": "66e43dad501b88fbadf69949a72cc14d8e6be351490db5fe1c893842c1152b10"
+    },
+    {
+      "from": "App/IronTheme.swift",
+      "to": "AppAndUI/IronTheme.swift",
+      "sha256": "c1d12506bf06af0afe735abc7a3e6494d20319f6f99c7abd63889e649430671f"
+    },
+    {
+      "from": "App/LoginView.swift",
+      "to": "AppAndUI/LoginView.swift",
+      "sha256": "c5e87f808c4df3af6374f62a6d56b8c9a7881aaddc310047caac2f34206cbe26"
+    },
+    {
+      "from": "App/HealthGuidanceView.swift",
+      "to": "AppAndUI/HealthGuidanceView.swift",
+      "sha256": "2c3610a405e41b592c1d4c533bfe61915016d309d7182837e9f612340005529d"
+    },
+    {
+      "from": "App/IronScanApp.swift",
+      "to": "AppAndUI/IronScanApp.swift",
+      "sha256": "043d40e7bd247694558ecbb0b983c40a347d52cf7d639c2f9c1474dff0c85766"
+    },
+    {
+      "from": "App/ImageQualityGatekeeper.swift",
+      "to": "ModelsAndML/ImageQualityGatekeeper.swift",
+      "sha256": "9e033de5776c82b08ee92f37a663e5f61056601f761910f5b513dd092e98c0de"
+    },
+    {
+      "from": "App/ScanResultView.swift",
+      "to": "AppAndUI/ScanResultView.swift",
+      "sha256": "fb149df1172ae5090b1d293690393f34168e76fe0d2f53872f1a02fd4a7cd07e"
+    },
+    {
+      "from": "App/NotificationManager.swift",
+      "to": "ServicesAndManagers/NotificationManager.swift",
+      "sha256": "cbbaaee8f125886bae2bf135aa30e62fe3f736fab35580d7588549f98f525426"
+    },
+    {
+      "from": "App/OnboardingFlowView.swift",
+      "to": "AppAndUI/OnboardingFlowView.swift",
+      "sha256": "ce3967106e603e563a1124cc93a0167c1ad21672e3ed10d04a28e738e70db4f9"
+    },
+    {
+      "from": "App/MultiScanHubViewModel.swift",
+      "to": "ServicesAndManagers/MultiScanHubViewModel.swift",
+      "sha256": "3e4dd22c802796774eda86ff3ee27c983d00c5acbbd88577cf91072022ce35f3"
+    },
+    {
+      "from": "App/MultiHealthDashboardView.swift",
+      "to": "AppAndUI/MultiHealthDashboardView.swift",
+      "sha256": "c6b7c399d85093ac3e3915019f465ef0dc35f7eaacc049463ae0791e174493ce"
+    },
+    {
+      "from": "App/ScanPipelineActor.swift",
+      "to": "ServicesAndManagers/ScanPipelineActor.swift",
+      "sha256": "13d5b36f6eac684fc065aaf9b0157cdc4318056a91cfb12a2374300c4e5e59fa"
+    },
+    {
+      "from": "App/ResultTranslator.swift",
+      "to": "ModelsAndML/ResultTranslator.swift",
+      "sha256": "b4338ae20ddea7d4b4d4273edfe646999762174250a6888dd092e306c6fd33e2"
+    },
+    {
+      "from": "App/AnalyzingView.swift",
+      "to": "AppAndUI/AnalyzingView.swift",
+      "sha256": "abfece244bf7505321f9429c375bb4b6d944b6966228c2e867cea4936ea04d2d"
+    },
+    {
+      "from": "App/LiquidGlassModifier.swift",
+      "to": "AppAndUI/LiquidGlassModifier.swift",
+      "sha256": "765b21583d281efddb9021898a0ba0fccedaa7e7b608856a16222d66e4846106"
+    },
+    {
+      "from": "App/ScanModels.swift",
+      "to": "ModelsAndML/ScanModels.swift",
+      "sha256": "e2acf55c49081b0fe9cece0b54258ebd206431f8f623e0f15396f989033db77c"
+    },
+    {
+      "from": "App/HomeDashboardView.swift",
+      "to": "AppAndUI/HomeDashboardView.swift",
+      "sha256": "7280ce7e36a2a69f6937ea46e027ce5d0df8e88e804fc0cc01e6fafbb8e31a34"
+    },
+    {
+      "from": "App/CoreMLInferenceManager.swift",
+      "to": "ModelsAndML/CoreMLInferenceManager.swift",
+      "sha256": "c7d7da306567a3caae69d4a86d6cfbf3e9f38ba4b1a3923c618d11f75a6efa9d"
+    },
+    {
+      "from": "App/DemographicProfile.swift",
+      "to": "ModelsAndML/DemographicProfile.swift",
+      "sha256": "561c8efa441cb5c18065e7a6f5ab6eeadd807956e4d0855f49dbab0b30fd9eb8"
+    },
+    {
+      "from": "App/LiveScanningState.swift",
+      "to": "ServicesAndManagers/LiveScanningState.swift",
+      "sha256": "fad9c064376a91808319c6de60ab3b2245b99c4b3335f7e6657fe9cd45538147"
+    },
+    {
+      "from": "App/IntegratedTriangulationReportView.swift",
+      "to": "AppAndUI/IntegratedTriangulationReportView.swift",
+      "sha256": "7dd57f6453ca42e5e9b469d552beba96e4c3b5a44bb4d3651db97c476af3adbe"
+    },
+    {
+      "from": "App/HumanResultsView.swift",
+      "to": "AppAndUI/HumanResultsView.swift",
+      "sha256": "98b6d9bdfc4cc65388f288b2cd7180a68f9a7b26aed377db41aa9d16ba8f16e4"
+    },
+    {
+      "from": "App/CameraView.swift",
+      "to": "AppAndUI/CameraView.swift",
+      "sha256": "4e0c9bfe82d7839082798058d06179ff3c23b105c88b6466ed4b8ff804099eba"
+    },
+    {
+      "from": "App/PersonalizedPlanEngine.swift",
+      "to": "ModelsAndML/PersonalizedPlanEngine.swift",
+      "sha256": "8944c127b717df2a0439a7f315eefb9640aa0bdff0251c6a2733d07935ec298c"
+    },
+    {
+      "from": "App/AutoCaptureManager.swift",
+      "to": "ServicesAndManagers/AutoCaptureManager.swift",
+      "sha256": "30e2fc80f576d940276a67d24826386a1bfb0874334d668d8017dbf150e200e4"
+    },
+    {
+      "from": "App/ClinicDetailSheet.swift",
+      "to": "AppAndUI/ClinicDetailSheet.swift",
+      "sha256": "2e4aa3ef5222da62c5c033b105b0b30e686b37b5b14dc354eb003c6e4f57f096"
+    },
+    {
+      "from": "App/DemographicCalibrationCategory.swift",
+      "to": "ModelsAndML/DemographicCalibrationCategory.swift",
+      "sha256": "ce3970117e0d5eac38da63f4f74354e867237578e450d19e88092f65db6636c8"
+    },
+    {
+      "from": "App/SaliencyHeatmapGenerator.swift",
+      "to": "ModelsAndML/SaliencyHeatmapGenerator.swift",
+      "sha256": "e1666e7d498331ee6e5ebb1514176132677816f0d759c93940a6e9c427be5e67"
+    },
+    {
+      "from": "App/ScreeningIntakeView.swift",
+      "to": "AppAndUI/ScreeningIntakeView.swift",
+      "sha256": "62b7fce35895b68e8fb8353e5855419e1899bb23df104266be38fe78f9671e88"
+    },
+    {
+      "from": "App/AuthManager.swift",
+      "to": "ServicesAndManagers/AuthManager.swift",
+      "sha256": "8f0864356f85dbcdf9fd5a0163daec43e22e684811c4b69ab51e0e8d9ec50edb"
+    },
+    {
+      "from": "App/HealthKitManager.swift",
+      "to": "ServicesAndManagers/HealthKitManager.swift",
+      "sha256": "48426a0b9fe585745e7afc6862407fe8ad33cc56e97c59a6b00e8b4f22ebe371"
+    },
+    {
+      "from": "App/ScanningOverlayView.swift",
+      "to": "AppAndUI/ScanningOverlayView.swift",
+      "sha256": "48ced2c0573034385e83aa77f521c9917b3ba6a1af3a80b91718f37430ed9e1f"
+    },
+    {
+      "from": "App/OnboardingProfileView.swift",
+      "to": "AppAndUI/OnboardingProfileView.swift",
+      "sha256": "572654eea83458d1ed509194b5912f1478083d63aba6d1659e252e8231300cee"
+    },
+    {
+      "from": "App/AvailabilityEngine.swift",
+      "to": "ServicesAndManagers/AvailabilityEngine.swift",
+      "sha256": "6b5351de9c75cbb01b9a3edd2aa991e1515dafe03f44c54e0331d5c0a946343a"
+    },
+    {
+      "from": "App/SupabaseManager.swift",
+      "to": "ServicesAndManagers/SupabaseManager.swift",
+      "sha256": "24e80c28669b8e79948875dac3209892e696910b21106c41327ba519c4e42f3c"
+    },
+    {
+      "from": "App/IntegratedResearchReportView.swift",
+      "to": "AppAndUI/IntegratedResearchReportView.swift",
+      "sha256": "80e8a99a2a409d5ef77a66ff32bc7691e11abc0d7712099e58a9448de43c2662"
+    },
+    {
+      "from": "App/PrototypeDemoMode.swift",
+      "to": "ServicesAndManagers/PrototypeDemoMode.swift",
+      "sha256": "b89b50bbeb8846f0f8df0e3893291ea3305ddee067eeaa0db22d701a103fcc51"
+    },
+    {
+      "from": "App/LocationManager.swift",
+      "to": "ServicesAndManagers/LocationManager.swift",
+      "sha256": "62735cbfe30af99461ab2f5b65d9806627d7a529f2f31869b5de50a6ea21dfe3"
+    },
+    {
+      "from": "App/ScanHapticsManager.swift",
+      "to": "ServicesAndManagers/ScanHapticsManager.swift",
+      "sha256": "59d3aad2c59d7f157b6b910c6d88ff41094fe2f63395b34c441871aed329d8e5"
+    },
+    {
+      "from": "App/SignupView.swift",
+      "to": "AppAndUI/SignupView.swift",
+      "sha256": "9390c18145d3e829cfc654be241a9ec9da99c6f8c1c4269f0a2fd88afe2a33e5"
+    },
+    {
+      "from": "App/InformedConsentModalView.swift",
+      "to": "AppAndUI/InformedConsentModalView.swift",
+      "sha256": "eeac2ed6df6d06cf34943f5139d191ab3b4bc803f9e9da9f0d4568e5571f3848"
+    },
+    {
+      "from": "App/ScanHistoryStore.swift",
+      "to": "ServicesAndManagers/ScanHistoryStore.swift",
+      "sha256": "94f3e19953cc6298af2cc21cee677d0f6a0bffc31e7d63fadb118b64e67c2330"
+    },
+    {
+      "from": "App/IronHealthInsightsView.swift",
+      "to": "AppAndUI/IronHealthInsightsView.swift",
+      "sha256": "60f753f55fa059690c0c4695469430ec4f5f2b24f7e5189a957a1eb35986dc89"
+    },
+    {
+      "from": "App/CareResourcesView.swift",
+      "to": "AppAndUI/CareResourcesView.swift",
+      "sha256": "7ccd12410aa6433efd7f06c5e4615f0256cfe6fdfa735d85c77f6e147e09b530"
+    },
+    {
+      "from": "Camera/CameraControllerFactory.swift",
+      "to": "ServicesAndManagers/CameraControllerFactory.swift",
+      "sha256": "36112410b111519ababb8971885fce43a62f606365ff3d36e66306065ce622f5"
+    },
+    {
+      "from": "Camera/CameraSessionActor.swift",
+      "to": "ServicesAndManagers/CameraSessionActor.swift",
+      "sha256": "d723898a10f69c5dfc9486580f45e82cd4cc00e65d18fdd33e9bc4c1dd29e2cf"
+    },
+    {
+      "from": "Camera/ImageQualityAnalyzer.swift",
+      "to": "ModelsAndML/ImageQualityAnalyzer.swift",
+      "sha256": "c480d2405f8265e42f9c811dd281145ee93ade2529c2e1659e01b11683caf546"
+    },
+    {
+      "from": "Camera/MotionStabilityMonitor.swift",
+      "to": "ServicesAndManagers/MotionStabilityMonitor.swift",
+      "sha256": "178a8d6365390eaee632662154e50943c50b32a5b9f4df2707d846bec32c94d5"
+    },
+    {
+      "from": "Camera/MedicalCameraManager.swift",
+      "to": "ServicesAndManagers/MedicalCameraManager.swift",
+      "sha256": "12382fc700f84d4c7d5e46bb98f5268cbbc7282721ec5c0972201bf76d85b6f1"
+    },
+    {
+      "from": "Camera/CameraPermissionManager.swift",
+      "to": "ServicesAndManagers/CameraPermissionManager.swift",
+      "sha256": "9dbdd8052064e2438a9fcbd67215fd84f6305e6e887e57f4d4b767f267021253"
+    },
+    {
+      "from": "Camera/CameraStateMachine.swift",
+      "to": "ServicesAndManagers/CameraStateMachine.swift",
+      "sha256": "f877ecb6b3f211da41f2d47269f6ae897eb4a844c50dc6d777a01cdb90bafb82"
+    },
+    {
+      "from": "Camera/SyntheticTongueFrameFactory.swift",
+      "to": "ModelsAndML/SyntheticTongueFrameFactory.swift",
+      "sha256": "6c54ccecffd62453ee7864184b19cacdc4188a9a5a9452bc1b9fabbf7c1a8681"
+    },
+    {
+      "from": "Camera/CameraInferenceBridge.swift",
+      "to": "ServicesAndManagers/CameraInferenceBridge.swift",
+      "sha256": "f3a34e6946ed077db9ba9faec170d6c8fc6dc7d7d6f1c6e6f93e7cd9ba58fa6b"
+    },
+    {
+      "from": "Camera/SimulatorCameraActor.swift",
+      "to": "ServicesAndManagers/SimulatorCameraActor.swift",
+      "sha256": "9e6356f44b4a2e28cab8bbdceed12d18eafce572b1dfe55510d0d808444f6545"
+    },
+    {
+      "from": "Camera/CameraProtocols.swift",
+      "to": "ServicesAndManagers/CameraProtocols.swift",
+      "sha256": "a3c8147de0ed4321a6f624713373865f713fe8311ab403d9f64f07c6a4982401"
+    },
+    {
+      "from": "Camera/FrameStrideThrottle.swift",
+      "to": "ServicesAndManagers/FrameStrideThrottle.swift",
+      "sha256": "a5e7da3d336f7a984ab61c10f971a67e7674c5f81603bcc4534fb6de13897821"
+    },
+    {
+      "from": "Camera/LatestFrameProcessor.swift",
+      "to": "ServicesAndManagers/LatestFrameProcessor.swift",
+      "sha256": "9c3fd5d0c58261e3042e9de38622c51cfd88dcb4b11bc6f01c774e1beec33746"
+    },
+    {
+      "from": "Camera/CameraTypes.swift",
+      "to": "ModelsAndML/CameraTypes.swift",
+      "sha256": "bef7f200155a55922fbb24893211312a6563501232f47d85d42fe212ac091eb8"
+    },
+    {
+      "from": "ML/TriangulationEngine.swift",
+      "to": "ModelsAndML/TriangulationEngine.swift",
+      "sha256": "4734da9af5060cf69105adec975398eba14074ab4d9c2ec006618e5e0ef1b55f"
+    },
+    {
+      "from": "ML/HbRegressionModel.mlpackage/Manifest.json",
+      "to": "ModelsAndML/HbRegressionModel.mlpackage/Manifest.json",
+      "sha256": "7fbd315d82db75799ec26ea1b5f39355bc885ef36793bdbb81c1414ec98ba93c"
+    },
+    {
+      "from": "ML/HbRegressionModel.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "ModelsAndML/HbRegressionModel.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256": "41a73fc0ed6f4ec176c7611b3d384f1b6f32effdd7dd67baf3dbc80d4698edc5"
+    },
+    {
+      "from": "ML/HbRegressionModel.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "ModelsAndML/HbRegressionModel.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256": "7a09fbede2cd4da270e3d428d14677b527452599d5ab7089ca22e3dc8a6a2d58"
+    },
+    {
+      "from": "ML/IDARiskEngine.swift",
+      "to": "ModelsAndML/IDARiskEngine.swift",
+      "sha256": "690d46441bbf64bf375eb30ce11ab40af4811ca015e306db7fbd7b5c6d3d6e6a"
+    },
+    {
+      "from": "ML/MultiTissueInferenceActor.swift",
+      "to": "ModelsAndML/MultiTissueInferenceActor.swift",
+      "sha256": "ab83add576311c95027f7f2ee5de3167b491995b7e2cce82450241f2025aa19e"
+    },
+    {
+      "from": "ML/TonguePallor.mlpackage/Manifest.json",
+      "to": "ModelsAndML/TonguePallor.mlpackage/Manifest.json",
+      "sha256": "9d408b892d44e0c45cc95fdb10337fdd9262b24a9af520809aa6e93f6580e123"
+    },
+    {
+      "from": "ML/TonguePallor.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "ModelsAndML/TonguePallor.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256": "b30f4be60324dae297967773f92c29c579155cc7b85326160cef1fabaaa830b5"
+    },
+    {
+      "from": "ML/TonguePallor.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "ModelsAndML/TonguePallor.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256": "b015004c267abab28352ca9a18720551769e9fb91a9e1a8b2814a845947c7d3f"
+    },
+    {
+      "from": "ML/LiveInferenceEngine.swift",
+      "to": "ModelsAndML/LiveInferenceEngine.swift",
+      "sha256": "cd728d112b3848d93a7095b4e6c0b1bc5895c97c0a699b7d2bad06ccdf643a5a"
+    },
+    {
+      "from": "ML/ConjunctivaPallor.mlpackage/Manifest.json",
+      "to": "ModelsAndML/ConjunctivaPallor.mlpackage/Manifest.json",
+      "sha256": "018334f1e6bfa38b81e21a933a704e96cb38473486e2fc5181ccc67e3bc8a959"
+    },
+    {
+      "from": "ML/ConjunctivaPallor.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "ModelsAndML/ConjunctivaPallor.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256": "417ea14a2e86cd671a615b6c90182610b0deb476c47ed309a76eb7f42f18d499"
+    },
+    {
+      "from": "ML/ConjunctivaPallor.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "ModelsAndML/ConjunctivaPallor.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256": "5eea82b26329faa46596c6d824f14c37bd199169b52cb60da20fe949286dbd7f"
+    },
+    {
+      "from": "ML/NailHemoglobin.mlpackage/Manifest.json",
+      "to": "ModelsAndML/NailHemoglobin.mlpackage/Manifest.json",
+      "sha256": "6f0016f999c865139aebaf942b70d10eca259940213b5c6dcbe3db2bcdefc1bb"
+    },
+    {
+      "from": "ML/NailHemoglobin.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "ModelsAndML/NailHemoglobin.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256": "5804df46bc5b981f54e4424bd4a4550c3011057cb6dddf7cc9524de97187787b"
+    },
+    {
+      "from": "ML/NailHemoglobin.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "ModelsAndML/NailHemoglobin.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256": "79955cb413d9ba4dac9808471f8ebaa65a254378a0dd030d5ba4a3fc791249d5"
+    },
+    {
+      "from": "ML/MultiInferenceEngine.swift",
+      "to": "ModelsAndML/MultiInferenceEngine.swift",
+      "sha256": "7be8268ab3a5925b4cd3072602293a6073c303ab943c67ba3c56bd9807f72368"
+    },
+    {
+      "from": "ML/ConjunctivaModel.mlpackage/Manifest.json",
+      "to": "ModelsAndML/ConjunctivaModel.mlpackage/Manifest.json",
+      "sha256": "0d3c3e102dbc9f427e71a5af4282f1dab38a6bd225c174335dcedc202187c7d6"
+    },
+    {
+      "from": "ML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/Metadata.json",
+      "to": "ModelsAndML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/Metadata.json",
+      "sha256": "1b3f5c927a46f1dfbfbbb2dc247c55abc2cc8e35b6d078986f1fe74457540c02"
+    },
+    {
+      "from": "ML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/FeatureDescriptions.json",
+      "to": "ModelsAndML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/FeatureDescriptions.json",
+      "sha256": "8cbc4a62b266d2fda332d85fa29b7742b1b47957a6f351af2c8e3bb6c4ecf665"
+    },
+    {
+      "from": "ML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "ModelsAndML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256": "64b8a34a6982e1be955093521cef4eab97bb96d28f22df7179adfda10347c108"
+    },
+    {
+      "from": "ML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "ModelsAndML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256": "cc96a86a9cc61e8a12ac1618b00df56b6c95f069f7598cc074c4a87c71db8cee"
+    }
+  ],
+  "removed_empty_placeholders": [
+    "Untitled 2.swift",
+    "Untitled.swift"
+  ]
+}
