@@ -30,9 +30,11 @@ for group in app_group['children']:
         assert path.exists(), f'Missing Xcode reference: {path.relative_to(root)}'
         checked += 1
 if '--verify-relocation-hashes' in sys.argv:
-    mapping = json.loads((root/'docs/repository-reorganization-map.json').read_text())
+    mapping = json.loads((root.parent/'Documentation/docs/repository-reorganization-map.json').read_text())
     for entry in mapping['files']:
         path = target / entry['to']
         assert hashlib.sha256(path.read_bytes()).hexdigest() == entry['sha256'], f'Changed relocated content: {entry["to"]}'
     print(f'Relocation audit: {len(mapping["files"])} file hashes unchanged.')
-print(f'Layout: 2 source folders; {checked} Xcode references resolve.')
+assert (root.parent / 'Documentation/docs').is_dir()
+assert not any((root.parent / name).exists() for name in ['Apps', 'Models', 'Packages', 'MLTraining', 'docs', 'compliance', 'Video', 'scripts'])
+print(f'Layout: IronScan + Documentation at repository root; 2 app source folders; {checked} Xcode references resolve.')

@@ -1,0 +1,2184 @@
+{
+  "date": "2026-10-25",
+  "scope": "Repository-level folders; no real participant data added",
+  "files": [
+    {
+      "from": "Apps/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "to": "IronScan/Apps/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "sha256_before": "1f78b2bc8937f7a7effa20488bdcd9317f5c006550ae54a49c18b85594917ddb",
+      "sha256_after": "1f78b2bc8937f7a7effa20488bdcd9317f5c006550ae54a49c18b85594917ddb"
+    },
+    {
+      "from": "Apps/Assets.xcassets/AppIcon.appiconset/ironscan_icon_only.jpg",
+      "to": "IronScan/Apps/Assets.xcassets/AppIcon.appiconset/ironscan_icon_only.jpg",
+      "sha256_before": "a904aa1d58c0bfb2e0535c3cc6f52fd17e41f68231c42ca8c2888641b128c7f7",
+      "sha256_after": "a904aa1d58c0bfb2e0535c3cc6f52fd17e41f68231c42ca8c2888641b128c7f7"
+    },
+    {
+      "from": "Apps/Assets.xcassets/AppIcon.appiconset/ironscan_icon_only_transparent 1.png",
+      "to": "IronScan/Apps/Assets.xcassets/AppIcon.appiconset/ironscan_icon_only_transparent 1.png",
+      "sha256_before": "df2dccc4b89f198fde2e72159be7d0eec0ea88486ff9282870a0a448f078a161",
+      "sha256_after": "df2dccc4b89f198fde2e72159be7d0eec0ea88486ff9282870a0a448f078a161"
+    },
+    {
+      "from": "Apps/Assets.xcassets/AppIcon.appiconset/ironscan_icon_only_transparent.png",
+      "to": "IronScan/Apps/Assets.xcassets/AppIcon.appiconset/ironscan_icon_only_transparent.png",
+      "sha256_before": "df2dccc4b89f198fde2e72159be7d0eec0ea88486ff9282870a0a448f078a161",
+      "sha256_after": "df2dccc4b89f198fde2e72159be7d0eec0ea88486ff9282870a0a448f078a161"
+    },
+    {
+      "from": "Apps/Assets.xcassets/Contents.json",
+      "to": "IronScan/Apps/Assets.xcassets/Contents.json",
+      "sha256_before": "0fd49ba3c3585c709678e0046a821c3c60685ec7063720d30d3a3448be3a208b",
+      "sha256_after": "0fd49ba3c3585c709678e0046a821c3c60685ec7063720d30d3a3448be3a208b"
+    },
+    {
+      "from": "Apps/IronScan/Config/README.md",
+      "to": "IronScan/Apps/IronScan/Config/README.md",
+      "sha256_before": "46248f1b5ed8db158f2474c84b8a3d1ca637a171090b05c289abb09c85112e33",
+      "sha256_after": "46248f1b5ed8db158f2474c84b8a3d1ca637a171090b05c289abb09c85112e33"
+    },
+    {
+      "from": "Apps/IronScan/IronScan.xcodeproj/project.pbxproj",
+      "to": "IronScan/Apps/IronScan/IronScan.xcodeproj/project.pbxproj",
+      "sha256_before": "f23378c25ecbc72e1928098b4a671dd895c3eeca20d962f1fbb3fb2c8bbaebbc",
+      "sha256_after": "f23378c25ecbc72e1928098b4a671dd895c3eeca20d962f1fbb3fb2c8bbaebbc"
+    },
+    {
+      "from": "Apps/IronScan/IronScan.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
+      "to": "IronScan/Apps/IronScan/IronScan.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
+      "sha256_before": "7f3b00b5c3fdb45242d7b87e1e5c4e25d1fa8129a16c94295ecc4e8ea2235c5f",
+      "sha256_after": "7f3b00b5c3fdb45242d7b87e1e5c4e25d1fa8129a16c94295ecc4e8ea2235c5f"
+    },
+    {
+      "from": "Apps/IronScan/IronScan.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+      "to": "IronScan/Apps/IronScan/IronScan.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+      "sha256_before": "549168279190dff67dfcdeefbc778814eca0798e645ebd33c9ae0df26e9b5b44",
+      "sha256_after": "549168279190dff67dfcdeefbc778814eca0798e645ebd33c9ae0df26e9b5b44"
+    },
+    {
+      "from": "Apps/IronScan/IronScan.xcodeproj/xcshareddata/xcschemes/IronScan.xcscheme",
+      "to": "IronScan/Apps/IronScan/IronScan.xcodeproj/xcshareddata/xcschemes/IronScan.xcscheme",
+      "sha256_before": "ef11e476d95b703d3976d74c70cb176923747b6068f59649587d4e746ea72b4c",
+      "sha256_after": "ef11e476d95b703d3976d74c70cb176923747b6068f59649587d4e746ea72b4c"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/AnalyzingView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/AnalyzingView.swift",
+      "sha256_before": "abfece244bf7505321f9429c375bb4b6d944b6966228c2e867cea4936ea04d2d",
+      "sha256_after": "abfece244bf7505321f9429c375bb4b6d944b6966228c2e867cea4936ea04d2d"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/CameraPreviewView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/CameraPreviewView.swift",
+      "sha256_before": "66e43dad501b88fbadf69949a72cc14d8e6be351490db5fe1c893842c1152b10",
+      "sha256_after": "66e43dad501b88fbadf69949a72cc14d8e6be351490db5fe1c893842c1152b10"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/CameraView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/CameraView.swift",
+      "sha256_before": "4e0c9bfe82d7839082798058d06179ff3c23b105c88b6466ed4b8ff804099eba",
+      "sha256_after": "4e0c9bfe82d7839082798058d06179ff3c23b105c88b6466ed4b8ff804099eba"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/CareResourcesView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/CareResourcesView.swift",
+      "sha256_before": "7ccd12410aa6433efd7f06c5e4615f0256cfe6fdfa735d85c77f6e147e09b530",
+      "sha256_after": "7ccd12410aa6433efd7f06c5e4615f0256cfe6fdfa735d85c77f6e147e09b530"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/ClinicDetailSheet.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/ClinicDetailSheet.swift",
+      "sha256_before": "2e4aa3ef5222da62c5c033b105b0b30e686b37b5b14dc354eb003c6e4f57f096",
+      "sha256_after": "2e4aa3ef5222da62c5c033b105b0b30e686b37b5b14dc354eb003c6e4f57f096"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/DemoFeatureViews.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/DemoFeatureViews.swift",
+      "sha256_before": "9b6a6354e0ae6f130a5f746af1f90df5c71f441438019d52ddf5a577b0b726ae",
+      "sha256_after": "9b6a6354e0ae6f130a5f746af1f90df5c71f441438019d52ddf5a577b0b726ae"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/HealthGuidanceView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/HealthGuidanceView.swift",
+      "sha256_before": "2c3610a405e41b592c1d4c533bfe61915016d309d7182837e9f612340005529d",
+      "sha256_after": "2c3610a405e41b592c1d4c533bfe61915016d309d7182837e9f612340005529d"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/HomeDashboardView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/HomeDashboardView.swift",
+      "sha256_before": "7280ce7e36a2a69f6937ea46e027ce5d0df8e88e804fc0cc01e6fafbb8e31a34",
+      "sha256_after": "7280ce7e36a2a69f6937ea46e027ce5d0df8e88e804fc0cc01e6fafbb8e31a34"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/HumanResultsView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/HumanResultsView.swift",
+      "sha256_before": "98b6d9bdfc4cc65388f288b2cd7180a68f9a7b26aed377db41aa9d16ba8f16e4",
+      "sha256_after": "98b6d9bdfc4cc65388f288b2cd7180a68f9a7b26aed377db41aa9d16ba8f16e4"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/InformedConsentModalView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/InformedConsentModalView.swift",
+      "sha256_before": "eeac2ed6df6d06cf34943f5139d191ab3b4bc803f9e9da9f0d4568e5571f3848",
+      "sha256_after": "eeac2ed6df6d06cf34943f5139d191ab3b4bc803f9e9da9f0d4568e5571f3848"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/IntegratedResearchReportView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/IntegratedResearchReportView.swift",
+      "sha256_before": "80e8a99a2a409d5ef77a66ff32bc7691e11abc0d7712099e58a9448de43c2662",
+      "sha256_after": "80e8a99a2a409d5ef77a66ff32bc7691e11abc0d7712099e58a9448de43c2662"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/IntegratedTriangulationReportView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/IntegratedTriangulationReportView.swift",
+      "sha256_before": "7dd57f6453ca42e5e9b469d552beba96e4c3b5a44bb4d3651db97c476af3adbe",
+      "sha256_after": "7dd57f6453ca42e5e9b469d552beba96e4c3b5a44bb4d3651db97c476af3adbe"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/IronHealthInsightsView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/IronHealthInsightsView.swift",
+      "sha256_before": "60f753f55fa059690c0c4695469430ec4f5f2b24f7e5189a957a1eb35986dc89",
+      "sha256_after": "60f753f55fa059690c0c4695469430ec4f5f2b24f7e5189a957a1eb35986dc89"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/IronScanApp.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/IronScanApp.swift",
+      "sha256_before": "043d40e7bd247694558ecbb0b983c40a347d52cf7d639c2f9c1474dff0c85766",
+      "sha256_after": "043d40e7bd247694558ecbb0b983c40a347d52cf7d639c2f9c1474dff0c85766"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/IronTheme.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/IronTheme.swift",
+      "sha256_before": "c1d12506bf06af0afe735abc7a3e6494d20319f6f99c7abd63889e649430671f",
+      "sha256_after": "c1d12506bf06af0afe735abc7a3e6494d20319f6f99c7abd63889e649430671f"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/LiquidGlassModifier.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/LiquidGlassModifier.swift",
+      "sha256_before": "765b21583d281efddb9021898a0ba0fccedaa7e7b608856a16222d66e4846106",
+      "sha256_after": "765b21583d281efddb9021898a0ba0fccedaa7e7b608856a16222d66e4846106"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/LoginView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/LoginView.swift",
+      "sha256_before": "c5e87f808c4df3af6374f62a6d56b8c9a7881aaddc310047caac2f34206cbe26",
+      "sha256_after": "c5e87f808c4df3af6374f62a6d56b8c9a7881aaddc310047caac2f34206cbe26"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/MainTabView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/MainTabView.swift",
+      "sha256_before": "ce1d7362e4ad6973f6d4c743d5da7da483c180891fc3a3861b429489b530ca25",
+      "sha256_after": "ce1d7362e4ad6973f6d4c743d5da7da483c180891fc3a3861b429489b530ca25"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/MultiHealthDashboardView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/MultiHealthDashboardView.swift",
+      "sha256_before": "c6b7c399d85093ac3e3915019f465ef0dc35f7eaacc049463ae0791e174493ce",
+      "sha256_after": "c6b7c399d85093ac3e3915019f465ef0dc35f7eaacc049463ae0791e174493ce"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/MultiScanHubView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/MultiScanHubView.swift",
+      "sha256_before": "e861bae8f3095eae3c3e860d22afe6cc229a602a192a38139f4116cc1a32a2bf",
+      "sha256_after": "e861bae8f3095eae3c3e860d22afe6cc229a602a192a38139f4116cc1a32a2bf"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/OnboardingConsentView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/OnboardingConsentView.swift",
+      "sha256_before": "68b6140db5c60e51c42d853ce00d234d28c43aae5f5a20147b1260a306bde15b",
+      "sha256_after": "68b6140db5c60e51c42d853ce00d234d28c43aae5f5a20147b1260a306bde15b"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/OnboardingFlowView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/OnboardingFlowView.swift",
+      "sha256_before": "ce3967106e603e563a1124cc93a0167c1ad21672e3ed10d04a28e738e70db4f9",
+      "sha256_after": "ce3967106e603e563a1124cc93a0167c1ad21672e3ed10d04a28e738e70db4f9"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/OnboardingProfileView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/OnboardingProfileView.swift",
+      "sha256_before": "572654eea83458d1ed509194b5912f1478083d63aba6d1659e252e8231300cee",
+      "sha256_after": "572654eea83458d1ed509194b5912f1478083d63aba6d1659e252e8231300cee"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/ScanResultView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/ScanResultView.swift",
+      "sha256_before": "fb149df1172ae5090b1d293690393f34168e76fe0d2f53872f1a02fd4a7cd07e",
+      "sha256_after": "fb149df1172ae5090b1d293690393f34168e76fe0d2f53872f1a02fd4a7cd07e"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/ScanView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/ScanView.swift",
+      "sha256_before": "a8ad9d1ead76fe469396cc994d1478b2d3a9d3323e5ea429b7da52ecfb771b8d",
+      "sha256_after": "a8ad9d1ead76fe469396cc994d1478b2d3a9d3323e5ea429b7da52ecfb771b8d"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/ScanningOverlayView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/ScanningOverlayView.swift",
+      "sha256_before": "48ced2c0573034385e83aa77f521c9917b3ba6a1af3a80b91718f37430ed9e1f",
+      "sha256_after": "48ced2c0573034385e83aa77f521c9917b3ba6a1af3a80b91718f37430ed9e1f"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/ScreeningIntakeView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/ScreeningIntakeView.swift",
+      "sha256_before": "62b7fce35895b68e8fb8353e5855419e1899bb23df104266be38fe78f9671e88",
+      "sha256_after": "62b7fce35895b68e8fb8353e5855419e1899bb23df104266be38fe78f9671e88"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/AppAndUI/SignupView.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/AppAndUI/SignupView.swift",
+      "sha256_before": "9390c18145d3e829cfc654be241a9ec9da99c6f8c1c4269f0a2fd88afe2a33e5",
+      "sha256_after": "9390c18145d3e829cfc654be241a9ec9da99c6f8c1c4269f0a2fd88afe2a33e5"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/AuthManager.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/AuthManager.swift",
+      "sha256_before": "8f0864356f85dbcdf9fd5a0163daec43e22e684811c4b69ab51e0e8d9ec50edb",
+      "sha256_after": "8f0864356f85dbcdf9fd5a0163daec43e22e684811c4b69ab51e0e8d9ec50edb"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/AutoCaptureManager.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/AutoCaptureManager.swift",
+      "sha256_before": "30e2fc80f576d940276a67d24826386a1bfb0874334d668d8017dbf150e200e4",
+      "sha256_after": "30e2fc80f576d940276a67d24826386a1bfb0874334d668d8017dbf150e200e4"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/AvailabilityEngine.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/AvailabilityEngine.swift",
+      "sha256_before": "6b5351de9c75cbb01b9a3edd2aa991e1515dafe03f44c54e0331d5c0a946343a",
+      "sha256_after": "6b5351de9c75cbb01b9a3edd2aa991e1515dafe03f44c54e0331d5c0a946343a"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/CameraControllerFactory.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/CameraControllerFactory.swift",
+      "sha256_before": "36112410b111519ababb8971885fce43a62f606365ff3d36e66306065ce622f5",
+      "sha256_after": "36112410b111519ababb8971885fce43a62f606365ff3d36e66306065ce622f5"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/CameraInferenceBridge.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/CameraInferenceBridge.swift",
+      "sha256_before": "f3a34e6946ed077db9ba9faec170d6c8fc6dc7d7d6f1c6e6f93e7cd9ba58fa6b",
+      "sha256_after": "f3a34e6946ed077db9ba9faec170d6c8fc6dc7d7d6f1c6e6f93e7cd9ba58fa6b"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/CameraPermissionManager.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/CameraPermissionManager.swift",
+      "sha256_before": "9dbdd8052064e2438a9fcbd67215fd84f6305e6e887e57f4d4b767f267021253",
+      "sha256_after": "9dbdd8052064e2438a9fcbd67215fd84f6305e6e887e57f4d4b767f267021253"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/CameraProtocols.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/CameraProtocols.swift",
+      "sha256_before": "a3c8147de0ed4321a6f624713373865f713fe8311ab403d9f64f07c6a4982401",
+      "sha256_after": "a3c8147de0ed4321a6f624713373865f713fe8311ab403d9f64f07c6a4982401"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/CameraSessionActor.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/CameraSessionActor.swift",
+      "sha256_before": "d723898a10f69c5dfc9486580f45e82cd4cc00e65d18fdd33e9bc4c1dd29e2cf",
+      "sha256_after": "d723898a10f69c5dfc9486580f45e82cd4cc00e65d18fdd33e9bc4c1dd29e2cf"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/CameraStateMachine.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/CameraStateMachine.swift",
+      "sha256_before": "f877ecb6b3f211da41f2d47269f6ae897eb4a844c50dc6d777a01cdb90bafb82",
+      "sha256_after": "f877ecb6b3f211da41f2d47269f6ae897eb4a844c50dc6d777a01cdb90bafb82"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/CameraTypes.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/CameraTypes.swift",
+      "sha256_before": "bef7f200155a55922fbb24893211312a6563501232f47d85d42fe212ac091eb8",
+      "sha256_after": "bef7f200155a55922fbb24893211312a6563501232f47d85d42fe212ac091eb8"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ClinicalReportGenerator.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ClinicalReportGenerator.swift",
+      "sha256_before": "dcd1c5bfca9546f4e8eebdc780420be35af37267b10435f58dcc7a4be16311ed",
+      "sha256_after": "dcd1c5bfca9546f4e8eebdc780420be35af37267b10435f58dcc7a4be16311ed"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/FeatureDescriptions.json",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/FeatureDescriptions.json",
+      "sha256_before": "8cbc4a62b266d2fda332d85fa29b7742b1b47957a6f351af2c8e3bb6c4ecf665",
+      "sha256_after": "8cbc4a62b266d2fda332d85fa29b7742b1b47957a6f351af2c8e3bb6c4ecf665"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/Metadata.json",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/Metadata.json",
+      "sha256_before": "1b3f5c927a46f1dfbfbbb2dc247c55abc2cc8e35b6d078986f1fe74457540c02",
+      "sha256_after": "1b3f5c927a46f1dfbfbbb2dc247c55abc2cc8e35b6d078986f1fe74457540c02"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256_before": "64b8a34a6982e1be955093521cef4eab97bb96d28f22df7179adfda10347c108",
+      "sha256_after": "64b8a34a6982e1be955093521cef4eab97bb96d28f22df7179adfda10347c108"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ConjunctivaModel.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256_before": "cc96a86a9cc61e8a12ac1618b00df56b6c95f069f7598cc074c4a87c71db8cee",
+      "sha256_after": "cc96a86a9cc61e8a12ac1618b00df56b6c95f069f7598cc074c4a87c71db8cee"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ConjunctivaModel.mlpackage/Manifest.json",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ConjunctivaModel.mlpackage/Manifest.json",
+      "sha256_before": "0d3c3e102dbc9f427e71a5af4282f1dab38a6bd225c174335dcedc202187c7d6",
+      "sha256_after": "0d3c3e102dbc9f427e71a5af4282f1dab38a6bd225c174335dcedc202187c7d6"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ConjunctivaPallor.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ConjunctivaPallor.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256_before": "417ea14a2e86cd671a615b6c90182610b0deb476c47ed309a76eb7f42f18d499",
+      "sha256_after": "417ea14a2e86cd671a615b6c90182610b0deb476c47ed309a76eb7f42f18d499"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ConjunctivaPallor.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ConjunctivaPallor.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256_before": "5eea82b26329faa46596c6d824f14c37bd199169b52cb60da20fe949286dbd7f",
+      "sha256_after": "5eea82b26329faa46596c6d824f14c37bd199169b52cb60da20fe949286dbd7f"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ConjunctivaPallor.mlpackage/Manifest.json",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ConjunctivaPallor.mlpackage/Manifest.json",
+      "sha256_before": "018334f1e6bfa38b81e21a933a704e96cb38473486e2fc5181ccc67e3bc8a959",
+      "sha256_after": "018334f1e6bfa38b81e21a933a704e96cb38473486e2fc5181ccc67e3bc8a959"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/CoreMLInferenceManager.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/CoreMLInferenceManager.swift",
+      "sha256_before": "c7d7da306567a3caae69d4a86d6cfbf3e9f38ba4b1a3923c618d11f75a6efa9d",
+      "sha256_after": "c7d7da306567a3caae69d4a86d6cfbf3e9f38ba4b1a3923c618d11f75a6efa9d"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/DemographicCalibrationCategory.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/DemographicCalibrationCategory.swift",
+      "sha256_before": "ce3970117e0d5eac38da63f4f74354e867237578e450d19e88092f65db6636c8",
+      "sha256_after": "ce3970117e0d5eac38da63f4f74354e867237578e450d19e88092f65db6636c8"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/DemographicProfile.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/DemographicProfile.swift",
+      "sha256_before": "561c8efa441cb5c18065e7a6f5ab6eeadd807956e4d0855f49dbab0b30fd9eb8",
+      "sha256_after": "561c8efa441cb5c18065e7a6f5ab6eeadd807956e4d0855f49dbab0b30fd9eb8"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/FrameStrideThrottle.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/FrameStrideThrottle.swift",
+      "sha256_before": "a5e7da3d336f7a984ab61c10f971a67e7674c5f81603bcc4534fb6de13897821",
+      "sha256_after": "a5e7da3d336f7a984ab61c10f971a67e7674c5f81603bcc4534fb6de13897821"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/HbRegressionModel.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/HbRegressionModel.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256_before": "41a73fc0ed6f4ec176c7611b3d384f1b6f32effdd7dd67baf3dbc80d4698edc5",
+      "sha256_after": "41a73fc0ed6f4ec176c7611b3d384f1b6f32effdd7dd67baf3dbc80d4698edc5"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/HbRegressionModel.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/HbRegressionModel.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256_before": "7a09fbede2cd4da270e3d428d14677b527452599d5ab7089ca22e3dc8a6a2d58",
+      "sha256_after": "7a09fbede2cd4da270e3d428d14677b527452599d5ab7089ca22e3dc8a6a2d58"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/HbRegressionModel.mlpackage/Manifest.json",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/HbRegressionModel.mlpackage/Manifest.json",
+      "sha256_before": "7fbd315d82db75799ec26ea1b5f39355bc885ef36793bdbb81c1414ec98ba93c",
+      "sha256_after": "7fbd315d82db75799ec26ea1b5f39355bc885ef36793bdbb81c1414ec98ba93c"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/HealthKitManager.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/HealthKitManager.swift",
+      "sha256_before": "48426a0b9fe585745e7afc6862407fe8ad33cc56e97c59a6b00e8b4f22ebe371",
+      "sha256_after": "48426a0b9fe585745e7afc6862407fe8ad33cc56e97c59a6b00e8b4f22ebe371"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/IDARiskEngine.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/IDARiskEngine.swift",
+      "sha256_before": "690d46441bbf64bf375eb30ce11ab40af4811ca015e306db7fbd7b5c6d3d6e6a",
+      "sha256_after": "690d46441bbf64bf375eb30ce11ab40af4811ca015e306db7fbd7b5c6d3d6e6a"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ImageQualityAnalyzer.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ImageQualityAnalyzer.swift",
+      "sha256_before": "c480d2405f8265e42f9c811dd281145ee93ade2529c2e1659e01b11683caf546",
+      "sha256_after": "c480d2405f8265e42f9c811dd281145ee93ade2529c2e1659e01b11683caf546"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ImageQualityGatekeeper.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ImageQualityGatekeeper.swift",
+      "sha256_before": "9e033de5776c82b08ee92f37a663e5f61056601f761910f5b513dd092e98c0de",
+      "sha256_after": "9e033de5776c82b08ee92f37a663e5f61056601f761910f5b513dd092e98c0de"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/LatestFrameProcessor.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/LatestFrameProcessor.swift",
+      "sha256_before": "9c3fd5d0c58261e3042e9de38622c51cfd88dcb4b11bc6f01c774e1beec33746",
+      "sha256_after": "9c3fd5d0c58261e3042e9de38622c51cfd88dcb4b11bc6f01c774e1beec33746"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/LiveInferenceEngine.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/LiveInferenceEngine.swift",
+      "sha256_before": "cd728d112b3848d93a7095b4e6c0b1bc5895c97c0a699b7d2bad06ccdf643a5a",
+      "sha256_after": "cd728d112b3848d93a7095b4e6c0b1bc5895c97c0a699b7d2bad06ccdf643a5a"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/LiveScanningState.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/LiveScanningState.swift",
+      "sha256_before": "fad9c064376a91808319c6de60ab3b2245b99c4b3335f7e6657fe9cd45538147",
+      "sha256_after": "fad9c064376a91808319c6de60ab3b2245b99c4b3335f7e6657fe9cd45538147"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/LocationManager.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/LocationManager.swift",
+      "sha256_before": "62735cbfe30af99461ab2f5b65d9806627d7a529f2f31869b5de50a6ea21dfe3",
+      "sha256_after": "62735cbfe30af99461ab2f5b65d9806627d7a529f2f31869b5de50a6ea21dfe3"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/MedicalCameraManager.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/MedicalCameraManager.swift",
+      "sha256_before": "12382fc700f84d4c7d5e46bb98f5268cbbc7282721ec5c0972201bf76d85b6f1",
+      "sha256_after": "12382fc700f84d4c7d5e46bb98f5268cbbc7282721ec5c0972201bf76d85b6f1"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/MotionStabilityMonitor.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/MotionStabilityMonitor.swift",
+      "sha256_before": "178a8d6365390eaee632662154e50943c50b32a5b9f4df2707d846bec32c94d5",
+      "sha256_after": "178a8d6365390eaee632662154e50943c50b32a5b9f4df2707d846bec32c94d5"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/MultiInferenceEngine.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/MultiInferenceEngine.swift",
+      "sha256_before": "7be8268ab3a5925b4cd3072602293a6073c303ab943c67ba3c56bd9807f72368",
+      "sha256_after": "7be8268ab3a5925b4cd3072602293a6073c303ab943c67ba3c56bd9807f72368"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/MultiScanHubViewModel.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/MultiScanHubViewModel.swift",
+      "sha256_before": "3e4dd22c802796774eda86ff3ee27c983d00c5acbbd88577cf91072022ce35f3",
+      "sha256_after": "3e4dd22c802796774eda86ff3ee27c983d00c5acbbd88577cf91072022ce35f3"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/MultiTissueInferenceActor.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/MultiTissueInferenceActor.swift",
+      "sha256_before": "ab83add576311c95027f7f2ee5de3167b491995b7e2cce82450241f2025aa19e",
+      "sha256_after": "ab83add576311c95027f7f2ee5de3167b491995b7e2cce82450241f2025aa19e"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/NailHemoglobin.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/NailHemoglobin.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256_before": "5804df46bc5b981f54e4424bd4a4550c3011057cb6dddf7cc9524de97187787b",
+      "sha256_after": "5804df46bc5b981f54e4424bd4a4550c3011057cb6dddf7cc9524de97187787b"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/NailHemoglobin.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/NailHemoglobin.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256_before": "79955cb413d9ba4dac9808471f8ebaa65a254378a0dd030d5ba4a3fc791249d5",
+      "sha256_after": "79955cb413d9ba4dac9808471f8ebaa65a254378a0dd030d5ba4a3fc791249d5"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/NailHemoglobin.mlpackage/Manifest.json",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/NailHemoglobin.mlpackage/Manifest.json",
+      "sha256_before": "6f0016f999c865139aebaf942b70d10eca259940213b5c6dcbe3db2bcdefc1bb",
+      "sha256_after": "6f0016f999c865139aebaf942b70d10eca259940213b5c6dcbe3db2bcdefc1bb"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/NotificationManager.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/NotificationManager.swift",
+      "sha256_before": "cbbaaee8f125886bae2bf135aa30e62fe3f736fab35580d7588549f98f525426",
+      "sha256_after": "cbbaaee8f125886bae2bf135aa30e62fe3f736fab35580d7588549f98f525426"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/PDFExportManager.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/PDFExportManager.swift",
+      "sha256_before": "15d410ac9cab342db3f699d310a28a18ba9e67649a14a5d2d43af248c9c6a333",
+      "sha256_after": "15d410ac9cab342db3f699d310a28a18ba9e67649a14a5d2d43af248c9c6a333"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/PersonalizedPlanEngine.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/PersonalizedPlanEngine.swift",
+      "sha256_before": "8944c127b717df2a0439a7f315eefb9640aa0bdff0251c6a2733d07935ec298c",
+      "sha256_after": "8944c127b717df2a0439a7f315eefb9640aa0bdff0251c6a2733d07935ec298c"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/PrototypeDemoMode.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/PrototypeDemoMode.swift",
+      "sha256_before": "b89b50bbeb8846f0f8df0e3893291ea3305ddee067eeaa0db22d701a103fcc51",
+      "sha256_after": "b89b50bbeb8846f0f8df0e3893291ea3305ddee067eeaa0db22d701a103fcc51"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ResearchDataExporter.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ResearchDataExporter.swift",
+      "sha256_before": "f1c9392a3998b11bce71c81ec52ccece74d9cde252c44f46aad09e10d5a811e6",
+      "sha256_after": "f1c9392a3998b11bce71c81ec52ccece74d9cde252c44f46aad09e10d5a811e6"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ResultTranslator.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ResultTranslator.swift",
+      "sha256_before": "b4338ae20ddea7d4b4d4273edfe646999762174250a6888dd092e306c6fd33e2",
+      "sha256_after": "b4338ae20ddea7d4b4d4273edfe646999762174250a6888dd092e306c6fd33e2"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/SaliencyHeatmapGenerator.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/SaliencyHeatmapGenerator.swift",
+      "sha256_before": "e1666e7d498331ee6e5ebb1514176132677816f0d759c93940a6e9c427be5e67",
+      "sha256_after": "e1666e7d498331ee6e5ebb1514176132677816f0d759c93940a6e9c427be5e67"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ScanHapticsManager.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ScanHapticsManager.swift",
+      "sha256_before": "59d3aad2c59d7f157b6b910c6d88ff41094fe2f63395b34c441871aed329d8e5",
+      "sha256_after": "59d3aad2c59d7f157b6b910c6d88ff41094fe2f63395b34c441871aed329d8e5"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ScanHistoryStore.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ScanHistoryStore.swift",
+      "sha256_before": "94f3e19953cc6298af2cc21cee677d0f6a0bffc31e7d63fadb118b64e67c2330",
+      "sha256_after": "94f3e19953cc6298af2cc21cee677d0f6a0bffc31e7d63fadb118b64e67c2330"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ScanModels.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ScanModels.swift",
+      "sha256_before": "e2acf55c49081b0fe9cece0b54258ebd206431f8f623e0f15396f989033db77c",
+      "sha256_after": "e2acf55c49081b0fe9cece0b54258ebd206431f8f623e0f15396f989033db77c"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ScanPipelineActor.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ScanPipelineActor.swift",
+      "sha256_before": "13d5b36f6eac684fc065aaf9b0157cdc4318056a91cfb12a2374300c4e5e59fa",
+      "sha256_after": "13d5b36f6eac684fc065aaf9b0157cdc4318056a91cfb12a2374300c4e5e59fa"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/ScanViewModel.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/ScanViewModel.swift",
+      "sha256_before": "bffa6135dbdd071645549999ebb44599a961d2175656aaf6ddaa282ce02817fb",
+      "sha256_after": "bffa6135dbdd071645549999ebb44599a961d2175656aaf6ddaa282ce02817fb"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/SimulatorCameraActor.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/SimulatorCameraActor.swift",
+      "sha256_before": "9e6356f44b4a2e28cab8bbdceed12d18eafce572b1dfe55510d0d808444f6545",
+      "sha256_after": "9e6356f44b4a2e28cab8bbdceed12d18eafce572b1dfe55510d0d808444f6545"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/SupabaseManager.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/SupabaseManager.swift",
+      "sha256_before": "24e80c28669b8e79948875dac3209892e696910b21106c41327ba519c4e42f3c",
+      "sha256_after": "24e80c28669b8e79948875dac3209892e696910b21106c41327ba519c4e42f3c"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/SyntheticTongueFrameFactory.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/SyntheticTongueFrameFactory.swift",
+      "sha256_before": "6c54ccecffd62453ee7864184b19cacdc4188a9a5a9452bc1b9fabbf7c1a8681",
+      "sha256_after": "6c54ccecffd62453ee7864184b19cacdc4188a9a5a9452bc1b9fabbf7c1a8681"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/TonguePallor.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/TonguePallor.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256_before": "b30f4be60324dae297967773f92c29c579155cc7b85326160cef1fabaaa830b5",
+      "sha256_after": "b30f4be60324dae297967773f92c29c579155cc7b85326160cef1fabaaa830b5"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/TonguePallor.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/TonguePallor.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256_before": "b015004c267abab28352ca9a18720551769e9fb91a9e1a8b2814a845947c7d3f",
+      "sha256_after": "b015004c267abab28352ca9a18720551769e9fb91a9e1a8b2814a845947c7d3f"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/TonguePallor.mlpackage/Manifest.json",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/TonguePallor.mlpackage/Manifest.json",
+      "sha256_before": "9d408b892d44e0c45cc95fdb10337fdd9262b24a9af520809aa6e93f6580e123",
+      "sha256_after": "9d408b892d44e0c45cc95fdb10337fdd9262b24a9af520809aa6e93f6580e123"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/TriangulationEngine.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/TriangulationEngine.swift",
+      "sha256_before": "4734da9af5060cf69105adec975398eba14074ab4d9c2ec006618e5e0ef1b55f",
+      "sha256_after": "4734da9af5060cf69105adec975398eba14074ab4d9c2ec006618e5e0ef1b55f"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/CoreAndML/VisualRiskSummaryEngine.swift",
+      "to": "IronScan/Apps/IronScan/IronScan/CoreAndML/VisualRiskSummaryEngine.swift",
+      "sha256_before": "1b094bc481f3b3a2211706e546178877ab2cc7c4be1cebdece801b42f53547fd",
+      "sha256_after": "1b094bc481f3b3a2211706e546178877ab2cc7c4be1cebdece801b42f53547fd"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/Info.plist",
+      "to": "IronScan/Apps/IronScan/IronScan/Info.plist",
+      "sha256_before": "734677f576e6cbaba9f4b7fdda76196df9af8824142027bb4fb308f4555ac2ae",
+      "sha256_after": "734677f576e6cbaba9f4b7fdda76196df9af8824142027bb4fb308f4555ac2ae"
+    },
+    {
+      "from": "Apps/IronScan/IronScan/IronScan.entitlements",
+      "to": "IronScan/Apps/IronScan/IronScan/IronScan.entitlements",
+      "sha256_before": "e82a7f6e130b0fe65a40214c15b4116c5245125329c63954d9ccdd9cc80f039e",
+      "sha256_after": "e82a7f6e130b0fe65a40214c15b4116c5245125329c63954d9ccdd9cc80f039e"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/App/AutoCaptureManagerTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/App/AutoCaptureManagerTests.swift",
+      "sha256_before": "98e3492af4580c8bc28989b36f057807bfec5b4a4ddeccc32e48cca6e355012d",
+      "sha256_after": "98e3492af4580c8bc28989b36f057807bfec5b4a4ddeccc32e48cca6e355012d"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/App/CareResourcesTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/App/CareResourcesTests.swift",
+      "sha256_before": "0ac654a6ffedb7ea3014ccdc3cd8792cdd6f84bcb4ffa0ba2004153171b0b0a4",
+      "sha256_after": "0ac654a6ffedb7ea3014ccdc3cd8792cdd6f84bcb4ffa0ba2004153171b0b0a4"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/App/DesignSystemAndHistoryTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/App/DesignSystemAndHistoryTests.swift",
+      "sha256_before": "f21f7307721a85937faa3b50d9f1a758f684bb04fe08f24f2540f5e291bbfa97",
+      "sha256_after": "f21f7307721a85937faa3b50d9f1a758f684bb04fe08f24f2540f5e291bbfa97"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/App/IronHealthInsightsTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/App/IronHealthInsightsTests.swift",
+      "sha256_before": "597f4ea4b7b3e4553e2ac6a40a385ce6623d7961e57344ddc2ee8dca26580999",
+      "sha256_after": "597f4ea4b7b3e4553e2ac6a40a385ce6623d7961e57344ddc2ee8dca26580999"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/App/OnboardingConsentTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/App/OnboardingConsentTests.swift",
+      "sha256_before": "98f03c67047ea64634ad8d7abe81bd2be09c1a6906b806e74301cc71ba1a71f7",
+      "sha256_after": "98f03c67047ea64634ad8d7abe81bd2be09c1a6906b806e74301cc71ba1a71f7"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/App/OnboardingFlowTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/App/OnboardingFlowTests.swift",
+      "sha256_before": "43798c30799318a44be1ef10c2021530db28c2b5ee2bacaf26035670d54ac501",
+      "sha256_after": "43798c30799318a44be1ef10c2021530db28c2b5ee2bacaf26035670d54ac501"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/App/PersonalizedPlanEngineTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/App/PersonalizedPlanEngineTests.swift",
+      "sha256_before": "2a4edf7ed862ba84e2dfb653bf425170a74493885aaf1a1e964fc72d718d7387",
+      "sha256_after": "2a4edf7ed862ba84e2dfb653bf425170a74493885aaf1a1e964fc72d718d7387"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/App/ResultTranslatorTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/App/ResultTranslatorTests.swift",
+      "sha256_before": "5346bc3c3925c30db0e7ff4267428278ace0881d32138a554f16774e2ab7b1d3",
+      "sha256_after": "5346bc3c3925c30db0e7ff4267428278ace0881d32138a554f16774e2ab7b1d3"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/App/ScanResultSummaryTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/App/ScanResultSummaryTests.swift",
+      "sha256_before": "411e0f2aa0d73506c8da98ae857af858136100f369791e438a5eaa8f8e736992",
+      "sha256_after": "411e0f2aa0d73506c8da98ae857af858136100f369791e438a5eaa8f8e736992"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/App/ScanningExperienceTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/App/ScanningExperienceTests.swift",
+      "sha256_before": "91672a023448c5f7d166dc92039f86610d9fd3617f74886b6e2cec98dc0f37cb",
+      "sha256_after": "91672a023448c5f7d166dc92039f86610d9fd3617f74886b6e2cec98dc0f37cb"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/App/VisualRiskSummaryEngineTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/App/VisualRiskSummaryEngineTests.swift",
+      "sha256_before": "c7f344de528ba9c6e04261b0c723d1bb466ffdd04017bb24fcd6b62d1264edcd",
+      "sha256_after": "c7f344de528ba9c6e04261b0c723d1bb466ffdd04017bb24fcd6b62d1264edcd"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/CameraPermissionAndSimulatorTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/CameraPermissionAndSimulatorTests.swift",
+      "sha256_before": "2c17923040305cebdc22226fb56b7cbf56c2f6d751204bfe6f6864ac62fdc6d9",
+      "sha256_after": "2c17923040305cebdc22226fb56b7cbf56c2f6d751204bfe6f6864ac62fdc6d9"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/CameraStateMachineTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/CameraStateMachineTests.swift",
+      "sha256_before": "e0f58c76a739ce2e9d3ae4850d173362e9e6bd71d87645f202d8dbfae980186f",
+      "sha256_after": "e0f58c76a739ce2e9d3ae4850d173362e9e6bd71d87645f202d8dbfae980186f"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/ML/ColorCalibration/CalibrationTestSupport.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/ML/ColorCalibration/CalibrationTestSupport.swift",
+      "sha256_before": "617ac8dda9586dadfeb0602dd7d515a2c30e8f75273ac8032accd10fb6f6d732",
+      "sha256_after": "617ac8dda9586dadfeb0602dd7d515a2c30e8f75273ac8032accd10fb6f6d732"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/ML/ColorCalibration/SmartColorCalibrationTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/ML/ColorCalibration/SmartColorCalibrationTests.swift",
+      "sha256_before": "bdc9d767178308acd7881b67bb16765da79632f233b8f927bba990898880eebd",
+      "sha256_after": "bdc9d767178308acd7881b67bb16765da79632f233b8f927bba990898880eebd"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/ML/IDARiskEngineTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/ML/IDARiskEngineTests.swift",
+      "sha256_before": "9e566f48497b57d4eb50913e3d1899dfd37b3adbc258eede2673766b59515761",
+      "sha256_after": "9e566f48497b57d4eb50913e3d1899dfd37b3adbc258eede2673766b59515761"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/ML/InferenceConcurrencyTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/ML/InferenceConcurrencyTests.swift",
+      "sha256_before": "3d8d0d2880128f87ffe2cde178bfbe06244ceff7f0d1def72d86d96d83d5c0f6",
+      "sha256_after": "3d8d0d2880128f87ffe2cde178bfbe06244ceff7f0d1def72d86d96d83d5c0f6"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/ML/InferenceParityTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/ML/InferenceParityTests.swift",
+      "sha256_before": "7f89581d6c84790cd474ca65cd75cfbbf12ddefbdf1542ad77fe87f1ed46055e",
+      "sha256_after": "7f89581d6c84790cd474ca65cd75cfbbf12ddefbdf1542ad77fe87f1ed46055e"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/ML/LiveInferenceEngineTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/ML/LiveInferenceEngineTests.swift",
+      "sha256_before": "93f627b8b2a19e5a10ac2f42061276a9f16f54ad6f4d90fc05ba9418c94f389f",
+      "sha256_after": "93f627b8b2a19e5a10ac2f42061276a9f16f54ad6f4d90fc05ba9418c94f389f"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/ML/MLTestSupport.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/ML/MLTestSupport.swift",
+      "sha256_before": "c33260ef980ad8e139602b5990c4c886afd7e948568a05f510ecbda8cf7961ad",
+      "sha256_after": "c33260ef980ad8e139602b5990c4c886afd7e948568a05f510ecbda8cf7961ad"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/ML/ModelContractValidatorTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/ML/ModelContractValidatorTests.swift",
+      "sha256_before": "e22c1c4e9936fcf884cd41e09ac2640146c30dff6cb82b89cbf731a2570685e3",
+      "sha256_after": "e22c1c4e9936fcf884cd41e09ac2640146c30dff6cb82b89cbf731a2570685e3"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/ML/MultiInferenceEngineTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/ML/MultiInferenceEngineTests.swift",
+      "sha256_before": "badac46f8151b9379565cad3c2c1509ae8628c7e8e4a829146a62b73cfe5fdfa",
+      "sha256_after": "badac46f8151b9379565cad3c2c1509ae8628c7e8e4a829146a62b73cfe5fdfa"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/ML/MultiTissueInferenceActorTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/ML/MultiTissueInferenceActorTests.swift",
+      "sha256_before": "ea98e01e30edbbf42b523ef3a86db34c1446c1701c6a000e6bca23be09c81501",
+      "sha256_after": "ea98e01e30edbbf42b523ef3a86db34c1446c1701c6a000e6bca23be09c81501"
+    },
+    {
+      "from": "Apps/IronScan/IronScanTests/ML/TriangulationEngineTests.swift",
+      "to": "IronScan/Apps/IronScan/IronScanTests/ML/TriangulationEngineTests.swift",
+      "sha256_before": "2e4433848d0a658d5fad60b6aff694678573d6757e52fc6505510e021f58b919",
+      "sha256_after": "2e4433848d0a658d5fad60b6aff694678573d6757e52fc6505510e021f58b919"
+    },
+    {
+      "from": "Apps/IronScan/IronScanUITests/README.md",
+      "to": "IronScan/Apps/IronScan/IronScanUITests/README.md",
+      "sha256_before": "064c68c53f74aecf2847f8cdbdb767d1f0ca2caaa2cdf01e83c4633d2268807f",
+      "sha256_after": "064c68c53f74aecf2847f8cdbdb767d1f0ca2caaa2cdf01e83c4633d2268807f"
+    },
+    {
+      "from": "Apps/IronScan/project.yml",
+      "to": "IronScan/Apps/IronScan/project.yml",
+      "sha256_before": "0311094afce7c5bffa381c4fc4d27a080c39e21e1b305bd9c683bd0279e3a10c",
+      "sha256_after": "0311094afce7c5bffa381c4fc4d27a080c39e21e1b305bd9c683bd0279e3a10c"
+    },
+    {
+      "from": "IronScan.xcworkspace/contents.xcworkspacedata",
+      "to": "IronScan/IronScan.xcworkspace/contents.xcworkspacedata",
+      "sha256_before": "f2bbc2e2e1ce1cc51c85977bb61fc6c32327d1877bff74109a9ab8b8ecd3630d",
+      "sha256_after": "f2bbc2e2e1ce1cc51c85977bb61fc6c32327d1877bff74109a9ab8b8ecd3630d"
+    },
+    {
+      "from": "IronScan.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings",
+      "to": "IronScan/IronScan.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings",
+      "sha256_before": "97704a8960b4facceef54397a08fb5d0a456247c3627359215aa2a27df22656c",
+      "sha256_after": "97704a8960b4facceef54397a08fb5d0a456247c3627359215aa2a27df22656c"
+    },
+    {
+      "from": "IronScan.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+      "to": "IronScan/IronScan.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+      "sha256_before": "549168279190dff67dfcdeefbc778814eca0798e645ebd33c9ae0df26e9b5b44",
+      "sha256_after": "549168279190dff67dfcdeefbc778814eca0798e645ebd33c9ae0df26e9b5b44"
+    },
+    {
+      "from": "MLTraining/README.md",
+      "to": "IronScan/MLTraining/README.md",
+      "sha256_before": "9991a932aa986fef01424fc17337d09ef62e8f6d3a5d26c37369751d939b0c15",
+      "sha256_after": "9991a932aa986fef01424fc17337d09ef62e8f6d3a5d26c37369751d939b0c15"
+    },
+    {
+      "from": "MLTraining/__init__.py",
+      "to": "IronScan/MLTraining/__init__.py",
+      "sha256_before": "6487cf789046ac717a489ee9fe5ba1432aaac63f3131c8773c86c981d21d4336",
+      "sha256_after": "6487cf789046ac717a489ee9fe5ba1432aaac63f3131c8773c86c981d21d4336"
+    },
+    {
+      "from": "MLTraining/configs/README.md",
+      "to": "IronScan/MLTraining/configs/README.md",
+      "sha256_before": "19eda137d6af451d2fa96182cb1e97c49c748d095dd5b0203c28c8cf0f1f59bd",
+      "sha256_after": "19eda137d6af451d2fa96182cb1e97c49c748d095dd5b0203c28c8cf0f1f59bd"
+    },
+    {
+      "from": "MLTraining/datasets/README.md",
+      "to": "IronScan/MLTraining/datasets/README.md",
+      "sha256_before": "7de7ac05a00a22467e3de84bb6ce37712e1e96a09db376ba8bb2b1c656f3c368",
+      "sha256_after": "7de7ac05a00a22467e3de84bb6ce37712e1e96a09db376ba8bb2b1c656f3c368"
+    },
+    {
+      "from": "MLTraining/datasets/dataset_cards/README.md",
+      "to": "IronScan/MLTraining/datasets/dataset_cards/README.md",
+      "sha256_before": "1825ea84b662d5fbc61609601c1d09e80dbdd7d4552c721673c7ea1b2c966aca",
+      "sha256_after": "1825ea84b662d5fbc61609601c1d09e80dbdd7d4552c721673c7ea1b2c966aca"
+    },
+    {
+      "from": "MLTraining/datasets/split_manifests/README.md",
+      "to": "IronScan/MLTraining/datasets/split_manifests/README.md",
+      "sha256_before": "85af8fbbbd3cb04b2085b4f69f851488ff360baedff4bb3125ee6a214cf82237",
+      "sha256_after": "85af8fbbbd3cb04b2085b4f69f851488ff360baedff4bb3125ee6a214cf82237"
+    },
+    {
+      "from": "MLTraining/ironscan_ml/__init__.py",
+      "to": "IronScan/MLTraining/ironscan_ml/__init__.py",
+      "sha256_before": "63bb06cdee872c86ee11293879bdaf0735808896321a905b5e68d88517ba1794",
+      "sha256_after": "63bb06cdee872c86ee11293879bdaf0735808896321a905b5e68d88517ba1794"
+    },
+    {
+      "from": "MLTraining/ironscan_ml/data/__init__.py",
+      "to": "IronScan/MLTraining/ironscan_ml/data/__init__.py",
+      "sha256_before": "076415cf29a4fc97a08cd0c7746ebcade4dc69ab5a769f68f768371ccf61b0c0",
+      "sha256_after": "076415cf29a4fc97a08cd0c7746ebcade4dc69ab5a769f68f768371ccf61b0c0"
+    },
+    {
+      "from": "MLTraining/ironscan_ml/evaluation/__init__.py",
+      "to": "IronScan/MLTraining/ironscan_ml/evaluation/__init__.py",
+      "sha256_before": "560a04b5f08edd4f69c46dd51ff608c605aed312c64babc9e342f95acb74a595",
+      "sha256_after": "560a04b5f08edd4f69c46dd51ff608c605aed312c64babc9e342f95acb74a595"
+    },
+    {
+      "from": "MLTraining/ironscan_ml/export/__init__.py",
+      "to": "IronScan/MLTraining/ironscan_ml/export/__init__.py",
+      "sha256_before": "ce0c641dae6318f4d67e91fd9815373fa16e36b78cdac438e8c4a41c76eedffe",
+      "sha256_after": "ce0c641dae6318f4d67e91fd9815373fa16e36b78cdac438e8c4a41c76eedffe"
+    },
+    {
+      "from": "MLTraining/ironscan_ml/preprocessing/__init__.py",
+      "to": "IronScan/MLTraining/ironscan_ml/preprocessing/__init__.py",
+      "sha256_before": "2cacc63a5ac08fa0304b3e184e8c58547d101a96553981392284b50ad4a873b1",
+      "sha256_after": "2cacc63a5ac08fa0304b3e184e8c58547d101a96553981392284b50ad4a873b1"
+    },
+    {
+      "from": "MLTraining/ironscan_ml/training/__init__.py",
+      "to": "IronScan/MLTraining/ironscan_ml/training/__init__.py",
+      "sha256_before": "558e7b72a29a98bfb0abf7cd720ce3a8f75ca0ea6ef6d758a7aef1f9b8cdc696",
+      "sha256_after": "558e7b72a29a98bfb0abf7cd720ce3a8f75ca0ea6ef6d758a7aef1f9b8cdc696"
+    },
+    {
+      "from": "MLTraining/ironscan_ml/validation/__init__.py",
+      "to": "IronScan/MLTraining/ironscan_ml/validation/__init__.py",
+      "sha256_before": "0e0cb2282d76241c20a6791fdad5f498a89a406761cd83c287a3daace3e667f3",
+      "sha256_after": "0e0cb2282d76241c20a6791fdad5f498a89a406761cd83c287a3daace3e667f3"
+    },
+    {
+      "from": "MLTraining/pyproject.toml",
+      "to": "IronScan/MLTraining/pyproject.toml",
+      "sha256_before": "52b5afec2596e0b6633dde0d5c24f7606b0857644bcb3929dbaeae90eeac8864",
+      "sha256_after": "52b5afec2596e0b6633dde0d5c24f7606b0857644bcb3929dbaeae90eeac8864"
+    },
+    {
+      "from": "MLTraining/reports/README.md",
+      "to": "IronScan/MLTraining/reports/README.md",
+      "sha256_before": "9bec8bcb37dc5490fb0ba58f685db48eeb110b2fd84b64c09520ce37fb8c2503",
+      "sha256_after": "9bec8bcb37dc5490fb0ba58f685db48eeb110b2fd84b64c09520ce37fb8c2503"
+    },
+    {
+      "from": "MLTraining/reports/multi-label-v0.1.0/evaluation_summary.json",
+      "to": "IronScan/MLTraining/reports/multi-label-v0.1.0/evaluation_summary.json",
+      "sha256_before": "b638c2f5c83457f20542f47a8ee1a131c6e4297a4e7430639474e58a9c2f7f42",
+      "sha256_after": "b638c2f5c83457f20542f47a8ee1a131c6e4297a4e7430639474e58a9c2f7f42"
+    },
+    {
+      "from": "MLTraining/reports/pallor-v0.1.0/evaluation_summary.json",
+      "to": "IronScan/MLTraining/reports/pallor-v0.1.0/evaluation_summary.json",
+      "sha256_before": "9f837212aa205638b41840dd04e0dfafc57e688afb43d77301449271dac7e9a5",
+      "sha256_after": "9f837212aa205638b41840dd04e0dfafc57e688afb43d77301449271dac7e9a5"
+    },
+    {
+      "from": "MLTraining/scripts/README.md",
+      "to": "IronScan/MLTraining/scripts/README.md",
+      "sha256_before": "83b19f266b327153491a9b4fb837a32d2d74ed626f98fa864970b47dfa852f0d",
+      "sha256_after": "83b19f266b327153491a9b4fb837a32d2d74ed626f98fa864970b47dfa852f0d"
+    },
+    {
+      "from": "MLTraining/scripts/__init__.py",
+      "to": "IronScan/MLTraining/scripts/__init__.py",
+      "sha256_before": "14bf6889ae14727ffc38dd0fc4bf0d6d5782273327e8a45ec13c5c164a10930e",
+      "sha256_after": "14bf6889ae14727ffc38dd0fc4bf0d6d5782273327e8a45ec13c5c164a10930e"
+    },
+    {
+      "from": "MLTraining/scripts/ingest_external_repo.py",
+      "to": "IronScan/MLTraining/scripts/ingest_external_repo.py",
+      "sha256_before": "ae3fccb6302ededf1bedbd9d2a3d481d1237a10eb00118511f05995704935d99",
+      "sha256_after": "ae3fccb6302ededf1bedbd9d2a3d481d1237a10eb00118511f05995704935d99"
+    },
+    {
+      "from": "MLTraining/scripts/master_pipeline.py",
+      "to": "IronScan/MLTraining/scripts/master_pipeline.py",
+      "sha256_before": "61e455e7da5af18e75ce003d7bee973a3a0cb796e5689157a5c2c1bc67f42b3f",
+      "sha256_after": "61e455e7da5af18e75ce003d7bee973a3a0cb796e5689157a5c2c1bc67f42b3f"
+    },
+    {
+      "from": "MLTraining/scripts/multimodal_ingestion.py",
+      "to": "IronScan/MLTraining/scripts/multimodal_ingestion.py",
+      "sha256_before": "23a5f8de757bdfae3fd33fb0dc79c7725220bed3e251eea86ee1f606b942480a",
+      "sha256_after": "23a5f8de757bdfae3fd33fb0dc79c7725220bed3e251eea86ee1f606b942480a"
+    },
+    {
+      "from": "MLTraining/scripts/sort_and_preprocess.py",
+      "to": "IronScan/MLTraining/scripts/sort_and_preprocess.py",
+      "sha256_before": "632497a2a29e9ad6517e56a4012a7f4daac7d214c8af586102b0216df396c6ec",
+      "sha256_after": "632497a2a29e9ad6517e56a4012a7f4daac7d214c8af586102b0216df396c6ec"
+    },
+    {
+      "from": "MLTraining/scripts/train_and_convert.py",
+      "to": "IronScan/MLTraining/scripts/train_and_convert.py",
+      "sha256_before": "cdd155daf83222b25192b31eeaf845cd0caaa5579ff44054dabcfe3b70ce4088",
+      "sha256_after": "cdd155daf83222b25192b31eeaf845cd0caaa5579ff44054dabcfe3b70ce4088"
+    },
+    {
+      "from": "MLTraining/scripts/train_multi_label_model.py",
+      "to": "IronScan/MLTraining/scripts/train_multi_label_model.py",
+      "sha256_before": "24c75fc47aaca6484a73ea76b1af9d88fcd95d24ac99606ff366e586f9b0db1f",
+      "sha256_after": "24c75fc47aaca6484a73ea76b1af9d88fcd95d24ac99606ff366e586f9b0db1f"
+    },
+    {
+      "from": "MLTraining/scripts/train_multimodal_suite.py",
+      "to": "IronScan/MLTraining/scripts/train_multimodal_suite.py",
+      "sha256_before": "a1a719bfb2265af495442afe73f1b0ada417d25755b9ef597ed52cbec6148e63",
+      "sha256_after": "a1a719bfb2265af495442afe73f1b0ada417d25755b9ef597ed52cbec6148e63"
+    },
+    {
+      "from": "MLTraining/scripts/train_pallor_model.py",
+      "to": "IronScan/MLTraining/scripts/train_pallor_model.py",
+      "sha256_before": "a157cc5eaf5890449e195a18daec6af5832172f9fff6772e924ddf39dad47c6e",
+      "sha256_after": "a157cc5eaf5890449e195a18daec6af5832172f9fff6772e924ddf39dad47c6e"
+    },
+    {
+      "from": "MLTraining/tests/README.md",
+      "to": "IronScan/MLTraining/tests/README.md",
+      "sha256_before": "0f3962b4c6a70f70c317410b1b94c0ee999e537d4ee80f2471f0f2703f0c7877",
+      "sha256_after": "0f3962b4c6a70f70c317410b1b94c0ee999e537d4ee80f2471f0f2703f0c7877"
+    },
+    {
+      "from": "MLTraining/tests/__init__.py",
+      "to": "IronScan/MLTraining/tests/__init__.py",
+      "sha256_before": "372af196ab42813045149d01ccd348d872c26e2a11c6f51aea1e583de403ea35",
+      "sha256_after": "372af196ab42813045149d01ccd348d872c26e2a11c6f51aea1e583de403ea35"
+    },
+    {
+      "from": "MLTraining/tests/test_ingest_external_repo.py",
+      "to": "IronScan/MLTraining/tests/test_ingest_external_repo.py",
+      "sha256_before": "cf50a259a77628b5143df0668dea9e87ee10ed3b4e7fa1c29325c2c9d415a7b5",
+      "sha256_after": "cf50a259a77628b5143df0668dea9e87ee10ed3b4e7fa1c29325c2c9d415a7b5"
+    },
+    {
+      "from": "MLTraining/tests/test_master_pipeline.py",
+      "to": "IronScan/MLTraining/tests/test_master_pipeline.py",
+      "sha256_before": "b2f2becd4873bc19fa141aa9b37f1ee97145324c1f3eb124ce30e2fb41c834bb",
+      "sha256_after": "b2f2becd4873bc19fa141aa9b37f1ee97145324c1f3eb124ce30e2fb41c834bb"
+    },
+    {
+      "from": "MLTraining/tests/test_multimodal_ingestion.py",
+      "to": "IronScan/MLTraining/tests/test_multimodal_ingestion.py",
+      "sha256_before": "373ee3ae8987c1693703c382b2f85755ed6d4f19fca9bf06b84c25536b47bcc0",
+      "sha256_after": "373ee3ae8987c1693703c382b2f85755ed6d4f19fca9bf06b84c25536b47bcc0"
+    },
+    {
+      "from": "MLTraining/tests/test_sort_and_preprocess.py",
+      "to": "IronScan/MLTraining/tests/test_sort_and_preprocess.py",
+      "sha256_before": "0f321e6b55a16091afd52e5c2f5c291dca650b3cbe435aa4eada097f42210291",
+      "sha256_after": "0f321e6b55a16091afd52e5c2f5c291dca650b3cbe435aa4eada097f42210291"
+    },
+    {
+      "from": "MLTraining/tests/test_train_and_convert.py",
+      "to": "IronScan/MLTraining/tests/test_train_and_convert.py",
+      "sha256_before": "3202a2d503f46f71b2330eb91f1dd5fd808873e0a71ce7d4a51a62fae70ade91",
+      "sha256_after": "3202a2d503f46f71b2330eb91f1dd5fd808873e0a71ce7d4a51a62fae70ade91"
+    },
+    {
+      "from": "MLTraining/tests/test_train_multi_label_model.py",
+      "to": "IronScan/MLTraining/tests/test_train_multi_label_model.py",
+      "sha256_before": "3386c880bc4e923993655d936094c96c423690135d435c9f5573f13b65796527",
+      "sha256_after": "3386c880bc4e923993655d936094c96c423690135d435c9f5573f13b65796527"
+    },
+    {
+      "from": "MLTraining/tests/test_train_multimodal_suite.py",
+      "to": "IronScan/MLTraining/tests/test_train_multimodal_suite.py",
+      "sha256_before": "69fba01b7b6f26cd06b30ba72151b6ba2fe6a8eb0b885aa2e10b1de3a7fb83b9",
+      "sha256_after": "69fba01b7b6f26cd06b30ba72151b6ba2fe6a8eb0b885aa2e10b1de3a7fb83b9"
+    },
+    {
+      "from": "MLTraining/tests/test_train_pallor_model.py",
+      "to": "IronScan/MLTraining/tests/test_train_pallor_model.py",
+      "sha256_before": "4d16d5979beddee974008029d6eb2a08d4f3efd7ab74e33610fe3eb86700dff9",
+      "sha256_after": "4d16d5979beddee974008029d6eb2a08d4f3efd7ab74e33610fe3eb86700dff9"
+    },
+    {
+      "from": "MLTraining/uv.lock",
+      "to": "IronScan/MLTraining/uv.lock",
+      "sha256_before": "ff87c36ef956fb282ca9f77140c4b33fcb0d23c1fa4fc3a379ee77a42904e27a",
+      "sha256_after": "ff87c36ef956fb282ca9f77140c4b33fcb0d23c1fa4fc3a379ee77a42904e27a"
+    },
+    {
+      "from": "Models/Checksums/SHA256SUMS",
+      "to": "IronScan/Models/Checksums/SHA256SUMS",
+      "sha256_before": "06e02143381382b4195797bce0ed2765d6bce0ef5f2292d87d5e3acf5770f466",
+      "sha256_after": "06e02143381382b4195797bce0ed2765d6bce0ef5f2292d87d5e3acf5770f466"
+    },
+    {
+      "from": "Models/CoreML/AnemiaRisk.mlpackage/Data/com.apple.CoreML/AnemiaRisk.mlmodel",
+      "to": "IronScan/Models/CoreML/AnemiaRisk.mlpackage/Data/com.apple.CoreML/AnemiaRisk.mlmodel",
+      "sha256_before": "f2de0f4025b5e866f6e3dc64c1e31f0a8612f721fb505d5442da58ed034c35dd",
+      "sha256_after": "f2de0f4025b5e866f6e3dc64c1e31f0a8612f721fb505d5442da58ed034c35dd"
+    },
+    {
+      "from": "Models/CoreML/AnemiaRisk.mlpackage/Data/com.apple.CoreML/FeatureDescriptions.json",
+      "to": "IronScan/Models/CoreML/AnemiaRisk.mlpackage/Data/com.apple.CoreML/FeatureDescriptions.json",
+      "sha256_before": "4dac54711f8bdcc99f4cdb80feb71076c865614332ce55a385939c540444556f",
+      "sha256_after": "4dac54711f8bdcc99f4cdb80feb71076c865614332ce55a385939c540444556f"
+    },
+    {
+      "from": "Models/CoreML/AnemiaRisk.mlpackage/Data/com.apple.CoreML/Metadata.json",
+      "to": "IronScan/Models/CoreML/AnemiaRisk.mlpackage/Data/com.apple.CoreML/Metadata.json",
+      "sha256_before": "cb04b1e5cbc341150ca82c12291db3f031a57d76f36c32c410ca59151683e71e",
+      "sha256_after": "cb04b1e5cbc341150ca82c12291db3f031a57d76f36c32c410ca59151683e71e"
+    },
+    {
+      "from": "Models/CoreML/AnemiaRisk.mlpackage/Manifest.json",
+      "to": "IronScan/Models/CoreML/AnemiaRisk.mlpackage/Manifest.json",
+      "sha256_before": "fb1aa6e097b8a4dd851c753800b0605481f7c659b253eb56c93a8621027e9823",
+      "sha256_after": "fb1aa6e097b8a4dd851c753800b0605481f7c659b253eb56c93a8621027e9823"
+    },
+    {
+      "from": "Models/CoreML/IronScanEye.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "IronScan/Models/CoreML/IronScanEye.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256_before": "c5bf92f8d213010d668437fe58a2831becf6d5e95c71548408ead074fa92239e",
+      "sha256_after": "c5bf92f8d213010d668437fe58a2831becf6d5e95c71548408ead074fa92239e"
+    },
+    {
+      "from": "Models/CoreML/IronScanEye.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "IronScan/Models/CoreML/IronScanEye.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256_before": "603c161dbeaea3470ad6abf17a4ff1e219a1d30e73ad814706cfd4ed6405ae77",
+      "sha256_after": "603c161dbeaea3470ad6abf17a4ff1e219a1d30e73ad814706cfd4ed6405ae77"
+    },
+    {
+      "from": "Models/CoreML/IronScanEye.mlpackage/Manifest.json",
+      "to": "IronScan/Models/CoreML/IronScanEye.mlpackage/Manifest.json",
+      "sha256_before": "4df691e69bf2b3a4cf1d3c382c28ec3a44c6602d0349d6bfe1a8885bc252c642",
+      "sha256_after": "4df691e69bf2b3a4cf1d3c382c28ec3a44c6602d0349d6bfe1a8885bc252c642"
+    },
+    {
+      "from": "Models/CoreML/IronScanEye_Clinical.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "IronScan/Models/CoreML/IronScanEye_Clinical.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256_before": "1afa96536920b7bde19ebe245bba018ea0c2a6a8b3ddaf6dfd2caccf0a3fc407",
+      "sha256_after": "1afa96536920b7bde19ebe245bba018ea0c2a6a8b3ddaf6dfd2caccf0a3fc407"
+    },
+    {
+      "from": "Models/CoreML/IronScanEye_Clinical.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "IronScan/Models/CoreML/IronScanEye_Clinical.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256_before": "2bde322533bc14c675bf5760492cc18249b641a3e45b21120120f0e02ec57178",
+      "sha256_after": "2bde322533bc14c675bf5760492cc18249b641a3e45b21120120f0e02ec57178"
+    },
+    {
+      "from": "Models/CoreML/IronScanEye_Clinical.mlpackage/Manifest.json",
+      "to": "IronScan/Models/CoreML/IronScanEye_Clinical.mlpackage/Manifest.json",
+      "sha256_before": "fd9c2186cddc4a087a01cacc8132ad9870f81b0d45a04064576788c410a7cf02",
+      "sha256_after": "fd9c2186cddc4a087a01cacc8132ad9870f81b0d45a04064576788c410a7cf02"
+    },
+    {
+      "from": "Models/CoreML/IronScanMultiScreen.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "IronScan/Models/CoreML/IronScanMultiScreen.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256_before": "0df231c211ce9a3e14a179215ff772a445bb4bd1fdec004a8ed78493a974d776",
+      "sha256_after": "0df231c211ce9a3e14a179215ff772a445bb4bd1fdec004a8ed78493a974d776"
+    },
+    {
+      "from": "Models/CoreML/IronScanMultiScreen.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "IronScan/Models/CoreML/IronScanMultiScreen.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256_before": "20abe736e054183ae4980a2de172d4bbee24be897a9646aa4a917f67fbb28b87",
+      "sha256_after": "20abe736e054183ae4980a2de172d4bbee24be897a9646aa4a917f67fbb28b87"
+    },
+    {
+      "from": "Models/CoreML/IronScanMultiScreen.mlpackage/Manifest.json",
+      "to": "IronScan/Models/CoreML/IronScanMultiScreen.mlpackage/Manifest.json",
+      "sha256_before": "7c489c99466d6165c990c5a2c7a07f4f3c769253ca6cbfe3e53687a10245ec67",
+      "sha256_after": "7c489c99466d6165c990c5a2c7a07f4f3c769253ca6cbfe3e53687a10245ec67"
+    },
+    {
+      "from": "Models/CoreML/IronScanNail.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "IronScan/Models/CoreML/IronScanNail.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256_before": "a28aae2bcde8a98354e476caf1101924103012eb2ba3153e065830668361ac99",
+      "sha256_after": "a28aae2bcde8a98354e476caf1101924103012eb2ba3153e065830668361ac99"
+    },
+    {
+      "from": "Models/CoreML/IronScanNail.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "IronScan/Models/CoreML/IronScanNail.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256_before": "53fdc19ca622651c2fa2cb78866b440eb4d7426d3b893c17236962bc646d2a28",
+      "sha256_after": "53fdc19ca622651c2fa2cb78866b440eb4d7426d3b893c17236962bc646d2a28"
+    },
+    {
+      "from": "Models/CoreML/IronScanNail.mlpackage/Manifest.json",
+      "to": "IronScan/Models/CoreML/IronScanNail.mlpackage/Manifest.json",
+      "sha256_before": "0908b740df0fc9af9f43c4561bd5382940b20ac3454d64b5ecbba9d9d60ee29c",
+      "sha256_after": "0908b740df0fc9af9f43c4561bd5382940b20ac3454d64b5ecbba9d9d60ee29c"
+    },
+    {
+      "from": "Models/CoreML/IronScanPallorClassifier.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "IronScan/Models/CoreML/IronScanPallorClassifier.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256_before": "fff24866899d66cd5d8153ac1516091e605aa85bff163daab5f648eda6d3fcf8",
+      "sha256_after": "fff24866899d66cd5d8153ac1516091e605aa85bff163daab5f648eda6d3fcf8"
+    },
+    {
+      "from": "Models/CoreML/IronScanPallorClassifier.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "IronScan/Models/CoreML/IronScanPallorClassifier.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256_before": "a88e89cd0ed54af7a49c95ad6f365f771f127dd84d42d5f261885a3965ea73c7",
+      "sha256_after": "a88e89cd0ed54af7a49c95ad6f365f771f127dd84d42d5f261885a3965ea73c7"
+    },
+    {
+      "from": "Models/CoreML/IronScanPallorClassifier.mlpackage/Manifest.json",
+      "to": "IronScan/Models/CoreML/IronScanPallorClassifier.mlpackage/Manifest.json",
+      "sha256_before": "34b11489cfa6ac1c6af154be01dc8b58ccfe39b4021a7af0e0706c0b338ccbd0",
+      "sha256_after": "34b11489cfa6ac1c6af154be01dc8b58ccfe39b4021a7af0e0706c0b338ccbd0"
+    },
+    {
+      "from": "Models/CoreML/IronScanTongue.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "to": "IronScan/Models/CoreML/IronScanTongue.mlpackage/Data/com.apple.CoreML/model.mlmodel",
+      "sha256_before": "f12ea0ccda38279ac46f9bff6a1a62ff388cc61409c4a7a1c08c833cf3f9768b",
+      "sha256_after": "f12ea0ccda38279ac46f9bff6a1a62ff388cc61409c4a7a1c08c833cf3f9768b"
+    },
+    {
+      "from": "Models/CoreML/IronScanTongue.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "to": "IronScan/Models/CoreML/IronScanTongue.mlpackage/Data/com.apple.CoreML/weights/weight.bin",
+      "sha256_before": "620427dcf10e3f1d712700bd8ce61b4f02dbe48455f1280b7e74bfc5f2a2adfe",
+      "sha256_after": "620427dcf10e3f1d712700bd8ce61b4f02dbe48455f1280b7e74bfc5f2a2adfe"
+    },
+    {
+      "from": "Models/CoreML/IronScanTongue.mlpackage/Manifest.json",
+      "to": "IronScan/Models/CoreML/IronScanTongue.mlpackage/Manifest.json",
+      "sha256_before": "784ac2499dd08fa7594f7b61b7d2d8ed1e896824eef1285da7290c6105d3c7b2",
+      "sha256_after": "784ac2499dd08fa7594f7b61b7d2d8ed1e896824eef1285da7290c6105d3c7b2"
+    },
+    {
+      "from": "Models/CoreML/TongueSegmentation.mlpackage/Data/com.apple.CoreML/FeatureDescriptions.json",
+      "to": "IronScan/Models/CoreML/TongueSegmentation.mlpackage/Data/com.apple.CoreML/FeatureDescriptions.json",
+      "sha256_before": "635337a3c1213dc759f44c473b910917655958392c2ceceb7c2795ab2afe4074",
+      "sha256_after": "635337a3c1213dc759f44c473b910917655958392c2ceceb7c2795ab2afe4074"
+    },
+    {
+      "from": "Models/CoreML/TongueSegmentation.mlpackage/Data/com.apple.CoreML/Metadata.json",
+      "to": "IronScan/Models/CoreML/TongueSegmentation.mlpackage/Data/com.apple.CoreML/Metadata.json",
+      "sha256_before": "0cdd2767f8674f240f858c709dc285bcdcf71be74999bd39d943628b44170d82",
+      "sha256_after": "0cdd2767f8674f240f858c709dc285bcdcf71be74999bd39d943628b44170d82"
+    },
+    {
+      "from": "Models/CoreML/TongueSegmentation.mlpackage/Data/com.apple.CoreML/TongueSegmentation.mlmodel",
+      "to": "IronScan/Models/CoreML/TongueSegmentation.mlpackage/Data/com.apple.CoreML/TongueSegmentation.mlmodel",
+      "sha256_before": "78b152dd6a63759140a13cf17909bfc87852d646eb206807b5de7b06a39c5da7",
+      "sha256_after": "78b152dd6a63759140a13cf17909bfc87852d646eb206807b5de7b06a39c5da7"
+    },
+    {
+      "from": "Models/CoreML/TongueSegmentation.mlpackage/Manifest.json",
+      "to": "IronScan/Models/CoreML/TongueSegmentation.mlpackage/Manifest.json",
+      "sha256_before": "a9aff2a7486ff5610eb10bc02659c92b1f329adf688908e887de601deea5a0c1",
+      "sha256_after": "a9aff2a7486ff5610eb10bc02659c92b1f329adf688908e887de601deea5a0c1"
+    },
+    {
+      "from": "Models/Manifests/eye_clinical_manifest.json",
+      "to": "IronScan/Models/Manifests/eye_clinical_manifest.json",
+      "sha256_before": "44dccd0577a1202d5aae2de661bcb8b12cd56c5ae0bd6d2c5b86a984c6b509fe",
+      "sha256_after": "44dccd0577a1202d5aae2de661bcb8b12cd56c5ae0bd6d2c5b86a984c6b509fe"
+    },
+    {
+      "from": "Models/Manifests/eye_manifest.json",
+      "to": "IronScan/Models/Manifests/eye_manifest.json",
+      "sha256_before": "d0dbcc5a6f4eb2b1c3e2b4f3f275ce6080dfccf880a8877986782b3f39b39194",
+      "sha256_after": "d0dbcc5a6f4eb2b1c3e2b4f3f275ce6080dfccf880a8877986782b3f39b39194"
+    },
+    {
+      "from": "Models/Manifests/model_manifest.schema.json",
+      "to": "IronScan/Models/Manifests/model_manifest.schema.json",
+      "sha256_before": "dd05d530a9f1e34c29a1e6159308746b42cb4f8fdb12084c30f2f43fd6cf9f01",
+      "sha256_after": "dd05d530a9f1e34c29a1e6159308746b42cb4f8fdb12084c30f2f43fd6cf9f01"
+    },
+    {
+      "from": "Models/Manifests/multi_screen_manifest.json",
+      "to": "IronScan/Models/Manifests/multi_screen_manifest.json",
+      "sha256_before": "1a1451e7480b39732c9d0335ac942d0334e71f53cc0bc7f68a680a8349e8b9c6",
+      "sha256_after": "1a1451e7480b39732c9d0335ac942d0334e71f53cc0bc7f68a680a8349e8b9c6"
+    },
+    {
+      "from": "Models/Manifests/nail_manifest.json",
+      "to": "IronScan/Models/Manifests/nail_manifest.json",
+      "sha256_before": "360c4838447fe44c2e5193cfdf1fd8f3e60bda8f83c4d5c7b569c00c5cc7cc0b",
+      "sha256_after": "360c4838447fe44c2e5193cfdf1fd8f3e60bda8f83c4d5c7b569c00c5cc7cc0b"
+    },
+    {
+      "from": "Models/Manifests/pallor_manifest.json",
+      "to": "IronScan/Models/Manifests/pallor_manifest.json",
+      "sha256_before": "906dcd26d860e61e0b56baff324a7a2a2619c16274f8cb3c7ac3de911ba5e3e2",
+      "sha256_after": "906dcd26d860e61e0b56baff324a7a2a2619c16274f8cb3c7ac3de911ba5e3e2"
+    },
+    {
+      "from": "Models/Manifests/risk_manifest.json",
+      "to": "IronScan/Models/Manifests/risk_manifest.json",
+      "sha256_before": "50b1ee0ba9f6ee719f80377eb92216493f2bd9801724fc0c6341dff1f690126e",
+      "sha256_after": "50b1ee0ba9f6ee719f80377eb92216493f2bd9801724fc0c6341dff1f690126e"
+    },
+    {
+      "from": "Models/Manifests/segmentation_manifest.json",
+      "to": "IronScan/Models/Manifests/segmentation_manifest.json",
+      "sha256_before": "e3241842666c4ad0989fce081dd57033fd7df6bbfc6ed4b661379c58fd200a23",
+      "sha256_after": "e3241842666c4ad0989fce081dd57033fd7df6bbfc6ed4b661379c58fd200a23"
+    },
+    {
+      "from": "Models/Manifests/tongue_manifest.json",
+      "to": "IronScan/Models/Manifests/tongue_manifest.json",
+      "sha256_before": "25e5c5884ddc111f1ff6481357c5051972ab6d802019af189a332b09fdb725a8",
+      "sha256_after": "25e5c5884ddc111f1ff6481357c5051972ab6d802019af189a332b09fdb725a8"
+    },
+    {
+      "from": "Models/TFLite/README.md",
+      "to": "IronScan/Models/TFLite/README.md",
+      "sha256_before": "2fbe234afd6494749ee4436515f4b6f4a1630cfe8535fa8ae90ba7c3c8145928",
+      "sha256_after": "2fbe234afd6494749ee4436515f4b6f4a1630cfe8535fa8ae90ba7c3c8145928"
+    },
+    {
+      "from": "Package.resolved",
+      "to": "IronScan/Package.resolved",
+      "sha256_before": "5b5e7b222df13b8f50caf4f16a31cddc336aaffca1859dae1513e29eeeb0b71d",
+      "sha256_after": "5b5e7b222df13b8f50caf4f16a31cddc336aaffca1859dae1513e29eeeb0b71d"
+    },
+    {
+      "from": "Package.swift",
+      "to": "IronScan/Package.swift",
+      "sha256_before": "2fdb711ee1c4d42625917c679826a0de5d9fda1ac8f759cdbde11d2d52ed810e",
+      "sha256_after": "bff67b819c9a5e3e3898292e95d5496ea7610243e2a4288bec05a0f2732d687f"
+    },
+    {
+      "from": "Packages/IronScanCore/README.md",
+      "to": "IronScan/Packages/IronScanCore/README.md",
+      "sha256_before": "6e3bdf547f810249051f431bf17435129b1652d607c95a947336a9756af4888f",
+      "sha256_after": "6e3bdf547f810249051f431bf17435129b1652d607c95a947336a9756af4888f"
+    },
+    {
+      "from": "Packages/IronScanCore/Sources/IronScanCore/ColorCalibration/CalibrationMath.swift",
+      "to": "IronScan/Packages/IronScanCore/Sources/IronScanCore/ColorCalibration/CalibrationMath.swift",
+      "sha256_before": "072f9ef2600e4618da694d4d989f8756531fe1046735f4203d4afb6d80fc0e09",
+      "sha256_after": "072f9ef2600e4618da694d4d989f8756531fe1046735f4203d4afb6d80fc0e09"
+    },
+    {
+      "from": "Packages/IronScanCore/Sources/IronScanCore/ColorCalibration/CalibrationTypes.swift",
+      "to": "IronScan/Packages/IronScanCore/Sources/IronScanCore/ColorCalibration/CalibrationTypes.swift",
+      "sha256_before": "35b834c088673af9b96253e36c4857d0275e53e0495bdf173758ad88e5e60be6",
+      "sha256_after": "35b834c088673af9b96253e36c4857d0275e53e0495bdf173758ad88e5e60be6"
+    },
+    {
+      "from": "Packages/IronScanCore/Sources/IronScanCore/ColorCalibration/SmartColorCalibrationActor.swift",
+      "to": "IronScan/Packages/IronScanCore/Sources/IronScanCore/ColorCalibration/SmartColorCalibrationActor.swift",
+      "sha256_before": "4d3a62e58abecc8733b1f384647ca3c0a21887578f0e7d498cc3f592fc405b81",
+      "sha256_after": "4d3a62e58abecc8733b1f384647ca3c0a21887578f0e7d498cc3f592fc405b81"
+    },
+    {
+      "from": "Packages/IronScanCore/Sources/IronScanCore/ImageProcessing/PixelBufferFactory.swift",
+      "to": "IronScan/Packages/IronScanCore/Sources/IronScanCore/ImageProcessing/PixelBufferFactory.swift",
+      "sha256_before": "33fb450d69482dece7958a5631990b2d8d8897f483c545db499409aa04e1802a",
+      "sha256_after": "33fb450d69482dece7958a5631990b2d8d8897f483c545db499409aa04e1802a"
+    },
+    {
+      "from": "Packages/IronScanModels/README.md",
+      "to": "IronScan/Packages/IronScanModels/README.md",
+      "sha256_before": "c2bf14576282506adeea65b2fb7377f1e7a57c663dec42f12b791a5ee5926559",
+      "sha256_after": "c2bf14576282506adeea65b2fb7377f1e7a57c663dec42f12b791a5ee5926559"
+    },
+    {
+      "from": "Packages/IronScanModels/Sources/IronScanModels/ML/Generated/GeneratedModelInterfaces.swift",
+      "to": "IronScan/Packages/IronScanModels/Sources/IronScanModels/ML/Generated/GeneratedModelInterfaces.swift",
+      "sha256_before": "abb6367afa97a6f6bdf77b0c6ca234a2604816aa555b0af2ab1aa5601113ee41",
+      "sha256_after": "abb6367afa97a6f6bdf77b0c6ca234a2604816aa555b0af2ab1aa5601113ee41"
+    },
+    {
+      "from": "Packages/IronScanModels/Sources/IronScanModels/ML/InferenceError.swift",
+      "to": "IronScan/Packages/IronScanModels/Sources/IronScanModels/ML/InferenceError.swift",
+      "sha256_before": "ee75d94102f522e3b9aec94d0574bb1c6e233308aacf65a2154c8f3b5dcdb9e8",
+      "sha256_after": "ee75d94102f522e3b9aec94d0574bb1c6e233308aacf65a2154c8f3b5dcdb9e8"
+    },
+    {
+      "from": "Packages/IronScanModels/Sources/IronScanModels/ML/InferenceMetricsRecorder.swift",
+      "to": "IronScan/Packages/IronScanModels/Sources/IronScanModels/ML/InferenceMetricsRecorder.swift",
+      "sha256_before": "f50bb01c9a9453eaeed764378551571032bc4296d4dcc84cb72bc801301f2a3b",
+      "sha256_after": "f50bb01c9a9453eaeed764378551571032bc4296d4dcc84cb72bc801301f2a3b"
+    },
+    {
+      "from": "Packages/IronScanModels/Sources/IronScanModels/ML/InferenceTypes.swift",
+      "to": "IronScan/Packages/IronScanModels/Sources/IronScanModels/ML/InferenceTypes.swift",
+      "sha256_before": "fd795ef522d54d6e1a168f8ca6f81b68cfb7923a465235097a48d0cc6a2db354",
+      "sha256_after": "fd795ef522d54d6e1a168f8ca6f81b68cfb7923a465235097a48d0cc6a2db354"
+    },
+    {
+      "from": "Packages/IronScanModels/Sources/IronScanModels/ML/ModelContractValidator.swift",
+      "to": "IronScan/Packages/IronScanModels/Sources/IronScanModels/ML/ModelContractValidator.swift",
+      "sha256_before": "5834a29cf4515c73449a88ab83d0095d9518b5bed1785c70e3fe432aa1ca4f92",
+      "sha256_after": "5834a29cf4515c73449a88ab83d0095d9518b5bed1785c70e3fe432aa1ca4f92"
+    },
+    {
+      "from": "Packages/IronScanModels/Sources/IronScanModels/ML/ModelManifest.swift",
+      "to": "IronScan/Packages/IronScanModels/Sources/IronScanModels/ML/ModelManifest.swift",
+      "sha256_before": "6bbd8f5d0dbeebb73b98279fa85ea969c602780c86c767190397d4d47db004b5",
+      "sha256_after": "6bbd8f5d0dbeebb73b98279fa85ea969c602780c86c767190397d4d47db004b5"
+    },
+    {
+      "from": "Packages/IronScanModels/Sources/IronScanModels/ML/ModelRegistryActor.swift",
+      "to": "IronScan/Packages/IronScanModels/Sources/IronScanModels/ML/ModelRegistryActor.swift",
+      "sha256_before": "5ea6f0d7e49b29743e102a3e15173b02472b9882ccc070fef61d1e712d88a072",
+      "sha256_after": "5ea6f0d7e49b29743e102a3e15173b02472b9882ccc070fef61d1e712d88a072"
+    },
+    {
+      "from": "Packages/IronScanModels/Sources/IronScanModels/ML/RiskInferenceActor.swift",
+      "to": "IronScan/Packages/IronScanModels/Sources/IronScanModels/ML/RiskInferenceActor.swift",
+      "sha256_before": "09e3e157e843857ae02ba9ba9bb725e68fe6e4f901a369c718e92ce31d0efbb3",
+      "sha256_after": "09e3e157e843857ae02ba9ba9bb725e68fe6e4f901a369c718e92ce31d0efbb3"
+    },
+    {
+      "from": "Packages/IronScanModels/Sources/IronScanModels/ML/SegmentationInferenceActor.swift",
+      "to": "IronScan/Packages/IronScanModels/Sources/IronScanModels/ML/SegmentationInferenceActor.swift",
+      "sha256_before": "693ad8ff7dbfce2d4107e588a1f6d3ddc05307adc0e0074b1a01247b91e69394",
+      "sha256_after": "693ad8ff7dbfce2d4107e588a1f6d3ddc05307adc0e0074b1a01247b91e69394"
+    },
+    {
+      "from": "Packages/IronScanModels/Sources/IronScanModels/ML/SegmentationPostprocessor.swift",
+      "to": "IronScan/Packages/IronScanModels/Sources/IronScanModels/ML/SegmentationPostprocessor.swift",
+      "sha256_before": "d471976c9b988b9df7c9cf2f467c2795cb16ff60696c56ad881d72acfd51002a",
+      "sha256_after": "d471976c9b988b9df7c9cf2f467c2795cb16ff60696c56ad881d72acfd51002a"
+    },
+    {
+      "from": "Packages/IronScanNetworking/README.md",
+      "to": "IronScan/Packages/IronScanNetworking/README.md",
+      "sha256_before": "f71aa4a4430e3f6b9ecf968cf49c6435f403f1053e683a392d7953557c9065db",
+      "sha256_after": "f71aa4a4430e3f6b9ecf968cf49c6435f403f1053e683a392d7953557c9065db"
+    },
+    {
+      "from": "Packages/IronScanTestSupport/README.md",
+      "to": "IronScan/Packages/IronScanTestSupport/README.md",
+      "sha256_before": "6a3d75291ab4a0baec64f34a945f7af9247c72e46de92a9c2a56f01f184b3311",
+      "sha256_after": "6a3d75291ab4a0baec64f34a945f7af9247c72e46de92a9c2a56f01f184b3311"
+    },
+    {
+      "from": "PythonReference/__init__.py",
+      "to": "IronScan/PythonReference/__init__.py",
+      "sha256_before": "a41e8cb8dc498deefb31959abf49dc4528ec6410747e04d42910ac39ad805f7a",
+      "sha256_after": "a41e8cb8dc498deefb31959abf49dc4528ec6410747e04d42910ac39ad805f7a"
+    },
+    {
+      "from": "PythonReference/color_calibration.py",
+      "to": "IronScan/PythonReference/color_calibration.py",
+      "sha256_before": "4e0756c0480aed8986250bef899006d365324dcb8531964c5787cabb3cd3d94c",
+      "sha256_after": "4e0756c0480aed8986250bef899006d365324dcb8531964c5787cabb3cd3d94c"
+    },
+    {
+      "from": "PythonReference/conjunctiva_crop.py",
+      "to": "IronScan/PythonReference/conjunctiva_crop.py",
+      "sha256_before": "9467fba768289c9680e34ee80bca049485bf5792c4f475d6de746b0bed714441",
+      "sha256_after": "9467fba768289c9680e34ee80bca049485bf5792c4f475d6de746b0bed714441"
+    },
+    {
+      "from": "PythonReference/feature_extraction.py",
+      "to": "IronScan/PythonReference/feature_extraction.py",
+      "sha256_before": "526ad02bc68fd3b779bf21b1536eac243a5b3fe71dcbcd7b89ef8c79c6188e67",
+      "sha256_after": "526ad02bc68fd3b779bf21b1536eac243a5b3fe71dcbcd7b89ef8c79c6188e67"
+    },
+    {
+      "from": "PythonReference/generate_golden_fixtures.py",
+      "to": "IronScan/PythonReference/generate_golden_fixtures.py",
+      "sha256_before": "8fabe06246e405e76f511e6fa7eb28ffb644f497aed4ab147a755f660a2870de",
+      "sha256_after": "8fabe06246e405e76f511e6fa7eb28ffb644f497aed4ab147a755f660a2870de"
+    },
+    {
+      "from": "PythonReference/quality_evaluation.py",
+      "to": "IronScan/PythonReference/quality_evaluation.py",
+      "sha256_before": "11fb74753619a821d18f73eb6f359854ee4fe03d7eebc689100eb8a3f52c6cfb",
+      "sha256_after": "11fb74753619a821d18f73eb6f359854ee4fe03d7eebc689100eb8a3f52c6cfb"
+    },
+    {
+      "from": "PythonReference/segmentation_postprocessing.py",
+      "to": "IronScan/PythonReference/segmentation_postprocessing.py",
+      "sha256_before": "1e30182bf751e95c677cad3f7d65ff0320381cb8b5bbac3f82f7537131fa3282",
+      "sha256_after": "1e30182bf751e95c677cad3f7d65ff0320381cb8b5bbac3f82f7537131fa3282"
+    },
+    {
+      "from": "PythonReference/tests/test_color_calibration_reference.py",
+      "to": "IronScan/PythonReference/tests/test_color_calibration_reference.py",
+      "sha256_before": "647ae0d9dcc35c247ddf829204811dc71b89468a1788d2d7bab32277d4d560d3",
+      "sha256_after": "647ae0d9dcc35c247ddf829204811dc71b89468a1788d2d7bab32277d4d560d3"
+    },
+    {
+      "from": "PythonReference/tests/test_conjunctiva_crop_reference.py",
+      "to": "IronScan/PythonReference/tests/test_conjunctiva_crop_reference.py",
+      "sha256_before": "8ac19bbf4243f93ad1c064b7d03f8f4560acb2d2a5a9fd2b1259b463987afadd",
+      "sha256_after": "8ac19bbf4243f93ad1c064b7d03f8f4560acb2d2a5a9fd2b1259b463987afadd"
+    },
+    {
+      "from": "PythonReference/tests/test_fixture_contracts.py",
+      "to": "IronScan/PythonReference/tests/test_fixture_contracts.py",
+      "sha256_before": "a106863cdddea50920dd459976dcd2c74312a1b68fca059f0c1e2ac4b2bdbf36",
+      "sha256_after": "a106863cdddea50920dd459976dcd2c74312a1b68fca059f0c1e2ac4b2bdbf36"
+    },
+    {
+      "from": "Server/Dockerfile",
+      "to": "IronScan/Server/Dockerfile",
+      "sha256_before": "a00ebd92486abd4fb6144b1c6c7697a69fcf2cbce012835cad88ea6098f379cf",
+      "sha256_after": "a00ebd92486abd4fb6144b1c6c7697a69fcf2cbce012835cad88ea6098f379cf"
+    },
+    {
+      "from": "Server/README.md",
+      "to": "IronScan/Server/README.md",
+      "sha256_before": "8cfe197675694c3b5605da8ae22293f38be15cef3f29415e61760f607f2d4394",
+      "sha256_after": "8cfe197675694c3b5605da8ae22293f38be15cef3f29415e61760f607f2d4394"
+    },
+    {
+      "from": "Server/__init__.py",
+      "to": "IronScan/Server/__init__.py",
+      "sha256_before": "858b25047f21533364f90f61bca38d1f1e33d1d8ee087bf4870b468f8cc54288",
+      "sha256_after": "858b25047f21533364f90f61bca38d1f1e33d1d8ee087bf4870b468f8cc54288"
+    },
+    {
+      "from": "Server/app/__init__.py",
+      "to": "IronScan/Server/app/__init__.py",
+      "sha256_before": "ea427c298aa4c4ad0bbff0675c3e2facd6a416a4b9317cf467e0d013c3a6404b",
+      "sha256_after": "ea427c298aa4c4ad0bbff0675c3e2facd6a416a4b9317cf467e0d013c3a6404b"
+    },
+    {
+      "from": "Server/app/api/__init__.py",
+      "to": "IronScan/Server/app/api/__init__.py",
+      "sha256_before": "95a8c96e23f9c5cfcc10f20465fce99c30244ee8697c80023407192a5c167bab",
+      "sha256_after": "95a8c96e23f9c5cfcc10f20465fce99c30244ee8697c80023407192a5c167bab"
+    },
+    {
+      "from": "Server/app/cli.py",
+      "to": "IronScan/Server/app/cli.py",
+      "sha256_before": "41409ee8d815c6778c87a3a97f0b0f882818992c02ff1780ab8e3751759e91f8",
+      "sha256_after": "41409ee8d815c6778c87a3a97f0b0f882818992c02ff1780ab8e3751759e91f8"
+    },
+    {
+      "from": "Server/app/config.py",
+      "to": "IronScan/Server/app/config.py",
+      "sha256_before": "a74526b409e8673060fa11327699b6e68589f56e9a9692351a479251d417f221",
+      "sha256_after": "a74526b409e8673060fa11327699b6e68589f56e9a9692351a479251d417f221"
+    },
+    {
+      "from": "Server/app/db/__init__.py",
+      "to": "IronScan/Server/app/db/__init__.py",
+      "sha256_before": "930adb12fad3f83404f47373a055f8dbda4ec2d492372fc8b0f855d3af6b48a2",
+      "sha256_after": "930adb12fad3f83404f47373a055f8dbda4ec2d492372fc8b0f855d3af6b48a2"
+    },
+    {
+      "from": "Server/app/db/database.py",
+      "to": "IronScan/Server/app/db/database.py",
+      "sha256_before": "93ad6ebe875f029f8485d43457f3291596fcd08b44f1a67986dc065e0ba7c309",
+      "sha256_after": "93ad6ebe875f029f8485d43457f3291596fcd08b44f1a67986dc065e0ba7c309"
+    },
+    {
+      "from": "Server/app/main.py",
+      "to": "IronScan/Server/app/main.py",
+      "sha256_before": "dbc4ce5f85dc4b680af3f62eb7925f9b606c6a22e3c97fe559a1e9dd0dbd0939",
+      "sha256_after": "dbc4ce5f85dc4b680af3f62eb7925f9b606c6a22e3c97fe559a1e9dd0dbd0939"
+    },
+    {
+      "from": "Server/app/models/__init__.py",
+      "to": "IronScan/Server/app/models/__init__.py",
+      "sha256_before": "217e8b7434ad08923be10e208127967a88a8f8a65b4acf099c5100f9f684e11b",
+      "sha256_after": "217e8b7434ad08923be10e208127967a88a8f8a65b4acf099c5100f9f684e11b"
+    },
+    {
+      "from": "Server/app/models/entities.py",
+      "to": "IronScan/Server/app/models/entities.py",
+      "sha256_before": "4030e2499f66f6caf2d64e4fae0569b1cbd164725fd39eccbdab0a6fd9b01943",
+      "sha256_after": "4030e2499f66f6caf2d64e4fae0569b1cbd164725fd39eccbdab0a6fd9b01943"
+    },
+    {
+      "from": "Server/app/schemas/__init__.py",
+      "to": "IronScan/Server/app/schemas/__init__.py",
+      "sha256_before": "da752296a53ffd7680dfde2eca0591cdae55c8d158fea79be748321b243b6994",
+      "sha256_after": "da752296a53ffd7680dfde2eca0591cdae55c8d158fea79be748321b243b6994"
+    },
+    {
+      "from": "Server/app/schemas/contracts.py",
+      "to": "IronScan/Server/app/schemas/contracts.py",
+      "sha256_before": "45bc870502b44c5cc1c04d168b6d755e8e8d44814a55bb221373aaf160079806",
+      "sha256_after": "45bc870502b44c5cc1c04d168b6d755e8e8d44814a55bb221373aaf160079806"
+    },
+    {
+      "from": "Server/app/security.py",
+      "to": "IronScan/Server/app/security.py",
+      "sha256_before": "ffd8d593f6354ccf6997c8d114468e64df7eb71d8e71bd341bdf0bc2ac488085",
+      "sha256_after": "ffd8d593f6354ccf6997c8d114468e64df7eb71d8e71bd341bdf0bc2ac488085"
+    },
+    {
+      "from": "Server/app/seed.py",
+      "to": "IronScan/Server/app/seed.py",
+      "sha256_before": "f564f2fd3ccd38b18cf7eb4d0fdfffdaef5a8235f05de84851bbbb65ccf1d7bd",
+      "sha256_after": "f564f2fd3ccd38b18cf7eb4d0fdfffdaef5a8235f05de84851bbbb65ccf1d7bd"
+    },
+    {
+      "from": "Server/app/services/__init__.py",
+      "to": "IronScan/Server/app/services/__init__.py",
+      "sha256_before": "404c10a7a90d35724c332e1ec76e8eef80d2b0664ad2bfb8ef82767021dc8c12",
+      "sha256_after": "404c10a7a90d35724c332e1ec76e8eef80d2b0664ad2bfb8ef82767021dc8c12"
+    },
+    {
+      "from": "Server/app/services/diagnostics.py",
+      "to": "IronScan/Server/app/services/diagnostics.py",
+      "sha256_before": "cec6dd91716d5e9059f40b764eb22b2146a94117703119ab50414c8a6e48f9d7",
+      "sha256_after": "cec6dd91716d5e9059f40b764eb22b2146a94117703119ab50414c8a6e48f9d7"
+    },
+    {
+      "from": "Server/app/static/dashboard.css",
+      "to": "IronScan/Server/app/static/dashboard.css",
+      "sha256_before": "f3455e2d277f01b76fb9d74e6bb1c49401cb111ca0763ee1bd88a29b4556174b",
+      "sha256_after": "f3455e2d277f01b76fb9d74e6bb1c49401cb111ca0763ee1bd88a29b4556174b"
+    },
+    {
+      "from": "Server/app/templates/_run_table.html",
+      "to": "IronScan/Server/app/templates/_run_table.html",
+      "sha256_before": "10197268b88f2bbf955d2126beb5adefe336a031c2cd0f9d7fb15687c45bde0b",
+      "sha256_after": "10197268b88f2bbf955d2126beb5adefe336a031c2cd0f9d7fb15687c45bde0b"
+    },
+    {
+      "from": "Server/app/templates/base.html",
+      "to": "IronScan/Server/app/templates/base.html",
+      "sha256_before": "c73284f1d5013c44b199fbb37c809835ef0208667da2567e3fa4aed6e2369e50",
+      "sha256_after": "c73284f1d5013c44b199fbb37c809835ef0208667da2567e3fa4aed6e2369e50"
+    },
+    {
+      "from": "Server/app/templates/run_detail.html",
+      "to": "IronScan/Server/app/templates/run_detail.html",
+      "sha256_before": "87e5490b540c4a1b1e4c5bf3397dffd5e23a4409297577eef8103c8ea89d5906",
+      "sha256_after": "87e5490b540c4a1b1e4c5bf3397dffd5e23a4409297577eef8103c8ea89d5906"
+    },
+    {
+      "from": "Server/app/templates/runs.html",
+      "to": "IronScan/Server/app/templates/runs.html",
+      "sha256_before": "c1e65ef2fe4dde24e30058bb25b6b3f7a743d841f4f115ea661c852f16b3d162",
+      "sha256_after": "c1e65ef2fe4dde24e30058bb25b6b3f7a743d841f4f115ea661c852f16b3d162"
+    },
+    {
+      "from": "Server/app/templates/scan_detail.html",
+      "to": "IronScan/Server/app/templates/scan_detail.html",
+      "sha256_before": "f803f3970b4d9541d7f7d5f2343c76548c979e37cfae7a72550b3d7443897200",
+      "sha256_after": "f803f3970b4d9541d7f7d5f2343c76548c979e37cfae7a72550b3d7443897200"
+    },
+    {
+      "from": "Server/docker-compose.yml",
+      "to": "IronScan/Server/docker-compose.yml",
+      "sha256_before": "dcc08e0391d51fb594ef63365aaf145b3f2bb90cb395b5e898f327c520a4c728",
+      "sha256_after": "dcc08e0391d51fb594ef63365aaf145b3f2bb90cb395b5e898f327c520a4c728"
+    },
+    {
+      "from": "Server/migrations/__init__.py",
+      "to": "IronScan/Server/migrations/__init__.py",
+      "sha256_before": "b9b682537c8c1c2adedde55ed6b45eaeaacd4d4d7804c65877373a029ad3d563",
+      "sha256_after": "b9b682537c8c1c2adedde55ed6b45eaeaacd4d4d7804c65877373a029ad3d563"
+    },
+    {
+      "from": "Server/migrations/alembic.ini",
+      "to": "IronScan/Server/migrations/alembic.ini",
+      "sha256_before": "1e109279fe91d6dd100b479069617efc6a8f17939cf553968c6847a551c893be",
+      "sha256_after": "1e109279fe91d6dd100b479069617efc6a8f17939cf553968c6847a551c893be"
+    },
+    {
+      "from": "Server/migrations/env.py",
+      "to": "IronScan/Server/migrations/env.py",
+      "sha256_before": "eee176a7f826ae2c37ae8fe5b80fbd7c7d23c1e2b3f05a4eb0a3b6d94058735d",
+      "sha256_after": "eee176a7f826ae2c37ae8fe5b80fbd7c7d23c1e2b3f05a4eb0a3b6d94058735d"
+    },
+    {
+      "from": "Server/migrations/script.py.mako",
+      "to": "IronScan/Server/migrations/script.py.mako",
+      "sha256_before": "c20f6ab92d4ed36d77fbccb82bc410cd2ced42f2c162eebb43ddd45ae93dd90e",
+      "sha256_after": "c20f6ab92d4ed36d77fbccb82bc410cd2ced42f2c162eebb43ddd45ae93dd90e"
+    },
+    {
+      "from": "Server/migrations/versions/20260715_0001_initial.py",
+      "to": "IronScan/Server/migrations/versions/20260715_0001_initial.py",
+      "sha256_before": "863ba457f1ac9e3080acd4218d495450e209eec8e8b700abd84f186dfd6cc62c",
+      "sha256_after": "863ba457f1ac9e3080acd4218d495450e209eec8e8b700abd84f186dfd6cc62c"
+    },
+    {
+      "from": "Server/migrations/versions/__init__.py",
+      "to": "IronScan/Server/migrations/versions/__init__.py",
+      "sha256_before": "83c1def2c123cfbd58ad9e6820ae9e02b47256d976f4252127b96e822acec598",
+      "sha256_after": "83c1def2c123cfbd58ad9e6820ae9e02b47256d976f4252127b96e822acec598"
+    },
+    {
+      "from": "Server/pyproject.toml",
+      "to": "IronScan/Server/pyproject.toml",
+      "sha256_before": "827c08dd39e773c862b3cd376966dfaa4ff30241927386b7226e6a05977aeee0",
+      "sha256_after": "827c08dd39e773c862b3cd376966dfaa4ff30241927386b7226e6a05977aeee0"
+    },
+    {
+      "from": "Server/tests/__init__.py",
+      "to": "IronScan/Server/tests/__init__.py",
+      "sha256_before": "25fe922c3198ef75a8f84a0b3eb4769ca5881e095364b71fd4132ec54ad26709",
+      "sha256_after": "25fe922c3198ef75a8f84a0b3eb4769ca5881e095364b71fd4132ec54ad26709"
+    },
+    {
+      "from": "Server/tests/conftest.py",
+      "to": "IronScan/Server/tests/conftest.py",
+      "sha256_before": "97bf3300c9380fe7e3be4fa65024ac3df1de8e2530573530f67b703b5cec902c",
+      "sha256_after": "97bf3300c9380fe7e3be4fa65024ac3df1de8e2530573530f67b703b5cec902c"
+    },
+    {
+      "from": "Server/tests/test_api.py",
+      "to": "IronScan/Server/tests/test_api.py",
+      "sha256_before": "9ca04843ddf68290504db40b2a81457f540eaa03361b8020ca1783ba3a7af587",
+      "sha256_after": "9ca04843ddf68290504db40b2a81457f540eaa03361b8020ca1783ba3a7af587"
+    },
+    {
+      "from": "Server/tests/test_metrics.py",
+      "to": "IronScan/Server/tests/test_metrics.py",
+      "sha256_before": "c7347a38186827952f4cbfffb769922b3638b5999a5eaa8463f64ec640ec7c30",
+      "sha256_after": "c7347a38186827952f4cbfffb769922b3638b5999a5eaa8463f64ec640ec7c30"
+    },
+    {
+      "from": "Server/tests/test_migrations_seed_security.py",
+      "to": "IronScan/Server/tests/test_migrations_seed_security.py",
+      "sha256_before": "3dd3cd57f3f5f245dca26d0779a34129051e7b90224382c67d3f10f55b7a79af",
+      "sha256_after": "3dd3cd57f3f5f245dca26d0779a34129051e7b90224382c67d3f10f55b7a79af"
+    },
+    {
+      "from": "SharedContracts/calibration_result.schema.json",
+      "to": "IronScan/SharedContracts/calibration_result.schema.json",
+      "sha256_before": "8e9140fcb9d67d6ddbdddd65d62a896fa321f93dbf0b1ea8ef739a1e7da3ae3d",
+      "sha256_after": "8e9140fcb9d67d6ddbdddd65d62a896fa321f93dbf0b1ea8ef739a1e7da3ae3d"
+    },
+    {
+      "from": "SharedContracts/capture_metadata.schema.json",
+      "to": "IronScan/SharedContracts/capture_metadata.schema.json",
+      "sha256_before": "c4a4815a156e63fe0d96855c2e2b4821f15a1c6e713705fd36de4c0994b8dc58",
+      "sha256_after": "c4a4815a156e63fe0d96855c2e2b4821f15a1c6e713705fd36de4c0994b8dc58"
+    },
+    {
+      "from": "SharedContracts/model_manifest.schema.json",
+      "to": "IronScan/SharedContracts/model_manifest.schema.json",
+      "sha256_before": "51216eda2e887b14301b89d68b912dce57535fedb9d21b2492f0f889734e7d7c",
+      "sha256_after": "51216eda2e887b14301b89d68b912dce57535fedb9d21b2492f0f889734e7d7c"
+    },
+    {
+      "from": "SharedContracts/rejection_reasons.json",
+      "to": "IronScan/SharedContracts/rejection_reasons.json",
+      "sha256_before": "0114bbc97bf87becd3bc6131e78c7e6d53ab8a1e864d672c8ea19c8e5f1f232a",
+      "sha256_after": "0114bbc97bf87becd3bc6131e78c7e6d53ab8a1e864d672c8ea19c8e5f1f232a"
+    },
+    {
+      "from": "SharedContracts/scan_debug_event.schema.json",
+      "to": "IronScan/SharedContracts/scan_debug_event.schema.json",
+      "sha256_before": "c104771cc8249064dea1c11a463cf8c6c06e035ea1a5a6e9a056df5bc1b05aa4",
+      "sha256_after": "c104771cc8249064dea1c11a463cf8c6c06e035ea1a5a6e9a056df5bc1b05aa4"
+    },
+    {
+      "from": "SharedContracts/scan_result.schema.json",
+      "to": "IronScan/SharedContracts/scan_result.schema.json",
+      "sha256_before": "ca097ffb01eec9bc709beac044142828702502f1dc3cf697345f8d56257d3e08",
+      "sha256_after": "ca097ffb01eec9bc709beac044142828702502f1dc3cf697345f8d56257d3e08"
+    },
+    {
+      "from": "TestFixtures/GoldenInputs/ML/risk_input.bgra",
+      "to": "IronScan/TestFixtures/GoldenInputs/ML/risk_input.bgra",
+      "sha256_before": "16706c295ed9a5eb10d527335b568ae60f9658d92e58e77fb5cf4e79cd3ecc22",
+      "sha256_after": "16706c295ed9a5eb10d527335b568ae60f9658d92e58e77fb5cf4e79cd3ecc22"
+    },
+    {
+      "from": "TestFixtures/GoldenInputs/ML/segmentation_input.bgra",
+      "to": "IronScan/TestFixtures/GoldenInputs/ML/segmentation_input.bgra",
+      "sha256_before": "3521b2cb5bc4edd0db7182a5e4c281f46d358b08c57a4bfa85ee1120e0b86e90",
+      "sha256_after": "3521b2cb5bc4edd0db7182a5e4c281f46d358b08c57a4bfa85ee1120e0b86e90"
+    },
+    {
+      "from": "TestFixtures/GoldenOutputs/ColorCalibration/warm_cast.json",
+      "to": "IronScan/TestFixtures/GoldenOutputs/ColorCalibration/warm_cast.json",
+      "sha256_before": "11780f29089e50af4f235c489e40476a8c14d48d639315a9b99373731058baa8",
+      "sha256_after": "11780f29089e50af4f235c489e40476a8c14d48d639315a9b99373731058baa8"
+    },
+    {
+      "from": "TestFixtures/GoldenOutputs/ML/conjunctiva_crop_output.json",
+      "to": "IronScan/TestFixtures/GoldenOutputs/ML/conjunctiva_crop_output.json",
+      "sha256_before": "159a7326b043185672e651c37026c4761afc09fb98cb8d48d7a825f5ff6cd358",
+      "sha256_after": "159a7326b043185672e651c37026c4761afc09fb98cb8d48d7a825f5ff6cd358"
+    },
+    {
+      "from": "TestFixtures/GoldenOutputs/ML/risk_output.json",
+      "to": "IronScan/TestFixtures/GoldenOutputs/ML/risk_output.json",
+      "sha256_before": "5eb8a29644b4dcb5608d1c676905222ab23e1b6dc8ec0a684594826e7ebab879",
+      "sha256_after": "5eb8a29644b4dcb5608d1c676905222ab23e1b6dc8ec0a684594826e7ebab879"
+    },
+    {
+      "from": "TestFixtures/GoldenOutputs/ML/segmentation_output.json",
+      "to": "IronScan/TestFixtures/GoldenOutputs/ML/segmentation_output.json",
+      "sha256_before": "f892769f1b8381806fda8c003e64edd3a57c36a85e2b516695919afd6bb5cd23",
+      "sha256_after": "f892769f1b8381806fda8c003e64edd3a57c36a85e2b516695919afd6bb5cd23"
+    },
+    {
+      "from": "TestFixtures/LicensedPublic/README.md",
+      "to": "IronScan/TestFixtures/LicensedPublic/README.md",
+      "sha256_before": "87fa51c3f8c701f5ee2c075f8b7c5af33559d3bc682642230cd97012929bafab",
+      "sha256_after": "87fa51c3f8c701f5ee2c075f8b7c5af33559d3bc682642230cd97012929bafab"
+    },
+    {
+      "from": "TestFixtures/Synthetic/README.md",
+      "to": "IronScan/TestFixtures/Synthetic/README.md",
+      "sha256_before": "056105fdd1c8fa86acbc446979270551c738beb0c817a24c5441e8c509329e01",
+      "sha256_after": "056105fdd1c8fa86acbc446979270551c738beb0c817a24c5441e8c509329e01"
+    },
+    {
+      "from": "Video/IronScanIntro/.gitignore",
+      "to": "IronScan/Video/IronScanIntro/.gitignore",
+      "sha256_before": "ae1bcea48f2bcafecf9b2835e42032a81b86aa3bcbdfb952bf8b41868d4baade",
+      "sha256_after": "ae1bcea48f2bcafecf9b2835e42032a81b86aa3bcbdfb952bf8b41868d4baade"
+    },
+    {
+      "from": "Video/IronScanIntro/README.md",
+      "to": "IronScan/Video/IronScanIntro/README.md",
+      "sha256_before": "56bf65638e8c5709e76e7f03aecd1e6a52325fd519a52cb3f960ab227e9ff22b",
+      "sha256_after": "7ac19f6f70fd6ca9474019a64693c11203c98c10e24a2c7fee404ad6b29d5316"
+    },
+    {
+      "from": "Video/IronScanIntro/VALIDATION.md",
+      "to": "IronScan/Video/IronScanIntro/VALIDATION.md",
+      "sha256_before": "8bf85c1f4ce539b0ce571dc8015647d6e8e70a226d7df802f574702eafb58d57",
+      "sha256_after": "8bf85c1f4ce539b0ce571dc8015647d6e8e70a226d7df802f574702eafb58d57"
+    },
+    {
+      "from": "Video/IronScanIntro/capture-manifest.json",
+      "to": "IronScan/Video/IronScanIntro/capture-manifest.json",
+      "sha256_before": "9ac63019c87e618ee88f80fb7023c550f69ff78597a752a69a5c8ad7a7fe4d6f",
+      "sha256_after": "9ac63019c87e618ee88f80fb7023c550f69ff78597a752a69a5c8ad7a7fe4d6f"
+    },
+    {
+      "from": "Video/IronScanIntro/package-lock.json",
+      "to": "IronScan/Video/IronScanIntro/package-lock.json",
+      "sha256_before": "0137887a9fea347ed112540e7e7cad26da0b7ed803030bed0983658c5c415f7e",
+      "sha256_after": "0137887a9fea347ed112540e7e7cad26da0b7ed803030bed0983658c5c415f7e"
+    },
+    {
+      "from": "Video/IronScanIntro/package.json",
+      "to": "IronScan/Video/IronScanIntro/package.json",
+      "sha256_before": "077358c7f7c13dc3493e65faa3f72a56f78bf380fea98cfe7cf700eab732d5aa",
+      "sha256_after": "077358c7f7c13dc3493e65faa3f72a56f78bf380fea98cfe7cf700eab732d5aa"
+    },
+    {
+      "from": "Video/IronScanIntro/public/screenshots/demo-home.png",
+      "to": "IronScan/Video/IronScanIntro/public/screenshots/demo-home.png",
+      "sha256_before": "0a5b4898870e352b20f4e39ca667d4c9e2e867d689bb14c687fd433030971339",
+      "sha256_after": "0a5b4898870e352b20f4e39ca667d4c9e2e867d689bb14c687fd433030971339"
+    },
+    {
+      "from": "Video/IronScanIntro/public/screenshots/demo-learn.png",
+      "to": "IronScan/Video/IronScanIntro/public/screenshots/demo-learn.png",
+      "sha256_before": "07b77aea25837a55ca14d0b46c5bcedf236f65f7949e362a3e4fa53bfe94a1f6",
+      "sha256_after": "07b77aea25837a55ca14d0b46c5bcedf236f65f7949e362a3e4fa53bfe94a1f6"
+    },
+    {
+      "from": "Video/IronScanIntro/public/screenshots/demo-profile.png",
+      "to": "IronScan/Video/IronScanIntro/public/screenshots/demo-profile.png",
+      "sha256_before": "51bbde6080230fc9c7fb276739a2d3e00b56b274a789d296351e9098d94accd4",
+      "sha256_after": "51bbde6080230fc9c7fb276739a2d3e00b56b274a789d296351e9098d94accd4"
+    },
+    {
+      "from": "Video/IronScanIntro/remotion.config.ts",
+      "to": "IronScan/Video/IronScanIntro/remotion.config.ts",
+      "sha256_before": "da3f11407e4912cfec06c3188e07faea7bd7aee4cbb9c3d2fabf5d9cfaeeba4c",
+      "sha256_after": "da3f11407e4912cfec06c3188e07faea7bd7aee4cbb9c3d2fabf5d9cfaeeba4c"
+    },
+    {
+      "from": "Video/IronScanIntro/scripts/capture-screenshots.py",
+      "to": "IronScan/Video/IronScanIntro/scripts/capture-screenshots.py",
+      "sha256_before": "edd8b01da86521d862a482b648d7cdf97caf3381101125c357de9fa76a3c8a86",
+      "sha256_after": "edd8b01da86521d862a482b648d7cdf97caf3381101125c357de9fa76a3c8a86"
+    },
+    {
+      "from": "Video/IronScanIntro/scripts/check-assets.mjs",
+      "to": "IronScan/Video/IronScanIntro/scripts/check-assets.mjs",
+      "sha256_before": "36cc06824151934bc0d969a2bb15317d5299895f6c5e44d833e2099f1d8b5552",
+      "sha256_after": "36cc06824151934bc0d969a2bb15317d5299895f6c5e44d833e2099f1d8b5552"
+    },
+    {
+      "from": "Video/IronScanIntro/scripts/export-readme-assets.mjs",
+      "to": "IronScan/Video/IronScanIntro/scripts/export-readme-assets.mjs",
+      "sha256_before": "4583365f65f10f54f6ff1ffd78dd5dd308d6cf9b344373653e41efcff87189e1",
+      "sha256_after": "4583365f65f10f54f6ff1ffd78dd5dd308d6cf9b344373653e41efcff87189e1"
+    },
+    {
+      "from": "Video/IronScanIntro/scripts/render-stills.mjs",
+      "to": "IronScan/Video/IronScanIntro/scripts/render-stills.mjs",
+      "sha256_before": "b8473f2b1c728dda8a5bf1a74ec2523083560351513e65f647e3f01245a0b33d",
+      "sha256_after": "b8473f2b1c728dda8a5bf1a74ec2523083560351513e65f647e3f01245a0b33d"
+    },
+    {
+      "from": "Video/IronScanIntro/scripts/render-video.mjs",
+      "to": "IronScan/Video/IronScanIntro/scripts/render-video.mjs",
+      "sha256_before": "e92b2b45e7d17573df14d7ea2e32e636bdb528b7ab0f59af625685e98343a5d0",
+      "sha256_after": "e92b2b45e7d17573df14d7ea2e32e636bdb528b7ab0f59af625685e98343a5d0"
+    },
+    {
+      "from": "Video/IronScanIntro/scripts/verify-output.py",
+      "to": "IronScan/Video/IronScanIntro/scripts/verify-output.py",
+      "sha256_before": "80a97e9ec16c3d76d4fb9a5ba2cbd3f59ebf682e11e9b00c23b3d3f8683491dd",
+      "sha256_after": "80a97e9ec16c3d76d4fb9a5ba2cbd3f59ebf682e11e9b00c23b3d3f8683491dd"
+    },
+    {
+      "from": "Video/IronScanIntro/src/Intro.tsx",
+      "to": "IronScan/Video/IronScanIntro/src/Intro.tsx",
+      "sha256_before": "f2f4f4ac43e5a434e14da0a61f8aa66761fcccd4bbb182a3b43358972467ce5f",
+      "sha256_after": "f2f4f4ac43e5a434e14da0a61f8aa66761fcccd4bbb182a3b43358972467ce5f"
+    },
+    {
+      "from": "Video/IronScanIntro/src/config.ts",
+      "to": "IronScan/Video/IronScanIntro/src/config.ts",
+      "sha256_before": "f5d99ff724d9e04ecc17a2779c09cadfd8cbe84a17390d3ed0ca094f28872327",
+      "sha256_after": "4199ba8dc033826810701c8dca5d3a58e79b1beab7ce8e7ca00354152d2ff143"
+    },
+    {
+      "from": "Video/IronScanIntro/src/design.tsx",
+      "to": "IronScan/Video/IronScanIntro/src/design.tsx",
+      "sha256_before": "1726945700a3a20ac9c1a363ed47976ecddc0c3b8a3e3b87b3a8d63838fe969c",
+      "sha256_after": "1726945700a3a20ac9c1a363ed47976ecddc0c3b8a3e3b87b3a8d63838fe969c"
+    },
+    {
+      "from": "Video/IronScanIntro/src/index.ts",
+      "to": "IronScan/Video/IronScanIntro/src/index.ts",
+      "sha256_before": "5fb46a754d9ada2fa605e6cd8cee5e8c2caa17cc03252ae0ce29de754f6a1643",
+      "sha256_after": "5fb46a754d9ada2fa605e6cd8cee5e8c2caa17cc03252ae0ce29de754f6a1643"
+    },
+    {
+      "from": "Video/IronScanIntro/src/scenes/Closing.tsx",
+      "to": "IronScan/Video/IronScanIntro/src/scenes/Closing.tsx",
+      "sha256_before": "f0ea8a5021a47d2b81d4fa4e19238adcb1d5678c35c31178416648fea518fee0",
+      "sha256_after": "f0ea8a5021a47d2b81d4fa4e19238adcb1d5678c35c31178416648fea518fee0"
+    },
+    {
+      "from": "Video/IronScanIntro/src/scenes/Opening.tsx",
+      "to": "IronScan/Video/IronScanIntro/src/scenes/Opening.tsx",
+      "sha256_before": "77639c6b8bc592162009cc89539efe8495559308f1620196fbd37f45b7bdf743",
+      "sha256_after": "77639c6b8bc592162009cc89539efe8495559308f1620196fbd37f45b7bdf743"
+    },
+    {
+      "from": "Video/IronScanIntro/src/scenes/PhoneScreens.tsx",
+      "to": "IronScan/Video/IronScanIntro/src/scenes/PhoneScreens.tsx",
+      "sha256_before": "121129edee21b571a10b3f95c0c18b23734387efcf62ed86c1c5320f50946f58",
+      "sha256_after": "121129edee21b571a10b3f95c0c18b23734387efcf62ed86c1c5320f50946f58"
+    },
+    {
+      "from": "Video/IronScanIntro/src/scenes/Problem.tsx",
+      "to": "IronScan/Video/IronScanIntro/src/scenes/Problem.tsx",
+      "sha256_before": "cee34d11034d821081ce61f71e50400aff1f96ff222b0274dd059a02164c2084",
+      "sha256_after": "cee34d11034d821081ce61f71e50400aff1f96ff222b0274dd059a02164c2084"
+    },
+    {
+      "from": "Video/IronScanIntro/src/scenes/Process.tsx",
+      "to": "IronScan/Video/IronScanIntro/src/scenes/Process.tsx",
+      "sha256_before": "9a8057012a3fc8efe74e18765cf1627b80fcd7b6c3bb0c86b75947a30b29b6fb",
+      "sha256_after": "9a8057012a3fc8efe74e18765cf1627b80fcd7b6c3bb0c86b75947a30b29b6fb"
+    },
+    {
+      "from": "Video/IronScanIntro/src/scenes/Showcase.tsx",
+      "to": "IronScan/Video/IronScanIntro/src/scenes/Showcase.tsx",
+      "sha256_before": "e342a7e89a73dc9863043779f9624a06ec8a64cc4cd6d4b8b99eb9f2ad3d3915",
+      "sha256_after": "e342a7e89a73dc9863043779f9624a06ec8a64cc4cd6d4b8b99eb9f2ad3d3915"
+    },
+    {
+      "from": "Video/IronScanIntro/tsconfig.json",
+      "to": "IronScan/Video/IronScanIntro/tsconfig.json",
+      "sha256_before": "eb1bac7031a0de11dcb0eabccbcaf3f528c40ba9cff965d1f69e5e79667dd8a1",
+      "sha256_after": "eb1bac7031a0de11dcb0eabccbcaf3f528c40ba9cff965d1f69e5e79667dd8a1"
+    },
+    {
+      "from": "compliance/AI_USAGE.md",
+      "to": "Documentation/compliance/AI_USAGE.md",
+      "sha256_before": "a732c78990f15de827ce923a15a0fd5ce20f3ef24797955a5833f128d0daa5a3",
+      "sha256_after": "a732c78990f15de827ce923a15a0fd5ce20f3ef24797955a5833f128d0daa5a3"
+    },
+    {
+      "from": "compliance/DATASET_PROVENANCE.md",
+      "to": "Documentation/compliance/DATASET_PROVENANCE.md",
+      "sha256_before": "7f032842f562dfb2cc04884df46ff3cdb39c7db01c381989776cb99fb278871d",
+      "sha256_after": "7f032842f562dfb2cc04884df46ff3cdb39c7db01c381989776cb99fb278871d"
+    },
+    {
+      "from": "compliance/HUMAN_CONTRIBUTIONS.md",
+      "to": "Documentation/compliance/HUMAN_CONTRIBUTIONS.md",
+      "sha256_before": "49baf0628718207ce44790e4a338d62715455ec27d393c514b81040d306a62dc",
+      "sha256_after": "49baf0628718207ce44790e4a338d62715455ec27d393c514b81040d306a62dc"
+    },
+    {
+      "from": "compliance/MODEL_CARD.md",
+      "to": "Documentation/compliance/MODEL_CARD.md",
+      "sha256_before": "0ba1660cf8ae7a85b195e50f704a1d4285e2e4b88d238973df9513546f2a4395",
+      "sha256_after": "0ba1660cf8ae7a85b195e50f704a1d4285e2e4b88d238973df9513546f2a4395"
+    },
+    {
+      "from": "compliance/SYSTEM_CARD.md",
+      "to": "Documentation/compliance/SYSTEM_CARD.md",
+      "sha256_before": "8ec7990935d0eb0f8cfc2d99bd7b62a2c48afa97d893a2ba695aa0c41dd0a013",
+      "sha256_after": "8ec7990935d0eb0f8cfc2d99bd7b62a2c48afa97d893a2ba695aa0c41dd0a013"
+    },
+    {
+      "from": "compliance/ai_usage_log.csv",
+      "to": "Documentation/compliance/ai_usage_log.csv",
+      "sha256_before": "a21b57928359e58b49177edc6fadc9e429622deb044761b82edd9dc8dd6f1840",
+      "sha256_after": "49d7a1a9e6ce1886c71e9871aaf0676430a4d507c05cd444cd4ed4353cffb41c"
+    },
+    {
+      "from": "compliance/code_provenance.md",
+      "to": "Documentation/compliance/code_provenance.md",
+      "sha256_before": "60482c487c3e384e03cf43aaeb5bdec5c09c452ad1493ef609e638db2c0663f5",
+      "sha256_after": "8b99f20b362f24a076f361a65a0a3a13dd02be4922abdb0df50a4e587d00bb12"
+    },
+    {
+      "from": "compliance/dependency_licenses.csv",
+      "to": "Documentation/compliance/dependency_licenses.csv",
+      "sha256_before": "bf2fc72ec0ea65e74a0a56725bb2c3413e5632dab408e7c6e94813b9154f79cd",
+      "sha256_after": "bf2fc72ec0ea65e74a0a56725bb2c3413e5632dab408e7c6e94813b9154f79cd"
+    },
+    {
+      "from": "docs/architecture/camera-pipeline.md",
+      "to": "Documentation/docs/architecture/camera-pipeline.md",
+      "sha256_before": "c19a3ba00fcd606f7ae1939844dbbc6b222f7c1b9aa94888b4b13cdedd197ce7",
+      "sha256_after": "c19a3ba00fcd606f7ae1939844dbbc6b222f7c1b9aa94888b4b13cdedd197ce7"
+    },
+    {
+      "from": "docs/architecture/color-calibration-spec.md",
+      "to": "Documentation/docs/architecture/color-calibration-spec.md",
+      "sha256_before": "2e778e74504941ca3504c03fb5f332dcf11c38a9ffa81ddb63a18abe8a40e65c",
+      "sha256_after": "2e778e74504941ca3504c03fb5f332dcf11c38a9ffa81ddb63a18abe8a40e65c"
+    },
+    {
+      "from": "docs/architecture/data-flow.md",
+      "to": "Documentation/docs/architecture/data-flow.md",
+      "sha256_before": "32a0e9e9c6a5baa318f3fb5a4a6705e2c63da2dc88978d5c3728b324181c2a15",
+      "sha256_after": "32a0e9e9c6a5baa318f3fb5a4a6705e2c63da2dc88978d5c3728b324181c2a15"
+    },
+    {
+      "from": "docs/architecture/debug-server.md",
+      "to": "Documentation/docs/architecture/debug-server.md",
+      "sha256_before": "bfe9185a867f29e9c23959fd95bfec5e457376856fa7ddeb5b3a75d422f801f0",
+      "sha256_after": "bfe9185a867f29e9c23959fd95bfec5e457376856fa7ddeb5b3a75d422f801f0"
+    },
+    {
+      "from": "docs/architecture/ml-runtime.md",
+      "to": "Documentation/docs/architecture/ml-runtime.md",
+      "sha256_before": "d41f8cdfafcfc267c5946b1b9f746779c156d01188985c53b42e7ea9938cf045",
+      "sha256_after": "d41f8cdfafcfc267c5946b1b9f746779c156d01188985c53b42e7ea9938cf045"
+    },
+    {
+      "from": "docs/architecture/system-overview.md",
+      "to": "Documentation/docs/architecture/system-overview.md",
+      "sha256_before": "986c8cbd678da0457e5375a63582eab4a9dbaec5a673a5bcf8d11b85fd8412ed",
+      "sha256_after": "986c8cbd678da0457e5375a63582eab4a9dbaec5a673a5bcf8d11b85fd8412ed"
+    },
+    {
+      "from": "docs/brand-theme-validation.md",
+      "to": "Documentation/docs/brand-theme-validation.md",
+      "sha256_before": "513192e1a5db2a2a4399d9f17eca7d4b5d592c3083b0421075e3e12314b971bb",
+      "sha256_after": "513192e1a5db2a2a4399d9f17eca7d4b5d592c3083b0421075e3e12314b971bb"
+    },
+    {
+      "from": "docs/camera-import-validation.md",
+      "to": "Documentation/docs/camera-import-validation.md",
+      "sha256_before": "300662d151c5d663f790261fd1b3c7c8facf10ebdad61a431ff437ca868328ae",
+      "sha256_after": "300662d151c5d663f790261fd1b3c7c8facf10ebdad61a431ff437ca868328ae"
+    },
+    {
+      "from": "docs/camera-toggle-debugging-validation.md",
+      "to": "Documentation/docs/camera-toggle-debugging-validation.md",
+      "sha256_before": "dfc269cc7881b1a1b2940c98f73902c29bbfa7a76843e71933e61f020afadc8b",
+      "sha256_after": "dfc269cc7881b1a1b2940c98f73902c29bbfa7a76843e71933e61f020afadc8b"
+    },
+    {
+      "from": "docs/demo-features.md",
+      "to": "Documentation/docs/demo-features.md",
+      "sha256_before": "087d8c442e4b710af23e363fcb9a21347c2b8e5fef5dd206373c752a0689f803",
+      "sha256_after": "087d8c442e4b710af23e363fcb9a21347c2b8e5fef5dd206373c752a0689f803"
+    },
+    {
+      "from": "docs/demo-reset-camera-validation.md",
+      "to": "Documentation/docs/demo-reset-camera-validation.md",
+      "sha256_before": "d76f472b65827884e2bf106ec6cccb9dff84e76d444655e4118d8bef1713bd56",
+      "sha256_after": "d76f472b65827884e2bf106ec6cccb9dff84e76d444655e4118d8bef1713bd56"
+    },
+    {
+      "from": "docs/final-workspace-build-validation.md",
+      "to": "Documentation/docs/final-workspace-build-validation.md",
+      "sha256_before": "96c87adc1f4499d10a22dcc7b2ff9e00665669adae34a15366df4bbacc90d284",
+      "sha256_after": "96c87adc1f4499d10a22dcc7b2ff9e00665669adae34a15366df4bbacc90d284"
+    },
+    {
+      "from": "docs/physical-iphone-bugfix-validation.md",
+      "to": "Documentation/docs/physical-iphone-bugfix-validation.md",
+      "sha256_before": "d3d4798b1d9fb970dfd73d1c9cad1c565a16f207bb19afedf8cc7b377f1e0a51",
+      "sha256_after": "d3d4798b1d9fb970dfd73d1c9cad1c565a16f207bb19afedf8cc7b377f1e0a51"
+    },
+    {
+      "from": "docs/readme_assets/01_hero_banner.png",
+      "to": "Documentation/docs/readme_assets/01_hero_banner.png",
+      "sha256_before": "37cb3d86028743caf551a77f3d70c55cbfff4947b8c03f058e0d2f4908412589",
+      "sha256_after": "37cb3d86028743caf551a77f3d70c55cbfff4947b8c03f058e0d2f4908412589"
+    },
+    {
+      "from": "docs/readme_assets/02_why_it_matters.png",
+      "to": "Documentation/docs/readme_assets/02_why_it_matters.png",
+      "sha256_before": "e4d1555d3f4382584eca93fd6ed2eb3247112c76bbf77bbc884bfb4d503c065f",
+      "sha256_after": "e4d1555d3f4382584eca93fd6ed2eb3247112c76bbf77bbc884bfb4d503c065f"
+    },
+    {
+      "from": "docs/readme_assets/03_how_it_works_ml.png",
+      "to": "Documentation/docs/readme_assets/03_how_it_works_ml.png",
+      "sha256_before": "180a80ff0288117e47e4bf4da5c1a12393946eb4085e0e0f08c053b6d8e4b3c4",
+      "sha256_after": "180a80ff0288117e47e4bf4da5c1a12393946eb4085e0e0f08c053b6d8e4b3c4"
+    },
+    {
+      "from": "docs/readme_assets/04_import_and_private_scan.png",
+      "to": "Documentation/docs/readme_assets/04_import_and_private_scan.png",
+      "sha256_before": "84e5e288789f4151b055b235beba9d3ef4b1d223bf21a6f80e7d90b9eaaa2990",
+      "sha256_after": "84e5e288789f4151b055b235beba9d3ef4b1d223bf21a6f80e7d90b9eaaa2990"
+    },
+    {
+      "from": "docs/readme_assets/05_history_trend_graph.png",
+      "to": "Documentation/docs/readme_assets/05_history_trend_graph.png",
+      "sha256_before": "3f75f92b5612c700d2ef20b25f71d0279d9446d2dcb51339694e3886cb2c83ad",
+      "sha256_after": "3f75f92b5612c700d2ef20b25f71d0279d9446d2dcb51339694e3886cb2c83ad"
+    },
+    {
+      "from": "docs/readme_assets/manifest.json",
+      "to": "Documentation/docs/readme_assets/manifest.json",
+      "sha256_before": "bea248d9062dcacf1ba5981b8ac5b3c8f5b54ba1eedeaf8caeae34719d35614b",
+      "sha256_after": "bea248d9062dcacf1ba5981b8ac5b3c8f5b54ba1eedeaf8caeae34719d35614b"
+    },
+    {
+      "from": "docs/repository-organization-validation.md",
+      "to": "Documentation/docs/repository-organization-validation.md",
+      "sha256_before": "64aad16508ade5bf27155fb710f3878adb9304dbd0159a795d225ef97062a900",
+      "sha256_after": "64aad16508ade5bf27155fb710f3878adb9304dbd0159a795d225ef97062a900"
+    },
+    {
+      "from": "docs/repository-reorganization-map.json",
+      "to": "Documentation/docs/repository-reorganization-map.json",
+      "sha256_before": "06124eb1dade5f4cfbec2291c8522020f9d7358a6ba4f4399b48b71277342c03",
+      "sha256_after": "6b880c070577b6487b9ece86a1d205d8cdcd0f6379ea4779e85bd8bcee57a54f"
+    },
+    {
+      "from": "docs/safety/failure-modes.md",
+      "to": "Documentation/docs/safety/failure-modes.md",
+      "sha256_before": "60cdf6f082f62ff9594026e7a9f947bf1e7cc7bf738ae6306fb5220e6e7abf35",
+      "sha256_after": "60cdf6f082f62ff9594026e7a9f947bf1e7cc7bf738ae6306fb5220e6e7abf35"
+    },
+    {
+      "from": "docs/safety/intended-use.md",
+      "to": "Documentation/docs/safety/intended-use.md",
+      "sha256_before": "6ff7d8f84dcbf994df780169795721c98b3ba63d4fcfbbce3e67b0ed896251df",
+      "sha256_after": "6ff7d8f84dcbf994df780169795721c98b3ba63d4fcfbbce3e67b0ed896251df"
+    },
+    {
+      "from": "docs/safety/limitations.md",
+      "to": "Documentation/docs/safety/limitations.md",
+      "sha256_before": "28ba072fedd03554e9ebe1ad01d30290ec077c32e542c46e824cc80b1bdead56",
+      "sha256_after": "28ba072fedd03554e9ebe1ad01d30290ec077c32e542c46e824cc80b1bdead56"
+    },
+    {
+      "from": "docs/ui-clipping-intro-validation.md",
+      "to": "Documentation/docs/ui-clipping-intro-validation.md",
+      "sha256_before": "b76d7419f21e95d4ddb76b804787c68d1129a1ffe7263512de7fd632037fe64d",
+      "sha256_after": "b76d7419f21e95d4ddb76b804787c68d1129a1ffe7263512de7fd632037fe64d"
+    },
+    {
+      "from": "docs/validation/dataset-validation-plan.md",
+      "to": "Documentation/docs/validation/dataset-validation-plan.md",
+      "sha256_before": "eda351ab06969a8202eaa0ef20bb780e03f070d322ecb4b756f9f99c5bef871f",
+      "sha256_after": "eda351ab06969a8202eaa0ef20bb780e03f070d322ecb4b756f9f99c5bef871f"
+    },
+    {
+      "from": "docs/validation/device-test-matrix.md",
+      "to": "Documentation/docs/validation/device-test-matrix.md",
+      "sha256_before": "165ad1b7af51af977f13f5285b7589b527e3fdb2ce88b69c0888806acfaa9c92",
+      "sha256_after": "165ad1b7af51af977f13f5285b7589b527e3fdb2ce88b69c0888806acfaa9c92"
+    },
+    {
+      "from": "docs/validation/parity-test-plan.md",
+      "to": "Documentation/docs/validation/parity-test-plan.md",
+      "sha256_before": "d0cca291d146b47d6611c93a4fde9199c89ab739ff9b658b76350ad381cff0fb",
+      "sha256_after": "d0cca291d146b47d6611c93a4fde9199c89ab739ff9b658b76350ad381cff0fb"
+    },
+    {
+      "from": "docs/validation/statistical-analysis-plan.md",
+      "to": "Documentation/docs/validation/statistical-analysis-plan.md",
+      "sha256_before": "4073a3a91993faa3edb79c5c42ff3d0553b229dd4f2fa6a8e1460bfa44da5bb5",
+      "sha256_after": "4073a3a91993faa3edb79c5c42ff3d0553b229dd4f2fa6a8e1460bfa44da5bb5"
+    },
+    {
+      "from": "docs/validation/system-validation-plan.md",
+      "to": "Documentation/docs/validation/system-validation-plan.md",
+      "sha256_before": "984e799cb5858281ff3a304ab40f900c3990a46979d80b77d37abb7eaf06c426",
+      "sha256_after": "984e799cb5858281ff3a304ab40f900c3990a46979d80b77d37abb7eaf06c426"
+    },
+    {
+      "from": "pyproject.toml",
+      "to": "IronScan/pyproject.toml",
+      "sha256_before": "3bbb87d9996c4bb9e0e91c7dc53748b928f07cc97abbfbf40f474058ae6a8825",
+      "sha256_after": "3bbb87d9996c4bb9e0e91c7dc53748b928f07cc97abbfbf40f474058ae6a8825"
+    },
+    {
+      "from": "scripts/__init__.py",
+      "to": "IronScan/scripts/__init__.py",
+      "sha256_before": "3cf5450832aef775f7d1ce3f4c49d18e9e7653afca019aaec449d2e0c6d8b204",
+      "sha256_after": "3cf5450832aef775f7d1ce3f4c49d18e9e7653afca019aaec449d2e0c6d8b204"
+    },
+    {
+      "from": "scripts/bootstrap.sh",
+      "to": "IronScan/scripts/bootstrap.sh",
+      "sha256_before": "838fc4f851539799adfbdb866a83fac6fd7fcf7cfba5c494ee461e0618bca6cd",
+      "sha256_after": "015121c9220e57b202fe51efb56770de057263b2f0b0714bc61d1b1861cae4b1"
+    },
+    {
+      "from": "scripts/check_repository_layout.py",
+      "to": "IronScan/scripts/check_repository_layout.py",
+      "sha256_before": "4f237ca89367db261e8223b1904fd79a0e1355d6f79cc1709044585671385544",
+      "sha256_after": "2448831731c65b854fc42de911cc7b2706017765d225d16381c7054e1a0e62d1"
+    },
+    {
+      "from": "scripts/compare_swift_python_outputs.py",
+      "to": "IronScan/scripts/compare_swift_python_outputs.py",
+      "sha256_before": "1aa26ddef438148152e8393f127f74a88f09b9abf22b1ea3510d16e1a467bca3",
+      "sha256_after": "1aa26ddef438148152e8393f127f74a88f09b9abf22b1ea3510d16e1a467bca3"
+    },
+    {
+      "from": "scripts/generate_fixture_models.py",
+      "to": "IronScan/scripts/generate_fixture_models.py",
+      "sha256_before": "0123b07f8d3cb986b73fb36f8d1feba3751afa67db540277808dfa11d9cb7056",
+      "sha256_after": "0123b07f8d3cb986b73fb36f8d1feba3751afa67db540277808dfa11d9cb7056"
+    },
+    {
+      "from": "scripts/generate_golden_fixtures.py",
+      "to": "IronScan/scripts/generate_golden_fixtures.py",
+      "sha256_before": "b3d71609dce9341831fb4c5d630fb84d217e89527277d9020ab045d7d4d4aea9",
+      "sha256_after": "b3d71609dce9341831fb4c5d630fb84d217e89527277d9020ab045d7d4d4aea9"
+    },
+    {
+      "from": "scripts/run_ios_checks.sh",
+      "to": "IronScan/scripts/run_ios_checks.sh",
+      "sha256_before": "9974cd01809a7cdd6bed8a8208134dfcebd6314acf7247cf1402301889141f61",
+      "sha256_after": "09f3bfdaf8d1b8fe7fe637b03b3b15da6ffaea3cf17a4b2817e20ba0f4fb4276"
+    },
+    {
+      "from": "scripts/run_python_checks.sh",
+      "to": "IronScan/scripts/run_python_checks.sh",
+      "sha256_before": "92b91ceb8ddf5e377da6b2c5da2fdd2a3d3117ce1d95e6d4c21eb9d473c4effe",
+      "sha256_after": "a39366f5a3fc9c04414ee8ba1dffd0592b52fcb0f365ab1aa6fb2d4d902d4e29"
+    },
+    {
+      "from": "scripts/verify_model_hashes.py",
+      "to": "IronScan/scripts/verify_model_hashes.py",
+      "sha256_before": "4bac12d8892058c54b4bbc1a5b630c05eae1f0429917a32e8d775dec4a87b03f",
+      "sha256_after": "4bac12d8892058c54b4bbc1a5b630c05eae1f0429917a32e8d775dec4a87b03f"
+    },
+    {
+      "from": "uv.lock",
+      "to": "IronScan/uv.lock",
+      "sha256_before": "3542505df0771113b38a8488bca573fc0e32f2f5fcd3a7fbd4b29e366e1d628f",
+      "sha256_after": "3542505df0771113b38a8488bca573fc0e32f2f5fcd3a7fbd4b29e366e1d628f"
+    }
+  ]
+}

@@ -74,7 +74,7 @@ export const config = {
   },
   assets: {screenshots: 'screenshots/', login: 'login.png', logo: 'logo.png', useLogo: false},
   output: {video: 'out/new.mp4', stills: 'out/stills', verification: 'out/transition-verification.json',
-    readmeAssets: {directory: '../../docs/readme_assets', shots: [
+    readmeAssets: {directory: '../../../Documentation/docs/readme_assets', shots: [
       {file: '01_hero_banner.png', second: 2.5},
       {file: '02_why_it_matters.png', second: 6.5},
       {file: '03_how_it_works_ml.png', second: 12},

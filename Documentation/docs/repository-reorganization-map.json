@@ -1,5 +1,5 @@
 {
-  "target": "Apps/IronScan/IronScan",
+  "target": "IronScan/Apps/IronScan/IronScan",
   "files": [
     {
       "from": "App/PDFExportManager.swift",

@@ -4,7 +4,7 @@ A silent 1920×1080 Remotion MP4 with the IronScan warm sand, deep teal, marigol
 
 ## Install, preview, render
 
-Node.js 22.18 or newer:
+Run these commands from `IronScan/Video/IronScanIntro` inside the repository. Node.js 22.18 or newer:
 
 ```sh
 npm ci
@@ -48,12 +48,12 @@ Personal/local captures remain gitignored; only the three explicitly named ficti
 To regenerate the three native screenshot inputs, build the app for a booted simulator and use the existing isolated capture mode:
 
 ```sh
-# From the repository root (replace DEVICE_ID):
+# From the technical workspace IronScan/ (replace DEVICE_ID):
 xcodebuild -project Apps/IronScan/IronScan.xcodeproj -scheme IronScan \
   -configuration Debug -destination 'platform=iOS Simulator,id=DEVICE_ID' \
   -derivedDataPath /private/tmp/ironscan-intro-build CODE_SIGNING_ALLOWED=NO build
 
-# From Video/IronScanIntro:
+# From IronScan/Video/IronScanIntro (relative to repository root):
 python3 scripts/capture-screenshots.py DEVICE_ID \
   /private/tmp/ironscan-intro-build/Build/Products/Debug-iphonesimulator/IronScan.app
 ```
